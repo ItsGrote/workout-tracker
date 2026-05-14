@@ -50,3 +50,12 @@ model ExerciseSet {
   @@index([exerciseId])
   @@index([setType])
 }
+
+model TrainingGoal {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  weeklyGoal  Int?
+  monthlyGoal Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

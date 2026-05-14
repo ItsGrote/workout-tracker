@@ -96,6 +96,7 @@ Tipos de serie suportados:
 - Rotas aninhadas devem validar no service que o recurso pertence ao pai informado no caminho, por exemplo exercicio dentro do workout correto.
 - Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
 - Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
+- Streaks e consistencia sao derivados de workouts e metas salvas. O streak nao deve ser persistido enquanto puder ser recalculado.
 
 ## Como adicionar uma feature
 

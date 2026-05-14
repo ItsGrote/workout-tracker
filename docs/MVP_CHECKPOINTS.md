@@ -122,6 +122,8 @@ Pronto quando:
 
 ## 8. Streaks e consistencia
 
+Status: concluido.
+
 Objetivo: rastrear frequencia semanal, mensal, streaks e porcentagem de conclusao.
 
 Arquivos provaveis:

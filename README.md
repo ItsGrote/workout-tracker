@@ -67,3 +67,14 @@ Enquanto a autenticacao real ainda nao foi implementada, as rotas de workout exi
 - `GET /api/exercises/history`: consulta historico de exercicios por nome e/ou datas.
 - `GET /api/progression`: retorna volume de treino/exercicio pronto para graficos.
 - `GET /api/personal-records`: calcula recordes pessoais a partir dos treinos existentes.
+- `GET /api/goals`: busca metas semanais/mensais do usuario.
+- `PUT /api/goals`: define metas semanais/mensais do usuario.
+- `GET /api/consistency`: retorna progresso semanal, mensal, historico e streak.
+
+## Migrations
+
+Para aplicar migrations pendentes no banco configurado:
+
+```bash
+npx prisma migrate deploy
+```
