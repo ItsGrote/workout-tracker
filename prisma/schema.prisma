@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ExerciseSetType {
+  WARM_UP
+  RECOGNITION_ACTIVATION
+  WORKING
+}
+
+model Workout {
+  id        String     @id @default(cuid())
+  userId    String
+  name      String     @db.VarChar(80)
+  category  String?    @db.VarChar(60)
+  date      DateTime
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  exercises Exercise[]
+
+  @@index([userId])
+  @@index([date])
+}
+
+model Exercise {
+  id        String        @id @default(cuid())
+  workoutId String
+  name      String        @db.VarChar(80)
+  order     Int
+  workout   Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  sets      ExerciseSet[]
+
+  @@index([workoutId])
+  @@index([name])
+}
+
+model ExerciseSet {
+  id          String          @id @default(cuid())
+  exerciseId  String
+  repetitions Int
+  weightKg    Decimal         @db.Decimal(7, 2)
+  setType     ExerciseSetType
+  order       Int
+  exercise    Exercise        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+  @@index([setType])
+}
