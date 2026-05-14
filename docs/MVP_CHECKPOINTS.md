@@ -90,6 +90,8 @@ Pronto quando:
 
 ## 6. Calculos de progressao
 
+Status: concluido.
+
 Objetivo: calcular intensidade e volume por treino, exercicio e categoria.
 
 Arquivos provaveis:
@@ -103,6 +105,8 @@ Pronto quando:
 - Resultados podem alimentar graficos.
 
 ## 7. Personal records
+
+Status: concluido.
 
 Objetivo: detectar maiores cargas, volumes, repeticoes e novos recordes.
 

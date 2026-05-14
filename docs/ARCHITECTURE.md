@@ -94,6 +94,8 @@ Tipos de serie suportados:
 - Criar abstracoes somente quando removerem duplicacao real ou melhorarem clareza.
 - Ate a autenticacao real existir, APIs de workout usam `x-user-id` como contexto temporario de usuario.
 - Rotas aninhadas devem validar no service que o recurso pertence ao pai informado no caminho, por exemplo exercicio dentro do workout correto.
+- Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
+- Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
 
 ## Como adicionar uma feature
 

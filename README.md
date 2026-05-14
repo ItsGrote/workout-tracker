@@ -65,3 +65,5 @@ Enquanto a autenticacao real ainda nao foi implementada, as rotas de workout exi
 - `PATCH /api/exercises/:exerciseId/sets/:setId`: edita serie.
 - `DELETE /api/exercises/:exerciseId/sets/:setId`: exclui serie.
 - `GET /api/exercises/history`: consulta historico de exercicios por nome e/ou datas.
+- `GET /api/progression`: retorna volume de treino/exercicio pronto para graficos.
+- `GET /api/personal-records`: calcula recordes pessoais a partir dos treinos existentes.
