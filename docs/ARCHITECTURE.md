@@ -97,6 +97,7 @@ Tipos de serie suportados:
 - Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
 - Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
 - Streaks e consistencia sao derivados de workouts e metas salvas. O streak nao deve ser persistido enquanto puder ser recalculado.
+- O dashboard inicial consome os endpoints HTTP existentes. Enquanto nao houver Supabase Auth, o frontend usa `x-user-id: dev-user` apenas em desenvolvimento local.
 
 ## Como adicionar uma feature
 

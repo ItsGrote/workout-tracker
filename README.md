@@ -31,6 +31,10 @@ npm run dev
 
 Depois acesse `http://localhost:3000`.
 
+O dashboard inicial usa temporariamente `x-user-id: dev-user` no frontend.
+Esse valor existe apenas para desenvolvimento local e deve ser removido quando
+Supabase Auth for implementado.
+
 ## Scripts
 
 - `npm run dev`: inicia o servidor de desenvolvimento.

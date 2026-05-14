@@ -138,6 +138,8 @@ Pronto quando:
 
 ## 9. Dashboard inicial
 
+Status: concluido.
+
 Objetivo: criar uma interface minima para visualizar progresso, volume e consistencia.
 
 Arquivos provaveis:
