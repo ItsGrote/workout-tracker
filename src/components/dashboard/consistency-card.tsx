@@ -12,6 +12,9 @@ const statusLabel: Record<ConsistencyResponse["weekly"]["status"], string> = {
 };
 
 export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
+  const weeklyGoalLabel = goals.weeklyGoal ?? "set a goal";
+  const monthlyGoalLabel = goals.monthlyGoal ?? "set a goal";
+
   return (
     <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
       <div className="flex flex-col gap-1">
@@ -25,7 +28,7 @@ export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
         <div className="rounded border border-[var(--border)] p-4">
           <p className="text-sm text-[var(--muted)]">Weekly Goal</p>
           <p className="mt-2 text-2xl font-semibold">
-            {consistency.weekly.trainedDays}/{goals.weeklyGoal ?? "-"}
+            {consistency.weekly.trainedDays}/{weeklyGoalLabel}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {consistency.weekly.remaining ?? "-"} remaining
@@ -44,7 +47,7 @@ export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
         <div className="rounded border border-[var(--border)] p-4">
           <p className="text-sm text-[var(--muted)]">Monthly Goal</p>
           <p className="mt-2 text-2xl font-semibold">
-            {consistency.monthly.trainedDays}/{goals.monthlyGoal ?? "-"}
+            {consistency.monthly.trainedDays}/{monthlyGoalLabel}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {consistency.monthly.completionPercentage}% complete
@@ -63,4 +66,3 @@ export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
     </section>
   );
 }
-

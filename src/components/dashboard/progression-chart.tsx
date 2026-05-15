@@ -59,12 +59,15 @@ export function ProgressionChart({ points }: ProgressionChartProps) {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full items-center justify-center rounded border border-dashed border-[var(--border)] text-sm text-[var(--muted)]">
-            No progression data yet.
+          <div className="flex h-full flex-col items-center justify-center rounded border border-dashed border-[var(--border)] px-6 text-center">
+            <p className="text-base font-medium">No volume trend yet</p>
+            <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--muted)]">
+              Create your first workout and this chart will start showing your
+              training evolution over time.
+            </p>
           </div>
         )}
       </div>
     </section>
   );
 }
-

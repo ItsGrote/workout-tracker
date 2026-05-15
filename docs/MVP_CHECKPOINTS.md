@@ -171,6 +171,8 @@ Pronto quando:
 
 ## 11. Polimento do MVP
 
+Status: concluido.
+
 Objetivo: revisar UX, mensagens de erro, estados vazios, loading e responsividade.
 
 Arquivos provaveis:

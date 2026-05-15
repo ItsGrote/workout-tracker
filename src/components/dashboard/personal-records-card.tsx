@@ -45,10 +45,15 @@ export function PersonalRecordsCard({
             </div>
           ))
         ) : (
-          <p className="text-sm text-[var(--muted)]">No personal records yet.</p>
+          <div className="rounded border border-dashed border-[var(--border)] p-4">
+            <p className="font-medium">No records unlocked yet</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              Save workouts with exercises and sets. Your first best weight,
+              reps and volume records will appear here automatically.
+            </p>
+          </div>
         )}
       </div>
     </section>
   );
 }
-

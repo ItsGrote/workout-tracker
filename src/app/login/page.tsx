@@ -1,12 +1,13 @@
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/auth-form";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-8">
+    <AuthPageShell>
       <Suspense fallback={null}>
         <AuthForm mode="login" />
       </Suspense>
-    </main>
+    </AuthPageShell>
   );
 }

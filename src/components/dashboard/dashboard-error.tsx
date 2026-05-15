@@ -8,7 +8,7 @@ export function DashboardError({ message, onRetry }: DashboardErrorProps) {
     <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
       <section className="mx-auto w-full max-w-3xl rounded border border-[#e1b8b8] bg-[#fff7f7] p-6">
         <h1 className="text-2xl font-semibold text-[#2b1515]">
-          Dashboard unavailable
+          We could not load your training data
         </h1>
         <p className="mt-3 text-sm leading-6 text-[#7b3b3b]">{message}</p>
         <button
@@ -22,4 +22,3 @@ export function DashboardError({ message, onRetry }: DashboardErrorProps) {
     </main>
   );
 }
-

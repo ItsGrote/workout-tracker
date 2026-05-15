@@ -76,6 +76,12 @@ As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth
 - `PUT /api/goals`: define metas semanais/mensais do usuario.
 - `GET /api/consistency`: retorna progresso semanal, mensal, historico e streak.
 
+## Dashboard MVP
+
+O dashboard autenticado mostra volume, consistencia, metas e recordes pessoais.
+Ele tambem inclui um fluxo minimo para criar um treino com um exercicio e uma
+serie, suficiente para iniciar os graficos e o acompanhamento de consistencia.
+
 ## Autenticacao
 
 - `GET /login`: tela simples de login com email e senha.
