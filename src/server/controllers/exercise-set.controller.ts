@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
+import { requireAuthenticatedUserId } from "@/server/auth/session";
 import {
   exerciseSetService,
   ExerciseSetServiceError,
@@ -9,7 +10,6 @@ import {
   exerciseIdSchema,
   setIdSchema,
   updateExerciseSetSchema,
-  userIdSchema,
 } from "@/server/validations/exercise.validation";
 
 const parseJsonBody = async (request: NextRequest) => {
@@ -20,18 +20,7 @@ const parseJsonBody = async (request: NextRequest) => {
   }
 };
 
-const getUserId = (request: NextRequest) => {
-  const parsed = userIdSchema.safeParse(request.headers.get("x-user-id"));
-
-  if (!parsed.success) {
-    throw new ExerciseSetServiceError(
-      "Missing or invalid x-user-id header",
-      400,
-    );
-  }
-
-  return parsed.data;
-};
+const getUserId = async () => requireAuthenticatedUserId();
 
 const handleError = (error: unknown) => {
   if (error instanceof ZodError) {
@@ -48,6 +37,13 @@ const handleError = (error: unknown) => {
     );
   }
 
+  if (error instanceof Error && "statusCode" in error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: Number(error.statusCode) },
+    );
+  }
+
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 };
 
@@ -59,7 +55,7 @@ const parseSetId = (setId: string) => setIdSchema.parse({ setId }).setId;
 export const exerciseSetController = {
   async create(request: NextRequest, exerciseId: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const body = await parseJsonBody(request);
       const input = createExerciseSetSchema.parse(body);
       const set = await exerciseSetService.create(
@@ -76,7 +72,7 @@ export const exerciseSetController = {
 
   async listByExercise(request: NextRequest, exerciseId: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const sets = await exerciseSetService.listByExercise(
         userId,
         parseExerciseId(exerciseId),
@@ -90,7 +86,7 @@ export const exerciseSetController = {
 
   async update(request: NextRequest, exerciseId: string, setId: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const body = await parseJsonBody(request);
       const input = updateExerciseSetSchema.parse(body);
       const set = await exerciseSetService.updateForExercise(
@@ -108,7 +104,7 @@ export const exerciseSetController = {
 
   async delete(request: NextRequest, exerciseId: string, setId: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       await exerciseSetService.deleteForExercise(
         userId,
         parseExerciseId(exerciseId),

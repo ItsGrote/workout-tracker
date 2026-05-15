@@ -31,9 +31,8 @@ npm run dev
 
 Depois acesse `http://localhost:3000`.
 
-O dashboard inicial usa temporariamente `x-user-id: dev-user` no frontend.
-Esse valor existe apenas para desenvolvimento local e deve ser removido quando
-Supabase Auth for implementado.
+Usuarios anonimos sao redirecionados para `/login`. Depois do login, o
+dashboard consome as APIs usando a sessao autenticada do Supabase.
 
 ## Scripts
 
@@ -48,10 +47,12 @@ Copie `.env.example` para `.env` e configure:
 
 - `DATABASE_URL`: URL pooled do PostgreSQL/Supabase usada pela aplicacao.
 - `DIRECT_URL`: URL direta usada pelo Prisma CLI para migrations.
+- `NEXT_PUBLIC_SUPABASE_URL`: URL publica do projeto Supabase.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: anon key publica do projeto Supabase.
 
 ## API atual
 
-Enquanto a autenticacao real ainda nao foi implementada, as rotas de workout exigem o header `x-user-id`.
+As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth.
 
 - `GET /api/workouts`: lista workouts.
 - `POST /api/workouts`: cria workout com exercicios e series.
@@ -74,6 +75,15 @@ Enquanto a autenticacao real ainda nao foi implementada, as rotas de workout exi
 - `GET /api/goals`: busca metas semanais/mensais do usuario.
 - `PUT /api/goals`: define metas semanais/mensais do usuario.
 - `GET /api/consistency`: retorna progresso semanal, mensal, historico e streak.
+
+## Autenticacao
+
+- `GET /login`: tela simples de login com email e senha.
+- `GET /signup`: tela simples de cadastro com email e senha.
+- Logout fica disponivel no dashboard autenticado.
+
+O `userId` usado nas APIs vem somente da sessao Supabase. O frontend nao envia
+nem escolhe `userId`.
 
 ## Migrations
 

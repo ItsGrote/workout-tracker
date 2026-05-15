@@ -92,12 +92,12 @@ Tipos de serie suportados:
 - Nomes de arquivos devem ser diretos e por feature quando possivel, por exemplo `workout.service.ts`.
 - Evitar camadas extras como use cases, gateways e presenters no MVP.
 - Criar abstracoes somente quando removerem duplicacao real ou melhorarem clareza.
-- Ate a autenticacao real existir, APIs de workout usam `x-user-id` como contexto temporario de usuario.
+- APIs privadas devem obter `userId` apenas da sessao Supabase autenticada.
 - Rotas aninhadas devem validar no service que o recurso pertence ao pai informado no caminho, por exemplo exercicio dentro do workout correto.
 - Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
 - Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
 - Streaks e consistencia sao derivados de workouts e metas salvas. O streak nao deve ser persistido enquanto puder ser recalculado.
-- O dashboard inicial consome os endpoints HTTP existentes. Enquanto nao houver Supabase Auth, o frontend usa `x-user-id: dev-user` apenas em desenvolvimento local.
+- O dashboard consome os endpoints HTTP existentes usando a sessao Supabase persistida em cookies.
 
 ## Como adicionar uma feature
 
@@ -117,3 +117,4 @@ Tipos de serie suportados:
 - Recharts sera usado apenas quando a camada de dashboard for iniciada.
 - A modelagem ja inclui `userId` em `Workout`, mas a autenticacao sera adicionada em um checkpoint futuro.
 - Com Prisma 7, `DIRECT_URL` fica em `prisma.config.ts` para CLI/migrations e `DATABASE_URL` e usada no runtime via adapter PostgreSQL.
+- Supabase Auth usa email/senha no MVP. OAuth, recuperacao de senha e roles ficam para etapas futuras.

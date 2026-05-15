@@ -154,6 +154,8 @@ Pronto quando:
 
 ## 10. Autenticacao e isolamento de usuario
 
+Status: concluido.
+
 Objetivo: adicionar Supabase Auth e garantir que cada usuario veja apenas seus dados.
 
 Arquivos provaveis:

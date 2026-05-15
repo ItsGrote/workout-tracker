@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
+import { requireAuthenticatedUserId } from "@/server/auth/session";
 import { consistencyService } from "@/server/services/consistency.service";
-import { userIdSchema } from "@/server/validations/goal.validation";
 
 class ConsistencyControllerError extends Error {
   constructor(
@@ -12,18 +12,7 @@ class ConsistencyControllerError extends Error {
   }
 }
 
-const getUserId = (request: NextRequest) => {
-  const parsed = userIdSchema.safeParse(request.headers.get("x-user-id"));
-
-  if (!parsed.success) {
-    throw new ConsistencyControllerError(
-      "Missing or invalid x-user-id header",
-      400,
-    );
-  }
-
-  return parsed.data;
-};
+const getUserId = async () => requireAuthenticatedUserId();
 
 const handleError = (error: unknown) => {
   if (error instanceof ZodError) {
@@ -40,13 +29,20 @@ const handleError = (error: unknown) => {
     );
   }
 
+  if (error instanceof Error && "statusCode" in error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: Number(error.statusCode) },
+    );
+  }
+
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 };
 
 export const consistencyController = {
   async get(request: NextRequest) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const consistency = await consistencyService.getConsistency(userId);
 
       return NextResponse.json(consistency);
@@ -55,4 +51,3 @@ export const consistencyController = {
     }
   },
 };
-

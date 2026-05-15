@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
+import { requireAuthenticatedUserId } from "@/server/auth/session";
 import { personalRecordService } from "@/server/services/personal-record.service";
 import {
   personalRecordFiltersSchema,
-  userIdSchema,
 } from "@/server/validations/personal-record.validation";
 
 class PersonalRecordControllerError extends Error {
@@ -15,18 +15,7 @@ class PersonalRecordControllerError extends Error {
   }
 }
 
-const getUserId = (request: NextRequest) => {
-  const parsed = userIdSchema.safeParse(request.headers.get("x-user-id"));
-
-  if (!parsed.success) {
-    throw new PersonalRecordControllerError(
-      "Missing or invalid x-user-id header",
-      400,
-    );
-  }
-
-  return parsed.data;
-};
+const getUserId = async () => requireAuthenticatedUserId();
 
 const handleError = (error: unknown) => {
   if (error instanceof ZodError) {
@@ -43,13 +32,20 @@ const handleError = (error: unknown) => {
     );
   }
 
+  if (error instanceof Error && "statusCode" in error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: Number(error.statusCode) },
+    );
+  }
+
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 };
 
 export const personalRecordController = {
   async list(request: NextRequest) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const filters = personalRecordFiltersSchema.parse(
         Object.fromEntries(request.nextUrl.searchParams),
       );
@@ -64,4 +60,3 @@ export const personalRecordController = {
     }
   },
 };
-

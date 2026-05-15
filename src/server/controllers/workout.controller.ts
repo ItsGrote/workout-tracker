@@ -1,10 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
+import { requireAuthenticatedUserId } from "@/server/auth/session";
 import { workoutService, WorkoutServiceError } from "@/server/services/workout.service";
 import {
   createWorkoutSchema,
   updateWorkoutSchema,
-  userIdSchema,
   workoutFiltersSchema,
   workoutIdSchema,
 } from "@/server/validations/workout.validation";
@@ -17,15 +17,7 @@ const parseJsonBody = async (request: NextRequest) => {
   }
 };
 
-const getUserId = (request: NextRequest) => {
-  const parsed = userIdSchema.safeParse(request.headers.get("x-user-id"));
-
-  if (!parsed.success) {
-    throw new WorkoutServiceError("Missing or invalid x-user-id header", 400);
-  }
-
-  return parsed.data;
-};
+const getUserId = async () => requireAuthenticatedUserId();
 
 const handleError = (error: unknown) => {
   if (error instanceof ZodError) {
@@ -42,6 +34,13 @@ const handleError = (error: unknown) => {
     );
   }
 
+  if (error instanceof Error && "statusCode" in error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: Number(error.statusCode) },
+    );
+  }
+
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 };
 
@@ -50,7 +49,7 @@ const parseWorkoutId = (id: string) => workoutIdSchema.parse({ id }).id;
 export const workoutController = {
   async create(request: NextRequest) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const body = await parseJsonBody(request);
       const input = createWorkoutSchema.parse(body);
       const workout = await workoutService.create(userId, input);
@@ -63,7 +62,7 @@ export const workoutController = {
 
   async list(request: NextRequest) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const filters = workoutFiltersSchema.parse(
         Object.fromEntries(request.nextUrl.searchParams),
       );
@@ -77,7 +76,7 @@ export const workoutController = {
 
   async findById(request: NextRequest, id: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const workout = await workoutService.findById(userId, parseWorkoutId(id));
 
       return NextResponse.json(workout);
@@ -88,7 +87,7 @@ export const workoutController = {
 
   async update(request: NextRequest, id: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const body = await parseJsonBody(request);
       const input = updateWorkoutSchema.parse(body);
       const workout = await workoutService.update(
@@ -105,7 +104,7 @@ export const workoutController = {
 
   async delete(request: NextRequest, id: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       await workoutService.delete(userId, parseWorkoutId(id));
 
       return new NextResponse(null, { status: 204 });
@@ -116,7 +115,7 @@ export const workoutController = {
 
   async duplicate(request: NextRequest, id: string) {
     try {
-      const userId = getUserId(request);
+      const userId = await getUserId();
       const workout = await workoutService.duplicate(userId, parseWorkoutId(id));
 
       return NextResponse.json(workout, { status: 201 });
@@ -125,4 +124,3 @@ export const workoutController = {
     }
   },
 };
-

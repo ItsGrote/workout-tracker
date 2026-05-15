@@ -8,14 +8,11 @@ import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
 import { SummaryCard } from "./summary-card";
 import type { DashboardData } from "./types";
-
-const DEV_USER_ID = "dev-user";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 const requestJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(path, {
-    headers: {
-      "x-user-id": DEV_USER_ID,
-    },
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -86,7 +83,7 @@ export function DashboardClient() {
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <header className="flex flex-col gap-3">
           <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
-            Development dashboard
+            Private dashboard
           </p>
           <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end">
             <div>
@@ -94,13 +91,10 @@ export function DashboardClient() {
                 Workout Evolution Tracker
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                Initial MVP dashboard using existing backend endpoints with the
-                temporary local user id.
+                Initial MVP dashboard using authenticated backend endpoints.
               </p>
             </div>
-            <p className="rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--muted)]">
-              x-user-id: {DEV_USER_ID}
-            </p>
+            <LogoutButton />
           </div>
         </header>
 
@@ -132,4 +126,3 @@ export function DashboardClient() {
     </main>
   );
 }
-
