@@ -89,8 +89,14 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - editar serie
 - excluir exercicio
 - excluir serie
+- excluir workout completo pelo modal de edicao
 - duplicar workout
 - recarregar graficos apos alteracoes
+- listar workouts em blocos de 6 com `View more`
+- configurar streak semanal e mensal em `Settings`
+
+As metas de streak contam dias unicos treinados. Mais de um workout no mesmo
+dia nao aumenta o progresso de consistencia.
 
 ## Autenticacao
 

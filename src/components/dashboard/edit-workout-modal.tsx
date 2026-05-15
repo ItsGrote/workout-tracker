@@ -20,6 +20,7 @@ import {
 type EditWorkoutModalProps = {
   workout: WorkoutResponse | null;
   onClose: () => void;
+  onDeleted: (message: string) => void;
   onSaved: (message: string) => void;
 };
 
@@ -31,9 +32,33 @@ const groupSetsByType = (sets: SetDraft[]) =>
     sets: sets.filter((set) => set.setType === setType),
   }));
 
+const readSaveError = async (response: Response) => {
+  const fallbackMessage =
+    "Could not save edits. Please review the workout and try again.";
+
+  try {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      const body = (await response.json()) as {
+        error?: string;
+        issues?: { message?: string }[];
+      };
+
+      return body.issues?.[0]?.message ?? body.error ?? fallbackMessage;
+    }
+
+    const text = await response.text();
+    return text || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+};
+
 export function EditWorkoutModal({
   workout,
   onClose,
+  onDeleted,
   onSaved,
 }: EditWorkoutModalProps) {
   const initialDraft = useMemo(
@@ -50,6 +75,7 @@ export function EditWorkoutModal({
     useState<UnsavedAction>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!initialDraft) {
@@ -213,22 +239,71 @@ export function EditWorkoutModal({
 
     setIsSaving(true);
 
-    const response = await fetch(`/api/workouts/${workout.id}`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(draftToPayload(draft)),
-    });
+    try {
+      const response = await fetch(`/api/workouts/${workout.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draftToPayload(draft)),
+      });
 
-    setIsSaving(false);
+      if (!response.ok) {
+        setError(await readSaveError(response));
+        return false;
+      }
+    } catch (caughtError) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to save workout edits", caughtError);
+      }
 
-    if (!response.ok) {
-      setError("Could not save edits. Please review the workout and try again.");
+      setError(
+        "Could not reach the server while saving. Please check your connection and try again.",
+      );
       return false;
+    } finally {
+      setIsSaving(false);
     }
 
     onSaved("Workout edits saved. Charts are being refreshed.");
     return true;
+  };
+
+  const deleteWorkout = async () => {
+    setError(null);
+
+    if (
+      !window.confirm(
+        "Deleting this workout will also delete all exercises and sets inside it. Do you want to continue?",
+      )
+    ) {
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/workouts/${workout.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        setError(await readSaveError(response));
+        return;
+      }
+
+      onDeleted("Workout deleted. Dashboard data has been refreshed.");
+    } catch (caughtError) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to delete workout", caughtError);
+      }
+
+      setError(
+        "Could not reach the server while deleting. Please check your connection and try again.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const requestClose = () => {
@@ -278,7 +353,7 @@ export function EditWorkoutModal({
             </button>
             <button
               className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-              disabled={isSaving}
+              disabled={isSaving || isDeleting}
               onClick={saveDraft}
               type="button"
             >
@@ -488,6 +563,17 @@ export function EditWorkoutModal({
             {error}
           </p>
         ) : null}
+
+        <div className="mt-6 border-t border-[var(--border)] pt-4">
+          <button
+            className="rounded border border-[#e1b8b8] px-4 py-2 text-sm font-semibold text-[#7b3b3b] disabled:opacity-60"
+            disabled={isSaving || isDeleting}
+            onClick={deleteWorkout}
+            type="button"
+          >
+            {isDeleting ? "Deleting..." : "Delete workout"}
+          </button>
+        </div>
 
         {pendingUnsavedAction ? (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 p-4">

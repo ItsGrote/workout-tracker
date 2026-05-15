@@ -22,7 +22,7 @@ Pronto quando:
 
 ## 2. Modelagem inicial do dominio
 
-Status: concluido.
+Status: implementado; testes manuais pendentes.
 
 Objetivo: definir os dados centrais: Workout, Exercise e ExerciseSet.
 
@@ -185,21 +185,28 @@ Pronto quando:
 - Erros sao compreensiveis.
 - O produto esta usavel em desktop e mobile.
 
-## 12. Fluxo completo de gerenciamento de workouts
+## 12. Workout management polish and configurable streaks
 
-Status: concluido.
+Status: implementado; testes manuais pendentes.
 
-Objetivo: completar o fluxo principal do frontend para criar, editar, excluir partes e duplicar workouts usando as APIs existentes.
+Objetivo: completar o fluxo principal do frontend para criar, editar, excluir, duplicar workouts e configurar streaks/metas.
 
 Arquivos provaveis:
 - `src/components/dashboard/create-workout-modal.tsx`
 - `src/components/dashboard/edit-workout-modal.tsx`
 - `src/components/dashboard/duplicate-workout-modal.tsx`
 - `src/components/dashboard/workout-management-card.tsx`
+- `src/components/dashboard/streak-settings-modal.tsx`
+- `src/components/dashboard/goal-achievement-popup.tsx`
 
 Pronto quando:
 - Usuario cria workout com varios exercicios e varias series.
 - Usuario edita workout, exercicios e series em uma unica interface.
 - Usuario remove exercicios e series antes de salvar edits.
+- Usuario exclui workout completo pelo modal com confirmacao.
 - Usuario duplica workout existente e abre a copia para edicao.
 - Graficos e cards sao recarregados apos salvar ou duplicar.
+- Lista de workouts mostra 6 itens inicialmente e expande com `View more`.
+- Usuario configura weekly/monthly streak com validacoes.
+- Cards de streak aparecem apenas quando a meta correspondente esta ativa.
+- Popup de conquista aparece quando uma meta ativa e atingida sem repetir em todo refresh.

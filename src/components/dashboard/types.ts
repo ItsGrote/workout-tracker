@@ -22,6 +22,8 @@ export type ConsistencyResponse = {
     status: "in_progress" | "completed" | "failed";
   };
   monthly: {
+    startDate: string;
+    endDate: string;
     trainedDays: number;
     goal: number | null;
     remaining: number | null;

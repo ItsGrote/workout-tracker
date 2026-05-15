@@ -35,6 +35,9 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
 - Excluir serie remove apenas aquela serie do draft.
 - Antes de remover exercicio ou serie, o usuario recebe confirmacao.
 - A exclusao so vira persistente quando o usuario clica em `Save edits`.
+- Excluir workout completo fica no final do modal de edicao.
+- Antes de excluir workout, o app avisa que exercicios e series tambem serao removidos.
+- Ao confirmar, o frontend chama `DELETE /api/workouts/:id`, fecha o modal e recarrega dashboard/graficos.
 
 ## Duplicacao
 
@@ -57,6 +60,25 @@ Apos criar, editar ou duplicar, o dashboard recarrega:
 
 Assim, o grafico de volume x tempo reflete os dados atuais.
 
+## Lista de workouts
+
+- O dashboard mostra inicialmente ate 6 workouts, ordenados pelos mais recentes.
+- `View more` mostra mais 6 por vez.
+- Quando todos estao visiveis, o botao desaparece.
+
+## Streaks e metas
+
+1. Usuario abre `Settings` na area de consistencia.
+2. Pode habilitar/desabilitar weekly streak e monthly streak.
+3. Weekly streak aceita meta de 1 a 7 dias treinados por semana.
+4. Monthly streak aceita meta de 1 a 31 dias treinados por mes.
+5. Mais de um workout no mesmo dia conta como apenas 1 dia treinado.
+6. Ao desabilitar streak salvo, o app pede confirmacao e apaga a meta correspondente.
+7. Cards de streak aparecem apenas para metas ativas.
+8. Clicar em um card de streak abre as mesmas configuracoes.
+9. Quando uma meta ativa e atingida, o app mostra um popup de parabens.
+10. O popup usa `localStorage` para evitar reaparecer em todo refresh do mesmo periodo/meta.
+
 ## Validacoes principais
 
 O frontend faz validacao basica antes de enviar:
@@ -76,4 +98,3 @@ No modal de edicao, se o usuario tentar fechar com alteracoes pendentes, o app m
 - `Save changes`
 - `Discard changes`
 - `Cancel`
-

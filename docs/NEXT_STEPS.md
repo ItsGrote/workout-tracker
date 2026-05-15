@@ -6,6 +6,8 @@
 - Criar area dedicada para listagem completa de treinos.
 - Melhorar estados vazios com exemplos mais guiados.
 - Refinar feedback visual de PRs apos salvar treino.
+- Refinar visual do modal de settings de streak.
+- Substituir confirmacoes nativas por dialogs consistentes com o design.
 
 ## Testes
 
@@ -15,10 +17,10 @@
 
 ## Produto
 
-- Criar fluxo de metas pelo frontend.
 - Criar filtros visuais para graficos.
 - Criar pagina dedicada de evolucao por exercicio.
 - Criar pagina dedicada de historico de workouts.
+- Permitir historico visual de metas semanais/mensais em calendario.
 
 ## Deploy
 
@@ -32,4 +34,3 @@
 - Revisar autorizacao em todos os endpoints privados.
 - Evitar expor mensagens internas de erro.
 - Considerar testes automatizados para acesso cruzado entre usuarios.
-

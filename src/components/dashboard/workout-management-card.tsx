@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import type { WorkoutResponse } from "./types";
 
 type WorkoutManagementCardProps = {
@@ -13,13 +14,31 @@ const formatDate = (date: string) =>
     day: "2-digit",
   }).format(new Date(date));
 
+const WORKOUT_PAGE_SIZE = 6;
+
 export function WorkoutManagementCard({
   workouts,
   onCreate,
   onDuplicate,
   onEdit,
 }: WorkoutManagementCardProps) {
-  const recentWorkouts = workouts.slice(0, 5);
+  const [visibleCount, setVisibleCount] = useState(WORKOUT_PAGE_SIZE);
+  const sortedWorkouts = useMemo(
+    () =>
+      workouts
+        .slice()
+        .sort(
+          (first, second) =>
+            new Date(second.date).getTime() - new Date(first.date).getTime(),
+        ),
+    [workouts],
+  );
+  const visibleWorkouts = sortedWorkouts.slice(0, visibleCount);
+  const hasMoreWorkouts = visibleCount < sortedWorkouts.length;
+
+  useEffect(() => {
+    setVisibleCount(WORKOUT_PAGE_SIZE);
+  }, [workouts]);
 
   return (
     <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
@@ -50,8 +69,8 @@ export function WorkoutManagementCard({
       </div>
 
       <div className="mt-5 flex flex-col gap-3">
-        {recentWorkouts.length > 0 ? (
-          recentWorkouts.map((workout) => (
+        {visibleWorkouts.length > 0 ? (
+          visibleWorkouts.map((workout) => (
             <div
               className="flex flex-col gap-3 rounded border border-[var(--border)] p-3 sm:flex-row sm:items-center sm:justify-between"
               key={workout.id}
@@ -79,7 +98,20 @@ export function WorkoutManagementCard({
           </p>
         )}
       </div>
+
+      {hasMoreWorkouts ? (
+        <button
+          className="mt-4 w-full rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+          onClick={() =>
+            setVisibleCount((current) =>
+              Math.min(current + WORKOUT_PAGE_SIZE, sortedWorkouts.length),
+            )
+          }
+          type="button"
+        >
+          View more
+        </button>
+      ) : null}
     </section>
   );
 }
-

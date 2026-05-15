@@ -10,8 +10,10 @@ import { DashboardLoading } from "./dashboard-loading";
 import { DuplicateWorkoutModal } from "./duplicate-workout-modal";
 import { EditWorkoutModal } from "./edit-workout-modal";
 import { EmptyOnboarding } from "./empty-onboarding";
+import { GoalAchievementPopup } from "./goal-achievement-popup";
 import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
+import { StreakSettingsModal } from "./streak-settings-modal";
 import { SummaryCard } from "./summary-card";
 import { WorkoutManagementCard } from "./workout-management-card";
 import type { DashboardData, WorkoutResponse } from "./types";
@@ -34,10 +36,14 @@ export function DashboardClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
+  const [isStreakSettingsOpen, setIsStreakSettingsOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] = useState<WorkoutResponse | null>(
     null,
   );
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
+  const [goalAchievementMessage, setGoalAchievementMessage] = useState<
+    string | null
+  >(null);
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
@@ -78,9 +84,69 @@ export function DashboardClient() {
     }
   }, []);
 
+  const loadConsistencyData = useCallback(async () => {
+    try {
+      const [consistency, goals] = await Promise.all([
+        requestJson<DashboardData["consistency"]>("/api/consistency"),
+        requestJson<DashboardData["goals"]>("/api/goals"),
+      ]);
+
+      setData((current) =>
+        current ? { ...current, consistency, goals } : current,
+      );
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Unable to load consistency data.",
+      );
+    }
+  }, []);
+
   useEffect(() => {
     void loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    if (!data || typeof window === "undefined") {
+      return;
+    }
+
+    const achievements = [
+      {
+        key: data.goals.weeklyGoal
+          ? `weekly:${data.consistency.weekly.startDate}:${data.goals.weeklyGoal}`
+          : null,
+        achieved:
+          data.goals.weeklyGoal !== null &&
+          data.consistency.weekly.trainedDays >= data.goals.weeklyGoal,
+        message: "Weekly goal achieved! Great job staying consistent.",
+      },
+      {
+        key: data.goals.monthlyGoal
+          ? `monthly:${data.consistency.monthly.startDate}:${data.goals.monthlyGoal}`
+          : null,
+        achieved:
+          data.goals.monthlyGoal !== null &&
+          data.consistency.monthly.trainedDays >= data.goals.monthlyGoal,
+        message: "Monthly goal achieved! Your consistency is paying off.",
+      },
+    ];
+
+    for (const achievement of achievements) {
+      if (!achievement.key || !achievement.achieved) {
+        continue;
+      }
+
+      const storageKey = `workout-evolution-goal-achieved:${achievement.key}`;
+
+      if (!window.localStorage.getItem(storageKey)) {
+        window.localStorage.setItem(storageKey, "shown");
+        setGoalAchievementMessage(achievement.message);
+        break;
+      }
+    }
+  }, [data]);
 
   const topRecordCount = data?.personalRecords.records.length ?? 0;
   const hasWorkouts = (data?.progression.points.length ?? 0) > 0;
@@ -145,7 +211,11 @@ export function DashboardClient() {
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.4fr)]">
-          <ConsistencyCard consistency={data.consistency} goals={data.goals} />
+          <ConsistencyCard
+            consistency={data.consistency}
+            goals={data.goals}
+            onEditGoals={() => setIsStreakSettingsOpen(true)}
+          />
           <ProgressionChart points={data.progression.points} />
         </div>
 
@@ -215,6 +285,13 @@ export function DashboardClient() {
 
         <EditWorkoutModal
           onClose={() => setEditingWorkout(null)}
+          onDeleted={(message) => {
+            setEditingWorkout(null);
+            void loadDashboard().then(() => {
+              setBannerMessage(message);
+              window.setTimeout(() => setBannerMessage(null), 5000);
+            });
+          }}
           onSaved={(message) => {
             setEditingWorkout(null);
             void loadDashboard().then(() => {
@@ -223,6 +300,23 @@ export function DashboardClient() {
             });
           }}
           workout={editingWorkout}
+        />
+
+        <StreakSettingsModal
+          goals={data.goals}
+          isOpen={isStreakSettingsOpen}
+          onClose={() => setIsStreakSettingsOpen(false)}
+          onSaved={() => {
+            void loadConsistencyData().then(() => {
+              setBannerMessage("Streak settings saved.");
+              window.setTimeout(() => setBannerMessage(null), 5000);
+            });
+          }}
+        />
+
+        <GoalAchievementPopup
+          message={goalAchievementMessage}
+          onClose={() => setGoalAchievementMessage(null)}
         />
       </section>
     </main>

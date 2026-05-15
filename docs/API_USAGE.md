@@ -60,6 +60,10 @@ Exclui workout do usuario autenticado.
 
 Resposta: `204 No Content`.
 
+Observacao: no dashboard, esta rota e usada pelo botao `Delete workout` dentro
+do modal de edicao. A confirmacao acontece no frontend; o backend ainda valida
+o usuario autenticado antes de excluir.
+
 ### `POST /api/workouts/:id/duplicate`
 
 Duplica workout do usuario autenticado.
@@ -166,10 +170,25 @@ Payload:
 }
 ```
 
+Para desabilitar um streak, envie `null` na meta correspondente:
+
+```json
+{
+  "weeklyGoal": null,
+  "monthlyGoal": 12
+}
+```
+
+Validacoes:
+
+- `weeklyGoal`: inteiro de 1 a 7 ou `null`
+- `monthlyGoal`: inteiro de 1 a 31 ou `null`
+- o frontend nao envia `userId`
+- mais de um workout no mesmo dia conta como apenas 1 dia para consistencia
+
 ## Seguranca
 
 - APIs usam Supabase Auth.
 - Usuario anonimo recebe `401`.
 - O backend sempre filtra recursos por `userId` autenticado.
 - Rotas aninhadas validam pertencimento entre workout, exercise e set.
-

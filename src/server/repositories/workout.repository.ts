@@ -138,6 +138,21 @@ export const workoutRepository = {
       }
 
       if (data.exercises) {
+        const existingExercises = await tx.exercise.findMany({
+          where: { workoutId: id },
+          select: { id: true },
+        });
+
+        if (existingExercises.length > 0) {
+          await tx.exerciseSet.deleteMany({
+            where: {
+              exerciseId: {
+                in: existingExercises.map((exercise) => exercise.id),
+              },
+            },
+          });
+        }
+
         await tx.exercise.deleteMany({ where: { workoutId: id } });
       }
 

@@ -3,6 +3,7 @@ import type { ConsistencyResponse, GoalsResponse } from "./types";
 type ConsistencyCardProps = {
   consistency: ConsistencyResponse;
   goals: GoalsResponse;
+  onEditGoals: () => void;
 };
 
 const statusLabel: Record<ConsistencyResponse["weekly"]["status"], string> = {
@@ -11,24 +12,52 @@ const statusLabel: Record<ConsistencyResponse["weekly"]["status"], string> = {
   failed: "Failed",
 };
 
-export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
-  const weeklyGoalLabel = goals.weeklyGoal ?? "set a goal";
-  const monthlyGoalLabel = goals.monthlyGoal ?? "set a goal";
+export function ConsistencyCard({
+  consistency,
+  goals,
+  onEditGoals,
+}: ConsistencyCardProps) {
+  const hasWeeklyGoal = goals.weeklyGoal !== null;
+  const hasMonthlyGoal = goals.monthlyGoal !== null;
+  const enabledGoalCount = Number(hasWeeklyGoal) + Number(hasMonthlyGoal);
+  const gridClassName =
+    enabledGoalCount === 2 ? "mt-6 grid gap-4 sm:grid-cols-2" : "mt-6 grid";
 
   return (
     <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-semibold">Consistency</h2>
-        <p className="text-sm text-[var(--muted)]">
-          Weekly progress counts unique training days.
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-semibold">Consistency</h2>
+          <p className="text-sm text-[var(--muted)]">
+            Streak progress counts unique training days.
+          </p>
+        </div>
+        <button
+          className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+          onClick={onEditGoals}
+          type="button"
+        >
+          Settings
+        </button>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded border border-[var(--border)] p-4">
+      {!hasWeeklyGoal && !hasMonthlyGoal ? (
+        <div className="mt-6 rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+          No streak is enabled yet. Open Settings to activate weekly or monthly
+          consistency goals.
+        </div>
+      ) : null}
+
+      <div className={gridClassName}>
+        {hasWeeklyGoal ? (
+        <button
+          className="rounded border border-[var(--border)] p-4 text-left transition hover:border-[var(--accent)]"
+          onClick={onEditGoals}
+          type="button"
+        >
           <p className="text-sm text-[var(--muted)]">Weekly Goal</p>
           <p className="mt-2 text-2xl font-semibold">
-            {consistency.weekly.trainedDays}/{weeklyGoalLabel}
+            {consistency.weekly.trainedDays}/{goals.weeklyGoal ?? "?"}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {consistency.weekly.remaining ?? "-"} remaining
@@ -42,12 +71,18 @@ export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
           <p className="mt-2 text-sm font-medium">
             {statusLabel[consistency.weekly.status]}
           </p>
-        </div>
+        </button>
+        ) : null}
 
-        <div className="rounded border border-[var(--border)] p-4">
+        {hasMonthlyGoal ? (
+        <button
+          className="rounded border border-[var(--border)] p-4 text-left transition hover:border-[var(--accent)]"
+          onClick={onEditGoals}
+          type="button"
+        >
           <p className="text-sm text-[var(--muted)]">Monthly Goal</p>
           <p className="mt-2 text-2xl font-semibold">
-            {consistency.monthly.trainedDays}/{monthlyGoalLabel}
+            {consistency.monthly.trainedDays}/{goals.monthlyGoal ?? "?"}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
             {consistency.monthly.completionPercentage}% complete
@@ -61,7 +96,8 @@ export function ConsistencyCard({ consistency, goals }: ConsistencyCardProps) {
           <p className="mt-2 text-sm font-medium">
             {consistency.completedWeekStreak} completed week streak
           </p>
-        </div>
+        </button>
+        ) : null}
       </div>
     </section>
   );
