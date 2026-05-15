@@ -11,12 +11,18 @@ import { DuplicateWorkoutModal } from "./duplicate-workout-modal";
 import { EditWorkoutModal } from "./edit-workout-modal";
 import { EmptyOnboarding } from "./empty-onboarding";
 import { GoalAchievementPopup } from "./goal-achievement-popup";
+import { PersonalRecordPopup } from "./personal-record-popup";
 import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
 import { StreakSettingsModal } from "./streak-settings-modal";
 import { SummaryCard } from "./summary-card";
 import { WorkoutManagementCard } from "./workout-management-card";
-import type { DashboardData, WorkoutResponse } from "./types";
+import type { DashboardData, PersonalRecord, WorkoutResponse } from "./types";
+
+const PERSONAL_RECORD_POPUPS_KEY =
+  "workout-evolution-personal-record-popups-enabled";
+const SHOWN_PERSONAL_RECORD_KEY_PREFIX =
+  "workout-evolution-personal-record-shown";
 
 const requestJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(path, {
@@ -44,6 +50,11 @@ export function DashboardClient() {
   const [goalAchievementMessage, setGoalAchievementMessage] = useState<
     string | null
   >(null);
+  const [personalRecordPopupRecords, setPersonalRecordPopupRecords] = useState<
+    PersonalRecord[]
+  >([]);
+  const [arePersonalRecordPopupsEnabled, setArePersonalRecordPopupsEnabled] =
+    useState(true);
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
@@ -108,6 +119,16 @@ export function DashboardClient() {
   }, [loadDashboard]);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    setArePersonalRecordPopupsEnabled(
+      window.localStorage.getItem(PERSONAL_RECORD_POPUPS_KEY) !== "false",
+    );
+  }, []);
+
+  useEffect(() => {
     if (!data || typeof window === "undefined") {
       return;
     }
@@ -156,6 +177,70 @@ export function DashboardClient() {
 
     return latestPoint ? latestPoint.totalVolume.toString() : "0";
   }, [data]);
+
+  const updatePersonalRecordPopupPreference = (enabled: boolean) => {
+    setArePersonalRecordPopupsEnabled(enabled);
+    window.localStorage.setItem(PERSONAL_RECORD_POPUPS_KEY, String(enabled));
+  };
+
+  const maybeShowPersonalRecordPopup = useCallback(
+    async (workout: WorkoutResponse) => {
+      if (!arePersonalRecordPopupsEnabled || typeof window === "undefined") {
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({ workoutId: workout.id });
+        const personalRecords =
+          await requestJson<DashboardData["personalRecords"]>(
+            `/api/personal-records?${params.toString()}`,
+          );
+        const exerciseRecords = personalRecords.newRecords.filter(
+          (record) =>
+            record.scope === "exercise" &&
+            [
+              "highest-weight",
+              "exercise-volume",
+              "best-repetitions",
+            ].includes(record.metric),
+        );
+        const unseenRecords = exerciseRecords.filter((record) => {
+          const key = [
+            SHOWN_PERSONAL_RECORD_KEY_PREFIX,
+            record.workoutId,
+            record.exerciseId,
+            record.metric,
+            record.value,
+          ].join(":");
+
+          return !window.localStorage.getItem(key);
+        });
+
+        if (unseenRecords.length === 0) {
+          return;
+        }
+
+        for (const record of unseenRecords) {
+          const key = [
+            SHOWN_PERSONAL_RECORD_KEY_PREFIX,
+            record.workoutId,
+            record.exerciseId,
+            record.metric,
+            record.value,
+          ].join(":");
+          window.localStorage.setItem(key, "shown");
+        }
+
+        setPersonalRecordPopupRecords(unseenRecords);
+      } catch (caughtError) {
+        setBannerMessage(
+          "Workout saved, but personal records could not be checked right now.",
+        );
+        window.setTimeout(() => setBannerMessage(null), 5000);
+      }
+    },
+    [arePersonalRecordPopupsEnabled],
+  );
 
   if (isLoading) {
     return <DashboardLoading />;
@@ -249,20 +334,16 @@ export function DashboardClient() {
         <CreateWorkoutModal
           isOpen={isCreateOpen}
           onClose={() => setIsCreateOpen(false)}
-          onCreated={() => {
-            const previousNewRecordCount = data.personalRecords.newRecords.length;
-
+          onCreated={(workout) => {
             void loadDashboard().then((nextData) => {
-              const nextNewRecordCount =
-                nextData?.personalRecords.newRecords.length ??
-                previousNewRecordCount;
-
               setBannerMessage(
-                nextNewRecordCount > previousNewRecordCount
-                  ? "Workout created and a new personal record was unlocked."
-                  : "Workout created. Your evolution graph just got a new point.",
+                "Workout created. Your evolution graph just got a new point.",
               );
               window.setTimeout(() => setBannerMessage(null), 5000);
+
+              if (nextData) {
+                void maybeShowPersonalRecordPopup(workout);
+              }
             });
           }}
         />
@@ -292,20 +373,23 @@ export function DashboardClient() {
               window.setTimeout(() => setBannerMessage(null), 5000);
             });
           }}
-          onSaved={(message) => {
+          onSaved={(message, workout) => {
             setEditingWorkout(null);
             void loadDashboard().then(() => {
               setBannerMessage(message);
               window.setTimeout(() => setBannerMessage(null), 5000);
+              void maybeShowPersonalRecordPopup(workout);
             });
           }}
           workout={editingWorkout}
         />
 
         <StreakSettingsModal
+          arePersonalRecordPopupsEnabled={arePersonalRecordPopupsEnabled}
           goals={data.goals}
           isOpen={isStreakSettingsOpen}
           onClose={() => setIsStreakSettingsOpen(false)}
+          onPersonalRecordPopupsChange={updatePersonalRecordPopupPreference}
           onSaved={() => {
             void loadConsistencyData().then(() => {
               setBannerMessage("Streak settings saved.");
@@ -317,6 +401,11 @@ export function DashboardClient() {
         <GoalAchievementPopup
           message={goalAchievementMessage}
           onClose={() => setGoalAchievementMessage(null)}
+        />
+
+        <PersonalRecordPopup
+          records={personalRecordPopupRecords}
+          onClose={() => setPersonalRecordPopupRecords([])}
         />
       </section>
     </main>

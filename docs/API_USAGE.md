@@ -2,6 +2,9 @@
 
 Todas as rotas abaixo sao privadas. O `userId` vem somente da sessao Supabase autenticada; o frontend nao envia `userId`.
 
+Chamadas feitas pelo frontend para APIs privadas devem usar `credentials: "include"`
+para enviar os cookies de sessao do Supabase.
+
 ## Workouts
 
 ### `GET /api/workouts`
@@ -134,6 +137,43 @@ Filtros opcionais:
 - `fromDate`
 - `toDate`
 
+### `GET /api/progression/analytics`
+
+Retorna opcoes para selects pesquisaveis e pontos prontos para graficos personalizados.
+
+Query params:
+
+- `target`: `workout` ou `exercise`
+- `workoutFilter`: `name` ou `category`, usado quando `target=workout`
+- `selectedValue`: nome/categoria/exercicio selecionado
+- `range`: `7d`, `30d`, `90d`, `1y` ou `all`
+- `exerciseMetric`: `volume`, `max-weight` ou `average-reps`
+
+Resposta resumida:
+
+```json
+{
+  "options": {
+    "workoutNames": ["Push A"],
+    "workoutCategories": ["Chest"],
+    "exerciseNames": ["Bench Press"]
+  },
+  "points": [
+    {
+      "date": "2026-05-15T12:00:00.000Z",
+      "label": "Bench Press",
+      "volume": 1200,
+      "maxWeight": 80,
+      "averageReps": 8,
+      "averageWeight": 70
+    }
+  ]
+}
+```
+
+O frontend usa essa rota em `/progression`. O endpoint calcula metricas no service
+e filtra por `userId` autenticado.
+
 ## Personal Records
 
 ### `GET /api/personal-records`
@@ -142,10 +182,16 @@ Calcula PRs a partir dos dados existentes.
 
 Filtros opcionais:
 
+- `workoutId`
 - `exerciseName`
 - `workoutCategory`
 - `fromDate`
 - `toDate`
+
+Uso no frontend: apos criar ou editar workout, o dashboard chama
+`GET /api/personal-records?workoutId=:id` para buscar os novos PRs daquele
+workout salvo e exibir um popup consolidado. O endpoint continua calculando no
+backend e sempre usa o `userId` da sessao Supabase.
 
 ## Consistency
 
@@ -192,3 +238,6 @@ Validacoes:
 - Usuario anonimo recebe `401`.
 - O backend sempre filtra recursos por `userId` autenticado.
 - Rotas aninhadas validam pertencimento entre workout, exercise e set.
+- Payloads sao validados com Zod no backend.
+- Erros enviados ao usuario devem ser mensagens seguras, sem stack trace.
+- Frontend pode fazer validacao basica para UX, mas nao e fonte de seguranca.

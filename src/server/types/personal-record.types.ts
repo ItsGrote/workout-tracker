@@ -26,6 +26,7 @@ export type PersonalRecordEvent = PersonalRecord & {
 
 export type PersonalRecordsResponse = {
   filters: {
+    workoutId?: string;
     exerciseName?: string;
     workoutCategory?: string;
     fromDate?: string;
@@ -34,4 +35,3 @@ export type PersonalRecordsResponse = {
   records: PersonalRecord[];
   newRecords: PersonalRecordEvent[];
 };
-

@@ -14,6 +14,7 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
    - set type: `warm-up`, `recognition-activation` ou `working`
 6. Ao salvar, o frontend envia o workout completo para `POST /api/workouts`.
 7. Dashboard recarrega progressao, consistencia, metas, PRs e lista de workouts.
+8. Se o workout salvo gerar PRs de exercicio, o app pode mostrar um popup consolidado.
 
 ## Edicao
 
@@ -28,6 +29,7 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
 5. Alteracoes so sao enviadas ao clicar em `Save edits`.
 6. O save usa `PATCH /api/workouts/:id` com o workout completo.
 7. O backend substitui a estrutura de exercicios/series conforme o payload validado.
+8. Se a edicao gerar PRs de exercicio, o app pode mostrar um popup consolidado.
 
 ## Exclusao
 
@@ -60,6 +62,20 @@ Apos criar, editar ou duplicar, o dashboard recarrega:
 
 Assim, o grafico de volume x tempo reflete os dados atuais.
 
+## Graficos personalizados
+
+- A area `/progression` fica separada do dashboard principal.
+- A pagina nao carrega um grafico completo antes de uma escolha do usuario.
+- Usuario escolhe `Workout` ou `Exercise`.
+- Para `Workout`, pode filtrar por nome do workout ou categoria.
+- Para `Exercise`, escolhe um exercicio pelo nome.
+- Intervalos permitidos: 7 dias, 30 dias, 90 dias, 1 ano e all time.
+- Tipo visual: bar chart ou line chart.
+- Exercise permite trocar eixo Y entre volume, max weight e average reps.
+- Average weight pode ser mostrado/escondido como serie adicional.
+- A pagina usa `GET /api/progression/analytics`.
+- A ultima configuracao escolhida usa `localStorage` no MVP.
+
 ## Lista de workouts
 
 - O dashboard mostra inicialmente ate 6 workouts, ordenados pelos mais recentes.
@@ -79,6 +95,18 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
 9. Quando uma meta ativa e atingida, o app mostra um popup de parabens.
 10. O popup usa `localStorage` para evitar reaparecer em todo refresh do mesmo periodo/meta.
 
+## Personal record popups
+
+- Apos criar ou editar um workout, o frontend consulta `GET /api/personal-records?workoutId=:id`.
+- O popup mostra apenas PRs de exercicio:
+  - maior carga usada
+  - maior volume do exercicio
+  - maior numero de repeticoes
+- Se o workout gerar varios PRs, o app mostra um unico popup consolidado.
+- O popup nao aparece ao apenas abrir ou recarregar o dashboard.
+- Em `Settings`, o usuario pode desativar `Enable personal record pop-ups`.
+- A preferencia de popup usa `localStorage` no MVP e nao remove/caltera os PRs calculados pelo backend.
+
 ## Validacoes principais
 
 O frontend faz validacao basica antes de enviar:
@@ -90,6 +118,16 @@ O frontend faz validacao basica antes de enviar:
 - weight deve ser numero valido e nao negativo
 
 O backend continua sendo a fonte final de validacao com Zod.
+
+## Seguranca e robustez do fluxo
+
+- O frontend nunca envia `userId`.
+- O backend obtem `userId` apenas da sessao Supabase.
+- APIs privadas usam cookies de sessao; chamadas do frontend usam `credentials: "include"`.
+- Services validam pertencimento antes de update/delete em recursos aninhados.
+- Erros de API sao exibidos como mensagens amigaveis, sem stack trace.
+- Popups de meta e PR usam `localStorage` para evitar repeticao infinita.
+- Graficos e cards possuem estados vazios/loading quando nao ha dados suficientes.
 
 ## Alteracoes nao salvas
 

@@ -57,6 +57,7 @@ const calculateWorkoutVolume = (workout: RecordSourceWorkout) =>
 const formatDate = (date: Date) => date.toISOString();
 
 const formatFilters = (filters: PersonalRecordFiltersInput) => ({
+  workoutId: filters.workoutId,
   exerciseName: filters.exerciseName,
   workoutCategory: filters.workoutCategory,
   fromDate: filters.fromDate?.toISOString(),
@@ -90,6 +91,11 @@ const isInsideEventWindow = (
 ) =>
   (!filters.fromDate || date.getTime() >= filters.fromDate.getTime()) &&
   (!filters.toDate || date.getTime() <= filters.toDate.getTime());
+
+const belongsToWorkoutFilter = (
+  candidate: Candidate,
+  filters: PersonalRecordFiltersInput,
+) => !filters.workoutId || candidate.workoutId === filters.workoutId;
 
 const pushIfValid = (candidates: Candidate[], candidate: Candidate) => {
   if (candidate.value > 0) {
@@ -219,7 +225,10 @@ export const personalRecordService = {
         const currentBest = bestRecords.get(candidate.key);
 
         if (!currentBest || candidate.value > currentBest.value) {
-          if (isInsideEventWindow(candidate.date, filters)) {
+          if (
+            isInsideEventWindow(candidate.date, filters) &&
+            belongsToWorkoutFilter(candidate, filters)
+          ) {
             newRecords.push(
               toEvent(candidate, currentBest ? currentBest.value : null),
             );
@@ -240,4 +249,3 @@ export const personalRecordService = {
     };
   },
 };
-

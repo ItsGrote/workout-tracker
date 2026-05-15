@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import type { WorkoutResponse } from "./types";
 
 type SetType = "warm-up" | "recognition-activation" | "working";
 
@@ -20,7 +21,7 @@ type ExerciseDraft = {
 type CreateWorkoutModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (workout: WorkoutResponse) => void;
 };
 
 const createId = () =>
@@ -42,6 +43,28 @@ const createExercise = (): ExerciseDraft => ({
   name: "Bench Press",
   sets: [createSet()],
 });
+
+const readCreateError = async (response: Response) => {
+  const fallbackMessage = "Could not create workout. Check the fields and try again.";
+
+  try {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      const body = (await response.json()) as {
+        error?: string;
+        issues?: { message?: string }[];
+      };
+
+      return body.issues?.[0]?.message ?? body.error ?? fallbackMessage;
+    }
+
+    const text = await response.text();
+    return text || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+};
 
 export function CreateWorkoutModal({
   isOpen,
@@ -191,36 +214,46 @@ export function CreateWorkoutModal({
 
     setIsSaving(true);
 
-    const response = await fetch("/api/workouts", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: workoutName.trim(),
-        category: category.trim(),
-        date: new Date(`${date}T12:00:00.000Z`).toISOString(),
-        exercises: exercises.map((exercise, exerciseIndex) => ({
-          name: exercise.name.trim(),
-          order: exerciseIndex + 1,
-          sets: exercise.sets.map((set, setIndex) => ({
-            repetitions: Number(set.repetitions),
-            weightKg: Number(set.weightKg),
-            setType: set.setType,
-            order: setIndex + 1,
+    try {
+      const response = await fetch("/api/workouts", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: workoutName.trim(),
+          category: category.trim(),
+          date: new Date(`${date}T12:00:00.000Z`).toISOString(),
+          exercises: exercises.map((exercise, exerciseIndex) => ({
+            name: exercise.name.trim(),
+            order: exerciseIndex + 1,
+            sets: exercise.sets.map((set, setIndex) => ({
+              repetitions: Number(set.repetitions),
+              weightKg: Number(set.weightKg),
+              setType: set.setType,
+              order: setIndex + 1,
+            })),
           })),
-        })),
-      }),
-    });
+        }),
+      });
 
-    setIsSaving(false);
+      if (!response.ok) {
+        setError(await readCreateError(response));
+        return;
+      }
 
-    if (!response.ok) {
-      setError("Could not create workout. Check the fields and try again.");
-      return;
+      onCreated((await response.json()) as WorkoutResponse);
+      onClose();
+    } catch (caughtError) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to create workout", caughtError);
+      }
+
+      setError(
+        "Could not reach the server while creating the workout. Please try again.",
+      );
+    } finally {
+      setIsSaving(false);
     }
-
-    onCreated();
-    onClose();
   };
 
   return (

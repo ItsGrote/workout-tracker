@@ -18,7 +18,7 @@ Route / Controller
 src/app
 ```
 
-Rotas do Next.js. Futuramente deve conter paginas, layouts e API routes.
+Rotas do Next.js. Contem paginas, layouts e API routes.
 
 ```txt
 src/app/api
@@ -89,15 +89,18 @@ Tipos de serie suportados:
 - Services podem combinar repositories e executar regras do produto.
 - Repositories nao devem saber sobre HTTP, UI ou regras de apresentacao.
 - Validacoes de payload devem usar Zod antes de chegar aos services.
+- O frontend pode validar formulario para UX, mas a validacao confiavel fica no backend.
 - Nomes de arquivos devem ser diretos e por feature quando possivel, por exemplo `workout.service.ts`.
 - Evitar camadas extras como use cases, gateways e presenters no MVP.
 - Criar abstracoes somente quando removerem duplicacao real ou melhorarem clareza.
 - APIs privadas devem obter `userId` apenas da sessao Supabase autenticada.
+- Nenhuma rota privada deve aceitar `userId` vindo do frontend.
 - Rotas aninhadas devem validar no service que o recurso pertence ao pai informado no caminho, por exemplo exercicio dentro do workout correto.
 - Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
 - Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
 - Streaks e consistencia sao derivados de workouts e metas salvas. O streak nao deve ser persistido enquanto puder ser recalculado.
 - O dashboard consome os endpoints HTTP existentes usando a sessao Supabase persistida em cookies.
+- Requests privadas do frontend devem usar `credentials: "include"` para enviar cookies de sessao.
 
 ## Como adicionar uma feature
 
@@ -115,6 +118,7 @@ Tipos de serie suportados:
 - Supabase sera usado para PostgreSQL e Auth.
 - Zod sera a fonte principal de validacao de entrada.
 - Recharts sera usado apenas quando a camada de dashboard for iniciada.
-- A modelagem ja inclui `userId` em `Workout`, mas a autenticacao sera adicionada em um checkpoint futuro.
+- A modelagem inclui `userId` em `Workout` e `TrainingGoal`; a autenticacao ja usa Supabase Auth.
 - Com Prisma 7, `DIRECT_URL` fica em `prisma.config.ts` para CLI/migrations e `DATABASE_URL` e usada no runtime via adapter PostgreSQL.
 - Supabase Auth usa email/senha no MVP. OAuth, recuperacao de senha e roles ficam para etapas futuras.
+- Preferencias visuais sem impacto de seguranca, como popups e configuracao de analytics, usam `localStorage` no MVP.

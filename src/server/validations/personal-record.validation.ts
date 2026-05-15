@@ -11,6 +11,7 @@ export const userIdSchema = idSchema;
 
 export const personalRecordFiltersSchema = z
   .object({
+    workoutId: idSchema.optional(),
     exerciseName: nameSchema.optional(),
     workoutCategory: categorySchema.optional(),
     fromDate: dateSchema.optional(),
@@ -30,4 +31,3 @@ export const personalRecordFiltersSchema = z
 export type PersonalRecordFiltersInput = z.infer<
   typeof personalRecordFiltersSchema
 >;
-

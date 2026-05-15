@@ -21,7 +21,7 @@ type EditWorkoutModalProps = {
   workout: WorkoutResponse | null;
   onClose: () => void;
   onDeleted: (message: string) => void;
-  onSaved: (message: string) => void;
+  onSaved: (message: string, workout: WorkoutResponse) => void;
 };
 
 type UnsavedAction = "close" | null;
@@ -251,6 +251,11 @@ export function EditWorkoutModal({
         setError(await readSaveError(response));
         return false;
       }
+
+      onSaved(
+        "Workout edits saved. Charts are being refreshed.",
+        (await response.json()) as WorkoutResponse,
+      );
     } catch (caughtError) {
       if (process.env.NODE_ENV === "development") {
         console.error("Failed to save workout edits", caughtError);
@@ -264,7 +269,6 @@ export function EditWorkoutModal({
       setIsSaving(false);
     }
 
-    onSaved("Workout edits saved. Charts are being refreshed.");
     return true;
   };
 

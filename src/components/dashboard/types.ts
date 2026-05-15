@@ -38,7 +38,12 @@ export type GoalsResponse = {
 };
 
 export type PersonalRecord = {
-  metric: string;
+  metric:
+    | "highest-weight"
+    | "best-repetitions"
+    | "exercise-volume"
+    | "workout-volume"
+    | "category-workout-volume";
   scope: string;
   value: number;
   date: string;
@@ -46,6 +51,9 @@ export type PersonalRecord = {
   exerciseName?: string;
   workoutName?: string;
   workoutCategory?: string | null;
+  workoutId?: string;
+  exerciseId?: string;
+  previousValue?: number | null;
 };
 
 export type PersonalRecordsResponse = {

@@ -22,7 +22,7 @@ Pronto quando:
 
 ## 2. Modelagem inicial do dominio
 
-Status: implementado; testes manuais pendentes.
+Status: concluido.
 
 Objetivo: definir os dados centrais: Workout, Exercise e ExerciseSet.
 
@@ -210,3 +210,51 @@ Pronto quando:
 - Usuario configura weekly/monthly streak com validacoes.
 - Cards de streak aparecem apenas quando a meta correspondente esta ativa.
 - Popup de conquista aparece quando uma meta ativa e atingida sem repetir em todo refresh.
+
+## 13. Personal record pop-ups
+
+Status: implementado; testes manuais pendentes.
+
+Objetivo: mostrar um popup consolidado quando um workout salvo gera novos recordes pessoais.
+
+Arquivos provaveis:
+- `src/components/dashboard/dashboard-client.tsx`
+- `src/components/dashboard/personal-record-popup.tsx`
+- `src/components/dashboard/streak-settings-modal.tsx`
+- `src/server/services/personal-record.service.ts`
+- `src/server/validations/personal-record.validation.ts`
+
+Pronto quando:
+- Popup aparece apos criar workout que gera PR.
+- Popup aparece apos editar workout que gera PR.
+- Varios PRs do mesmo workout aparecem em um unico popup.
+- Popup nao aparece ao apenas abrir/recarregar dashboard.
+- Usuario pode desabilitar/reabilitar popups de PR em `Settings`.
+- Preferencia temporaria fica documentada como `localStorage`.
+
+## 14. Custom progression analytics
+
+Status: implementado; testes manuais pendentes.
+
+Objetivo: criar uma area separada para o usuario montar graficos personalizados de evolucao.
+
+Arquivos provaveis:
+- `src/app/progression/page.tsx`
+- `src/components/progression/progression-analytics-client.tsx`
+- `src/components/progression/searchable-select.tsx`
+- `src/app/api/progression/analytics/route.ts`
+- `src/server/controllers/progression-analytics.controller.ts`
+- `src/server/services/progression-analytics.service.ts`
+- `src/server/repositories/progression-analytics.repository.ts`
+- `src/server/validations/progression-analytics.validation.ts`
+
+Pronto quando:
+- Usuario acessa `/progression` pelo dashboard.
+- Pagina exige escolha antes de renderizar grafico.
+- Usuario alterna entre grafico de workout e exercise.
+- Workout permite filtro por nome ou categoria.
+- Exercise permite eixo Y de volume, max weight e average reps.
+- Average weight pode ser mostrado/escondido.
+- Intervalos permitidos sao 7d, 30d, 90d, 1y e all time.
+- Tipo visual alterna entre bar chart e line chart.
+- Preferencias sao restauradas via `localStorage`.

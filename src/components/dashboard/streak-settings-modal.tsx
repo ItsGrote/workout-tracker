@@ -4,9 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import type { GoalsResponse } from "./types";
 
 type StreakSettingsModalProps = {
+  arePersonalRecordPopupsEnabled: boolean;
   goals: GoalsResponse;
   isOpen: boolean;
   onClose: () => void;
+  onPersonalRecordPopupsChange: (enabled: boolean) => void;
   onSaved: (goals: GoalsResponse) => void;
 };
 
@@ -41,9 +43,11 @@ const readGoalError = async (response: Response) => {
 };
 
 export function StreakSettingsModal({
+  arePersonalRecordPopupsEnabled,
   goals,
   isOpen,
   onClose,
+  onPersonalRecordPopupsChange,
   onSaved,
 }: StreakSettingsModalProps) {
   const [weeklyEnabled, setWeeklyEnabled] = useState(false);
@@ -195,6 +199,29 @@ export function StreakSettingsModal({
         </div>
 
         <div className="mt-5 grid gap-4">
+          <div className="rounded border border-[var(--border)] p-4">
+            <p className="font-semibold">Personal Records</p>
+            <label className="mt-3 flex items-start gap-3">
+              <input
+                checked={arePersonalRecordPopupsEnabled}
+                className="mt-1"
+                onChange={(event) =>
+                  onPersonalRecordPopupsChange(event.target.checked)
+                }
+                type="checkbox"
+              />
+              <span>
+                <span className="font-semibold">
+                  Enable personal record pop-ups
+                </span>
+                <span className="mt-1 block text-sm text-[var(--muted)]">
+                  PRs are still calculated when this is off; only the
+                  celebration pop-up is hidden.
+                </span>
+              </span>
+            </label>
+          </div>
+
           <div className="rounded border border-[var(--border)] p-4">
             <label className="flex items-start gap-3">
               <input

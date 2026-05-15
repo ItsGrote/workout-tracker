@@ -2,15 +2,17 @@
 
 Aplicacao para registrar treinos e mostrar evolucao real de performance antes das mudancas fisicas ficarem visiveis.
 
-Este repositorio deve evoluir de forma incremental. A primeira fase prepara somente a arquitetura base.
+O projeto evolui de forma incremental. O MVP atual ja possui autenticacao,
+CRUD principal de treinos, metas/streaks, PRs calculados sob demanda e uma area
+separada de graficos personalizados.
 
-## Stack planejada
+## Stack atual
 
 - Next.js 15
 - React + TypeScript
-- TailwindCSS + shadcn/ui
+- TailwindCSS
 - Recharts
-- Next.js Server Actions e API Routes
+- Next.js API Routes
 - Zod
 - Prisma
 - Supabase/PostgreSQL
@@ -20,6 +22,7 @@ Este repositorio deve evoluir de forma incremental. A primeira fase prepara some
 
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Checkpoints do MVP](docs/MVP_CHECKPOINTS.md)
+- [Progression Analytics](docs/PROGRESSION_ANALYTICS.md)
 
 ## Desenvolvimento local
 
@@ -29,7 +32,7 @@ npx prisma generate
 npm run dev
 ```
 
-Depois acesse `http://localhost:3000`.
+Depois acesse `http://localhost:3007`.
 
 Usuarios anonimos sao redirecionados para `/login`. Depois do login, o
 dashboard consome as APIs usando a sessao autenticada do Supabase.
@@ -71,6 +74,7 @@ As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth
 - `DELETE /api/exercises/:exerciseId/sets/:setId`: exclui serie.
 - `GET /api/exercises/history`: consulta historico de exercicios por nome e/ou datas.
 - `GET /api/progression`: retorna volume de treino/exercicio pronto para graficos.
+- `GET /api/progression/analytics`: retorna opcoes e pontos para graficos personalizados.
 - `GET /api/personal-records`: calcula recordes pessoais a partir dos treinos existentes.
 - `GET /api/goals`: busca metas semanais/mensais do usuario.
 - `PUT /api/goals`: define metas semanais/mensais do usuario.
@@ -94,9 +98,32 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - recarregar graficos apos alteracoes
 - listar workouts em blocos de 6 com `View more`
 - configurar streak semanal e mensal em `Settings`
+- receber popup consolidado de novos PRs apos criar/editar workout
+- desativar popups de PR em `Settings`
+- acessar `/progression` para montar graficos personalizados
 
 As metas de streak contam dias unicos treinados. Mais de um workout no mesmo
 dia nao aumenta o progresso de consistencia.
+Preferencias visuais simples, como popups de PR e configuracao dos graficos
+personalizados, usam `localStorage` no MVP.
+
+## Status real do MVP
+
+Implementado e compilando:
+
+- autenticacao por email/senha com Supabase Auth
+- isolamento por usuario autenticado nas APIs privadas
+- gerenciamento de workouts, exercicios e series
+- duplicacao e exclusao de workouts
+- calculos de volume, consistencia e PRs
+- popups de conquistas/metas e PRs
+- pagina `/progression` para graficos personalizados
+
+Pendente de validacao manual completa:
+
+- fluxos recentes de polish, popups de PR e analytics customizados
+- testes automatizados de API, services e componentes
+- revisao pre-producao de cookies, redirects, HTTPS e politicas Supabase
 
 ## Autenticacao
 

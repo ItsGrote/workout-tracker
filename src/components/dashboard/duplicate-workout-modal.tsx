@@ -17,6 +17,28 @@ const formatDate = (date: string) =>
     year: "numeric",
   }).format(new Date(date));
 
+const readDuplicateError = async (response: Response) => {
+  const fallbackMessage = "Could not duplicate workout. Please try again.";
+
+  try {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      const body = (await response.json()) as {
+        error?: string;
+        issues?: { message?: string }[];
+      };
+
+      return body.issues?.[0]?.message ?? body.error ?? fallbackMessage;
+    }
+
+    const text = await response.text();
+    return text || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+};
+
 export function DuplicateWorkoutModal({
   isOpen,
   workouts,
@@ -48,20 +70,29 @@ export function DuplicateWorkoutModal({
     setError(null);
     setIsDuplicating(true);
 
-    const response = await fetch(`/api/workouts/${selectedWorkoutId}/duplicate`, {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const response = await fetch(
+        `/api/workouts/${selectedWorkoutId}/duplicate`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
 
-    setIsDuplicating(false);
+      if (!response.ok) {
+        setError(await readDuplicateError(response));
+        return;
+      }
 
-    if (!response.ok) {
-      setError("Could not duplicate workout. Please try again.");
-      return;
+      const duplicated = (await response.json()) as WorkoutResponse;
+      onDuplicated(duplicated);
+    } catch {
+      setError(
+        "Could not reach the server while duplicating. Please try again.",
+      );
+    } finally {
+      setIsDuplicating(false);
     }
-
-    const duplicated = (await response.json()) as WorkoutResponse;
-    onDuplicated(duplicated);
   };
 
   return (
