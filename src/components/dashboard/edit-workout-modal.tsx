@@ -1,0 +1,530 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { WorkoutResponse } from "./types";
+import {
+  createDraftId,
+  createExerciseDraft,
+  createSetDraft,
+  draftToPayload,
+  normalizeDraft,
+  SET_TYPES,
+  type ExerciseDraft,
+  type PublicSetType,
+  type SetDraft,
+  validateWorkoutDraft,
+  type WorkoutDraft,
+  workoutToDraft,
+} from "./workout-editor-utils";
+
+type EditWorkoutModalProps = {
+  workout: WorkoutResponse | null;
+  onClose: () => void;
+  onSaved: (message: string) => void;
+};
+
+type UnsavedAction = "close" | null;
+
+const groupSetsByType = (sets: SetDraft[]) =>
+  SET_TYPES.map((setType) => ({
+    setType,
+    sets: sets.filter((set) => set.setType === setType),
+  }));
+
+export function EditWorkoutModal({
+  workout,
+  onClose,
+  onSaved,
+}: EditWorkoutModalProps) {
+  const initialDraft = useMemo(
+    () => (workout ? workoutToDraft(workout) : null),
+    [workout],
+  );
+  const [draft, setDraft] = useState<WorkoutDraft | null>(initialDraft);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(
+    initialDraft?.exercises[0]?.draftId ?? null,
+  );
+  const [selectedSetType, setSelectedSetType] =
+    useState<PublicSetType>("working");
+  const [pendingUnsavedAction, setPendingUnsavedAction] =
+    useState<UnsavedAction>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (!initialDraft) {
+      setDraft(null);
+      setSelectedExerciseId(null);
+      return;
+    }
+
+    setDraft(initialDraft);
+    setSelectedExerciseId(initialDraft.exercises[0]?.draftId ?? null);
+    setSelectedSetType("working");
+    setPendingUnsavedAction(null);
+    setError(null);
+  }, [initialDraft]);
+
+  if (!workout || !draft || !initialDraft) {
+    return null;
+  }
+
+  const isDirty = normalizeDraft(draft) !== normalizeDraft(initialDraft);
+  const selectedExercise =
+    draft.exercises.find((exercise) => exercise.draftId === selectedExerciseId) ??
+    draft.exercises[0] ??
+    null;
+
+  const updateDraft = (update: Partial<WorkoutDraft>) => {
+    setDraft((current) => (current ? { ...current, ...update } : current));
+  };
+
+  const updateExercise = (
+    exerciseDraftId: string,
+    update: Partial<ExerciseDraft>,
+  ) => {
+    setDraft((current) =>
+      current
+        ? {
+            ...current,
+            exercises: current.exercises.map((exercise) =>
+              exercise.draftId === exerciseDraftId
+                ? { ...exercise, ...update }
+                : exercise,
+            ),
+          }
+        : current,
+    );
+  };
+
+  const updateSet = (
+    exerciseDraftId: string,
+    setDraftId: string,
+    update: Partial<SetDraft>,
+  ) => {
+    setDraft((current) =>
+      current
+        ? {
+            ...current,
+            exercises: current.exercises.map((exercise) =>
+              exercise.draftId === exerciseDraftId
+                ? {
+                    ...exercise,
+                    sets: exercise.sets.map((set) =>
+                      set.draftId === setDraftId ? { ...set, ...update } : set,
+                    ),
+                  }
+                : exercise,
+            ),
+          }
+        : current,
+    );
+  };
+
+  const addExercise = () => {
+    const exercise = {
+      ...createExerciseDraft(`Exercise ${draft.exercises.length + 1}`),
+      draftId: createDraftId(),
+    };
+
+    setDraft((current) =>
+      current
+        ? { ...current, exercises: [...current.exercises, exercise] }
+        : current,
+    );
+    setSelectedExerciseId(exercise.draftId);
+  };
+
+  const removeExercise = (exerciseDraftId: string) => {
+    const exercise = draft.exercises.find(
+      (item) => item.draftId === exerciseDraftId,
+    );
+
+    if (!exercise) {
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Delete ${exercise.name || "this exercise"} and all of its sets from this draft?`,
+      )
+    ) {
+      return;
+    }
+
+    const nextExercises = draft.exercises.filter(
+      (item) => item.draftId !== exerciseDraftId,
+    );
+
+    updateDraft({ exercises: nextExercises });
+    setSelectedExerciseId(nextExercises[0]?.draftId ?? null);
+  };
+
+  const addSet = (exerciseDraftId: string, setType = selectedSetType) => {
+    setDraft((current) =>
+      current
+        ? {
+            ...current,
+            exercises: current.exercises.map((exercise) =>
+              exercise.draftId === exerciseDraftId
+                ? {
+                    ...exercise,
+                    sets: [...exercise.sets, { ...createSetDraft(), setType }],
+                  }
+                : exercise,
+            ),
+          }
+        : current,
+    );
+  };
+
+  const removeSet = (exerciseDraftId: string, setDraftId: string) => {
+    if (!window.confirm("Delete this set from this draft?")) {
+      return;
+    }
+
+    setDraft((current) =>
+      current
+        ? {
+            ...current,
+            exercises: current.exercises.map((exercise) =>
+              exercise.draftId === exerciseDraftId
+                ? {
+                    ...exercise,
+                    sets: exercise.sets.filter(
+                      (set) => set.draftId !== setDraftId,
+                    ),
+                  }
+                : exercise,
+            ),
+          }
+        : current,
+    );
+  };
+
+  const saveDraft = async () => {
+    setError(null);
+    const validationError = validateWorkoutDraft(draft);
+
+    if (validationError) {
+      setError(validationError);
+      return false;
+    }
+
+    setIsSaving(true);
+
+    const response = await fetch(`/api/workouts/${workout.id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(draftToPayload(draft)),
+    });
+
+    setIsSaving(false);
+
+    if (!response.ok) {
+      setError("Could not save edits. Please review the workout and try again.");
+      return false;
+    }
+
+    onSaved("Workout edits saved. Charts are being refreshed.");
+    return true;
+  };
+
+  const requestClose = () => {
+    if (isDirty) {
+      setPendingUnsavedAction("close");
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleSaveAndClose = async () => {
+    const saved = await saveDraft();
+
+    if (saved) {
+      setPendingUnsavedAction(null);
+      onClose();
+    }
+  };
+
+  const visibleSets =
+    selectedExercise?.sets.filter((set) => set.setType === selectedSetType) ??
+    [];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end bg-black/30 p-3 sm:items-center sm:justify-center">
+      <section className="max-h-[92vh] w-full overflow-y-auto rounded border border-[var(--border)] bg-[var(--surface)] p-5 shadow-xl sm:max-w-5xl">
+        <div className="flex flex-col gap-4 border-b border-[var(--border)] pb-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+              Edit workout
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold">
+              {draft.name || "Untitled workout"} - {draft.category || "Category"}
+            </h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Changes stay in this editor until you click Save edits.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="rounded border border-[var(--border)] px-3 py-2 text-sm"
+              onClick={requestClose}
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              disabled={isSaving}
+              onClick={saveDraft}
+              type="button"
+            >
+              {isSaving ? "Saving..." : "Save edits"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            Workout name
+            <input
+              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              onChange={(event) => updateDraft({ name: event.target.value })}
+              value={draft.name}
+            />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            Category
+            <input
+              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              onChange={(event) =>
+                updateDraft({ category: event.target.value })
+              }
+              value={draft.category}
+            />
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            Date
+            <input
+              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              onChange={(event) => updateDraft({ date: event.target.value })}
+              type="date"
+              value={draft.date}
+            />
+          </label>
+        </div>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className="rounded border border-[var(--border)] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-semibold">Exercises</h3>
+              <button
+                className="rounded bg-[var(--foreground)] px-3 py-2 text-sm font-medium text-white"
+                onClick={addExercise}
+                type="button"
+              >
+                + Add
+              </button>
+            </div>
+            <div className="mt-3 flex flex-col gap-2">
+              {draft.exercises.map((exercise) => (
+                <button
+                  className={`rounded border px-3 py-2 text-left text-sm ${
+                    selectedExercise?.draftId === exercise.draftId
+                      ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+                      : "border-[var(--border)]"
+                  }`}
+                  key={exercise.draftId}
+                  onClick={() => setSelectedExerciseId(exercise.draftId)}
+                  type="button"
+                >
+                  {exercise.name || "Unnamed exercise"}
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <div className="rounded border border-[var(--border)] p-4">
+            {selectedExercise ? (
+              <>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <label className="flex flex-1 flex-col gap-2 text-sm font-medium">
+                    Exercise name
+                    <input
+                      className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                      onChange={(event) =>
+                        updateExercise(selectedExercise.draftId, {
+                          name: event.target.value,
+                        })
+                      }
+                      value={selectedExercise.name}
+                    />
+                  </label>
+                  <button
+                    className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
+                    onClick={() => removeExercise(selectedExercise.draftId)}
+                    type="button"
+                  >
+                    Delete exercise
+                  </button>
+                </div>
+
+                <div className="mt-5">
+                  <p className="text-sm font-semibold">Sets - set type</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {groupSetsByType(selectedExercise.sets).map((group) => (
+                      <button
+                        className={`rounded border px-3 py-2 text-sm ${
+                          selectedSetType === group.setType
+                            ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+                            : "border-[var(--border)]"
+                        }`}
+                        key={group.setType}
+                        onClick={() => setSelectedSetType(group.setType)}
+                        type="button"
+                      >
+                        {group.setType} ({group.sets.length})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between gap-3">
+                  <h4 className="font-semibold">{selectedSetType} sets</h4>
+                  <button
+                    className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                    onClick={() => addSet(selectedExercise.draftId)}
+                    type="button"
+                  >
+                    + Add set
+                  </button>
+                </div>
+
+                <div className="mt-3 flex flex-col gap-3">
+                  {visibleSets.length === 0 ? (
+                    <div className="rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+                      No sets for this type yet.
+                    </div>
+                  ) : null}
+
+                  {visibleSets.map((set) => (
+                    <div
+                      className="grid gap-3 rounded border border-[var(--border)] p-3 sm:grid-cols-[1fr_1fr_1.2fr_auto]"
+                      key={set.draftId}
+                    >
+                      <label className="flex flex-col gap-2 text-sm font-medium">
+                        Reps
+                        <input
+                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          min="1"
+                          onChange={(event) =>
+                            updateSet(selectedExercise.draftId, set.draftId, {
+                              repetitions: event.target.value,
+                            })
+                          }
+                          type="number"
+                          value={set.repetitions}
+                        />
+                      </label>
+                      <label className="flex flex-col gap-2 text-sm font-medium">
+                        Weight
+                        <input
+                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          min="0"
+                          onChange={(event) =>
+                            updateSet(selectedExercise.draftId, set.draftId, {
+                              weightKg: event.target.value,
+                            })
+                          }
+                          step="0.5"
+                          type="number"
+                          value={set.weightKg}
+                        />
+                      </label>
+                      <label className="flex flex-col gap-2 text-sm font-medium">
+                        Set type
+                        <select
+                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          onChange={(event) =>
+                            updateSet(selectedExercise.draftId, set.draftId, {
+                              setType: event.target.value as PublicSetType,
+                            })
+                          }
+                          value={set.setType}
+                        >
+                          {SET_TYPES.map((setType) => (
+                            <option key={setType} value={setType}>
+                              {setType}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b] sm:self-end"
+                        onClick={() =>
+                          removeSet(selectedExercise.draftId, set.draftId)
+                        }
+                        type="button"
+                      >
+                        Delete set
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+                Add an exercise to continue.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {error ? (
+          <p className="mt-4 rounded border border-[#e1b8b8] bg-[#fff7f7] px-3 py-2 text-sm text-[#7b3b3b]">
+            {error}
+          </p>
+        ) : null}
+
+        {pendingUnsavedAction ? (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 p-4">
+            <div className="w-full max-w-md rounded border border-[var(--border)] bg-white p-5 shadow-xl">
+              <h3 className="text-lg font-semibold">Unsaved changes</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                Save your edits before leaving, discard them, or cancel and keep
+                editing.
+              </p>
+              <div className="mt-5 grid gap-2 sm:grid-cols-3">
+                <button
+                  className="rounded bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                  disabled={isSaving}
+                  onClick={handleSaveAndClose}
+                  type="button"
+                >
+                  Save changes
+                </button>
+                <button
+                  className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
+                  onClick={onClose}
+                  type="button"
+                >
+                  Discard changes
+                </button>
+                <button
+                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  onClick={() => setPendingUnsavedAction(null)}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </section>
+    </div>
+  );
+}

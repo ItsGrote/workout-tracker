@@ -157,15 +157,20 @@ export function CreateWorkoutModal({
         const parsedWeight = Number(set.weightKg);
         const parsedRepetitions = Number(set.repetitions);
 
-        if (!Number.isFinite(parsedWeight) || parsedWeight < 0) {
+        if (
+          set.weightKg === "" ||
+          !Number.isFinite(parsedWeight) ||
+          parsedWeight < 0
+        ) {
           return `${exercise.name}, set ${setIndex + 1}: weight must be zero or higher.`;
         }
 
         if (
+          set.repetitions === "" ||
           !Number.isInteger(parsedRepetitions) ||
-          parsedRepetitions < 0
+          parsedRepetitions <= 0
         ) {
-          return `${exercise.name}, set ${setIndex + 1}: repetitions must be a whole number zero or higher.`;
+          return `${exercise.name}, set ${setIndex + 1}: repetitions must be a positive whole number.`;
         }
       }
     }
@@ -414,4 +419,3 @@ export function CreateWorkoutModal({
     </div>
   );
 }
-

@@ -79,8 +79,18 @@ As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth
 ## Dashboard MVP
 
 O dashboard autenticado mostra volume, consistencia, metas e recordes pessoais.
-Ele tambem inclui um fluxo minimo para criar um treino com um exercicio e uma
-serie, suficiente para iniciar os graficos e o acompanhamento de consistencia.
+Ele tambem inclui o fluxo principal de gerenciamento de treinos:
+
+- criar workout
+- adicionar varios exercicios
+- adicionar varias series
+- editar workout
+- editar exercicio
+- editar serie
+- excluir exercicio
+- excluir serie
+- duplicar workout
+- recarregar graficos apos alteracoes
 
 ## Autenticacao
 

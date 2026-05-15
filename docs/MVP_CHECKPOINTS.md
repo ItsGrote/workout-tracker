@@ -184,3 +184,22 @@ Pronto quando:
 - Fluxo principal de registrar treino e ver evolucao esta completo.
 - Erros sao compreensiveis.
 - O produto esta usavel em desktop e mobile.
+
+## 12. Fluxo completo de gerenciamento de workouts
+
+Status: concluido.
+
+Objetivo: completar o fluxo principal do frontend para criar, editar, excluir partes e duplicar workouts usando as APIs existentes.
+
+Arquivos provaveis:
+- `src/components/dashboard/create-workout-modal.tsx`
+- `src/components/dashboard/edit-workout-modal.tsx`
+- `src/components/dashboard/duplicate-workout-modal.tsx`
+- `src/components/dashboard/workout-management-card.tsx`
+
+Pronto quando:
+- Usuario cria workout com varios exercicios e varias series.
+- Usuario edita workout, exercicios e series em uma unica interface.
+- Usuario remove exercicios e series antes de salvar edits.
+- Usuario duplica workout existente e abre a copia para edicao.
+- Graficos e cards sao recarregados apos salvar ou duplicar.

@@ -7,11 +7,14 @@ import { CreateWorkoutModal } from "./create-workout-modal";
 import { DashboardNav } from "./dashboard-nav";
 import { DashboardError } from "./dashboard-error";
 import { DashboardLoading } from "./dashboard-loading";
+import { DuplicateWorkoutModal } from "./duplicate-workout-modal";
+import { EditWorkoutModal } from "./edit-workout-modal";
 import { EmptyOnboarding } from "./empty-onboarding";
 import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
 import { SummaryCard } from "./summary-card";
-import type { DashboardData } from "./types";
+import { WorkoutManagementCard } from "./workout-management-card";
+import type { DashboardData, WorkoutResponse } from "./types";
 
 const requestJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(path, {
@@ -30,6 +33,10 @@ export function DashboardClient() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
+  const [editingWorkout, setEditingWorkout] = useState<WorkoutResponse | null>(
+    null,
+  );
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
 
   const loadDashboard = useCallback(async () => {
@@ -37,7 +44,7 @@ export function DashboardClient() {
     setError(null);
 
     try {
-      const [progression, consistency, goals, personalRecords] =
+      const [progression, consistency, goals, personalRecords, workouts] =
         await Promise.all([
           requestJson<DashboardData["progression"]>("/api/progression"),
           requestJson<DashboardData["consistency"]>("/api/consistency"),
@@ -45,9 +52,16 @@ export function DashboardClient() {
           requestJson<DashboardData["personalRecords"]>(
             "/api/personal-records",
           ),
+          requestJson<DashboardData["workouts"]>("/api/workouts"),
         ]);
 
-      const nextData = { progression, consistency, goals, personalRecords };
+      const nextData = {
+        progression,
+        consistency,
+        goals,
+        personalRecords,
+        workouts,
+      };
       setData(nextData);
 
       return nextData;
@@ -135,6 +149,13 @@ export function DashboardClient() {
           <ProgressionChart points={data.progression.points} />
         </div>
 
+        <WorkoutManagementCard
+          workouts={data.workouts}
+          onCreate={() => setIsCreateOpen(true)}
+          onDuplicate={() => setIsDuplicateOpen(true)}
+          onEdit={setEditingWorkout}
+        />
+
         <div className="grid gap-4 md:grid-cols-3">
           <SummaryCard
             label="Total Volume"
@@ -174,6 +195,34 @@ export function DashboardClient() {
               window.setTimeout(() => setBannerMessage(null), 5000);
             });
           }}
+        />
+
+        <DuplicateWorkoutModal
+          isOpen={isDuplicateOpen}
+          onClose={() => setIsDuplicateOpen(false)}
+          onDuplicated={(workout) => {
+            setIsDuplicateOpen(false);
+            setEditingWorkout(workout);
+            void loadDashboard().then(() => {
+              setBannerMessage(
+                "Workout duplicated with today's date. Review it before saving edits.",
+              );
+              window.setTimeout(() => setBannerMessage(null), 5000);
+            });
+          }}
+          workouts={data.workouts}
+        />
+
+        <EditWorkoutModal
+          onClose={() => setEditingWorkout(null)}
+          onSaved={(message) => {
+            setEditingWorkout(null);
+            void loadDashboard().then(() => {
+              setBannerMessage(message);
+              window.setTimeout(() => setBannerMessage(null), 5000);
+            });
+          }}
+          workout={editingWorkout}
         />
       </section>
     </main>
