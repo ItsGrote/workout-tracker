@@ -298,3 +298,29 @@ Pronto quando:
 - Ownership bloqueia acesso cruzado em workout, exercise e set.
 - Validacoes de metas bloqueiam valores invalidos.
 - Sessao autenticada falha de forma segura sem usuario.
+
+## 17. Segunda etapa de testes automatizados
+
+Status: concluido.
+
+Objetivo: ampliar cobertura para API routes reais, isolamento entre usuarios e
+services de progressao, PRs e consistencia sem conectar em banco real.
+
+Arquivos provaveis:
+- `tests/api/workout-routes.test.ts`
+- `tests/api/exercise-set-routes.test.ts`
+- `tests/services/progression.service.test.ts`
+- `tests/services/personal-record.service.test.ts`
+- `tests/services/consistency.service.test.ts`
+- `tests/helpers/api-request.ts`
+- `docs/TESTING.md`
+
+Pronto quando:
+- API routes respondem `401` para usuario anonimo.
+- API routes bloqueiam acesso cruzado entre `userA` e `userB`.
+- Criacao, validacao, delete e duplicacao de workouts sao testados por HTTP handler.
+- Duplicacao usa data atual.
+- Progressao calcula volumes corretamente.
+- PRs detectam carga, repeticoes e volume sem falso positivo em empate.
+- Consistencia conta dias unicos e nao quebra com historico vazio.
+- `npm run test` passa com a suite anterior e a nova.

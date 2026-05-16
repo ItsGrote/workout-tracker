@@ -121,12 +121,13 @@ Implementado e compilando:
 - calculos de volume, consistencia e PRs
 - popups de conquistas/metas e PRs
 - pagina `/progression` para graficos personalizados
-- estrutura inicial de testes automatizados com Vitest
+- testes automatizados com Vitest para services criticos, API routes, ownership,
+  progressao, PRs e consistencia
 
 Pendente de validacao manual completa:
 
 - fluxos recentes de polish, settings sidebar, popups de PR e analytics customizados
-- testes automatizados adicionais de API, services e componentes
+- testes automatizados de componentes e integracao com banco isolado
 - revisao pre-producao de cookies, redirects, HTTPS e politicas Supabase
 
 ## Autenticacao

@@ -12,11 +12,11 @@
 
 ## Testes
 
-- Expandir testes unitarios para services de progressao, PRs e consistencia.
-- Adicionar testes de API para isolamento entre usuarios.
 - Adicionar testes de componente para criacao/edicao de workout.
 - Adicionar testes de componente para popup consolidado de PR.
 - Adicionar testes de API para `/api/progression/analytics`.
+- Adicionar testes de API para `/api/goals`, `/api/consistency`,
+  `/api/progression` e `/api/personal-records`.
 - Executar e registrar testes manuais dos checkpoints 12, 13 e 14 antes de marcar como concluidos.
 - Avaliar banco de teste isolado ou test container para cobrir repository/Prisma sem usar dados reais.
 

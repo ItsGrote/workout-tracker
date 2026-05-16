@@ -148,6 +148,23 @@ describe("exercise and set ownership services", () => {
     ).rejects.toBeInstanceOf(ExerciseServiceError);
   });
 
+  it("deletes an owned exercise through the repository after ownership check", async () => {
+    const { exerciseService } = await import("@/server/services/exercise.service");
+    exerciseRepositoryMock.findByIdForUser.mockResolvedValueOnce({
+      id: TEST_EXERCISE_ID,
+      workoutId: TEST_WORKOUT_ID,
+    });
+    exerciseRepositoryMock.delete.mockResolvedValueOnce({ id: TEST_EXERCISE_ID });
+
+    await exerciseService.delete(
+      TEST_USER_A_ID,
+      TEST_EXERCISE_ID,
+      TEST_WORKOUT_ID,
+    );
+
+    expect(exerciseRepositoryMock.delete).toHaveBeenCalledWith(TEST_EXERCISE_ID);
+  });
+
   it("does not edit a set from another user's workout", async () => {
     const { exerciseSetService, ExerciseSetServiceError } = await import(
       "@/server/services/exercise-set.service"
@@ -189,5 +206,24 @@ describe("exercise and set ownership services", () => {
     await expect(
       exerciseSetService.delete(TEST_USER_B_ID, TEST_SET_ID),
     ).rejects.toBeInstanceOf(ExerciseSetServiceError);
+  });
+
+  it("deletes only the requested owned set after ownership check", async () => {
+    const { exerciseSetService } = await import(
+      "@/server/services/exercise-set.service"
+    );
+    exerciseSetRepositoryMock.findByIdForUser.mockResolvedValueOnce({
+      id: TEST_SET_ID,
+      exerciseId: TEST_EXERCISE_ID,
+    });
+    exerciseSetRepositoryMock.delete.mockResolvedValueOnce({ id: TEST_SET_ID });
+
+    await exerciseSetService.deleteForExercise(
+      TEST_USER_A_ID,
+      TEST_EXERCISE_ID,
+      TEST_SET_ID,
+    );
+
+    expect(exerciseSetRepositoryMock.delete).toHaveBeenCalledWith(TEST_SET_ID);
   });
 });
