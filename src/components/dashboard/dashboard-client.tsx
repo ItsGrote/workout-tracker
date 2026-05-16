@@ -14,7 +14,7 @@ import { GoalAchievementPopup } from "./goal-achievement-popup";
 import { PersonalRecordPopup } from "./personal-record-popup";
 import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
-import { StreakSettingsModal } from "./streak-settings-modal";
+import { SettingsSidebar } from "./settings-sidebar";
 import { SummaryCard } from "./summary-card";
 import { WorkoutManagementCard } from "./workout-management-card";
 import type { DashboardData, PersonalRecord, WorkoutResponse } from "./types";
@@ -23,6 +23,8 @@ const PERSONAL_RECORD_POPUPS_KEY =
   "workout-evolution-personal-record-popups-enabled";
 const SHOWN_PERSONAL_RECORD_KEY_PREFIX =
   "workout-evolution-personal-record-shown";
+
+type SettingsSection = "streak" | "popups";
 
 const requestJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(path, {
@@ -42,7 +44,9 @@ export function DashboardClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
-  const [isStreakSettingsOpen, setIsStreakSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [activeSettingsSection, setActiveSettingsSection] =
+    useState<SettingsSection>("streak");
   const [editingWorkout, setEditingWorkout] = useState<WorkoutResponse | null>(
     null,
   );
@@ -183,6 +187,11 @@ export function DashboardClient() {
     window.localStorage.setItem(PERSONAL_RECORD_POPUPS_KEY, String(enabled));
   };
 
+  const openSettings = (section: SettingsSection) => {
+    setActiveSettingsSection(section);
+    setIsSettingsOpen(true);
+  };
+
   const maybeShowPersonalRecordPopup = useCallback(
     async (workout: WorkoutResponse) => {
       if (!arePersonalRecordPopupsEnabled || typeof window === "undefined") {
@@ -275,6 +284,13 @@ export function DashboardClient() {
               </p>
             </div>
             <button
+              className="rounded border border-[var(--border)] px-4 py-2 text-sm font-semibold"
+              onClick={() => openSettings("streak")}
+              type="button"
+            >
+              Settings
+            </button>
+            <button
               className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-[var(--accent)] text-3xl font-light leading-none text-white shadow-xl sm:static sm:h-auto sm:w-auto sm:rounded sm:px-4 sm:py-2 sm:text-sm sm:font-semibold"
               onClick={() => setIsCreateOpen(true)}
               title="Create workout"
@@ -299,7 +315,7 @@ export function DashboardClient() {
           <ConsistencyCard
             consistency={data.consistency}
             goals={data.goals}
-            onEditGoals={() => setIsStreakSettingsOpen(true)}
+            onEditGoals={() => openSettings("streak")}
           />
           <ProgressionChart points={data.progression.points} />
         </div>
@@ -384,11 +400,12 @@ export function DashboardClient() {
           workout={editingWorkout}
         />
 
-        <StreakSettingsModal
+        <SettingsSidebar
+          activeSection={activeSettingsSection}
           arePersonalRecordPopupsEnabled={arePersonalRecordPopupsEnabled}
           goals={data.goals}
-          isOpen={isStreakSettingsOpen}
-          onClose={() => setIsStreakSettingsOpen(false)}
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
           onPersonalRecordPopupsChange={updatePersonalRecordPopupPreference}
           onSaved={() => {
             void loadConsistencyData().then(() => {

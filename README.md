@@ -23,6 +23,7 @@ separada de graficos personalizados.
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Checkpoints do MVP](docs/MVP_CHECKPOINTS.md)
 - [Progression Analytics](docs/PROGRESSION_ANALYTICS.md)
+- [Testing](docs/TESTING.md)
 
 ## Desenvolvimento local
 
@@ -42,6 +43,8 @@ dashboard consome as APIs usando a sessao autenticada do Supabase.
 - `npm run dev`: inicia o servidor de desenvolvimento.
 - `npm run build`: gera o build de producao.
 - `npm run start`: executa o build de producao.
+- `npm run test`: executa testes automatizados com Vitest.
+- `npm run test:watch`: executa testes em modo watch.
 - `npm run typecheck`: valida os tipos TypeScript.
 
 ## Ambiente
@@ -97,9 +100,9 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - duplicar workout
 - recarregar graficos apos alteracoes
 - listar workouts em blocos de 6 com `View more`
-- configurar streak semanal e mensal em `Settings`
+- configurar streak semanal e mensal na sidebar `Settings`
 - receber popup consolidado de novos PRs apos criar/editar workout
-- desativar popups de PR em `Settings`
+- desativar popups de PR em `Settings > Popup settings`
 - acessar `/progression` para montar graficos personalizados
 
 As metas de streak contam dias unicos treinados. Mais de um workout no mesmo
@@ -118,11 +121,12 @@ Implementado e compilando:
 - calculos de volume, consistencia e PRs
 - popups de conquistas/metas e PRs
 - pagina `/progression` para graficos personalizados
+- estrutura inicial de testes automatizados com Vitest
 
 Pendente de validacao manual completa:
 
-- fluxos recentes de polish, popups de PR e analytics customizados
-- testes automatizados de API, services e componentes
+- fluxos recentes de polish, settings sidebar, popups de PR e analytics customizados
+- testes automatizados adicionais de API, services e componentes
 - revisao pre-producao de cookies, redirects, HTTPS e politicas Supabase
 
 ## Autenticacao

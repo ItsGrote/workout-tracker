@@ -196,7 +196,7 @@ Arquivos provaveis:
 - `src/components/dashboard/edit-workout-modal.tsx`
 - `src/components/dashboard/duplicate-workout-modal.tsx`
 - `src/components/dashboard/workout-management-card.tsx`
-- `src/components/dashboard/streak-settings-modal.tsx`
+- `src/components/dashboard/settings-sidebar.tsx`
 - `src/components/dashboard/goal-achievement-popup.tsx`
 
 Pronto quando:
@@ -220,7 +220,7 @@ Objetivo: mostrar um popup consolidado quando um workout salvo gera novos record
 Arquivos provaveis:
 - `src/components/dashboard/dashboard-client.tsx`
 - `src/components/dashboard/personal-record-popup.tsx`
-- `src/components/dashboard/streak-settings-modal.tsx`
+- `src/components/dashboard/settings-sidebar.tsx`
 - `src/server/services/personal-record.service.ts`
 - `src/server/validations/personal-record.validation.ts`
 
@@ -229,7 +229,7 @@ Pronto quando:
 - Popup aparece apos editar workout que gera PR.
 - Varios PRs do mesmo workout aparecem em um unico popup.
 - Popup nao aparece ao apenas abrir/recarregar dashboard.
-- Usuario pode desabilitar/reabilitar popups de PR em `Settings`.
+- Usuario pode desabilitar/reabilitar popups de PR em `Settings > Popup settings`.
 - Preferencia temporaria fica documentada como `localStorage`.
 
 ## 14. Custom progression analytics
@@ -258,3 +258,43 @@ Pronto quando:
 - Intervalos permitidos sao 7d, 30d, 90d, 1y e all time.
 - Tipo visual alterna entre bar chart e line chart.
 - Preferencias sao restauradas via `localStorage`.
+
+## 15. Settings sidebar
+
+Status: implementado; testes manuais pendentes.
+
+Objetivo: substituir o modal antigo de settings por uma sidebar lateral que nao corta o formulario.
+
+Arquivos provaveis:
+- `src/components/dashboard/settings-sidebar.tsx`
+- `src/components/dashboard/dashboard-client.tsx`
+- `src/components/dashboard/consistency-card.tsx`
+
+Pronto quando:
+- Botao `Settings` abre uma sidebar lateral.
+- Sidebar possui `Streak settings` e `Popup settings`.
+- Streak settings salva metas semanais/mensais com validacao.
+- Popup settings controla popups de PR via `localStorage`.
+- Cards de streak abrem a sidebar diretamente em `Streak settings`.
+- Botao de salvar fica acessivel e a sidebar possui scroll interno.
+
+## 16. Estrutura inicial de testes automatizados
+
+Status: concluido.
+
+Objetivo: adicionar Vitest e cobrir services criticos, validacoes e seguranca de ownership sem conectar em banco real.
+
+Arquivos provaveis:
+- `vitest.config.ts`
+- `tests/services/workout.service.test.ts`
+- `tests/services/exercise-ownership.service.test.ts`
+- `tests/services/goal.service.test.ts`
+- `tests/auth/session.test.ts`
+- `docs/TESTING.md`
+
+Pronto quando:
+- `npm run test` executa com sucesso.
+- Services de workout cobrem criacao, update, delete e duplicacao.
+- Ownership bloqueia acesso cruzado em workout, exercise e set.
+- Validacoes de metas bloqueiam valores invalidos.
+- Sessao autenticada falha de forma segura sem usuario.

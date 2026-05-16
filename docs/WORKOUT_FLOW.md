@@ -84,16 +84,26 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
 
 ## Streaks e metas
 
-1. Usuario abre `Settings` na area de consistencia.
+1. Usuario abre a sidebar `Settings` pelo topo do dashboard ou pelo card de consistencia.
 2. Pode habilitar/desabilitar weekly streak e monthly streak.
 3. Weekly streak aceita meta de 1 a 7 dias treinados por semana.
 4. Monthly streak aceita meta de 1 a 31 dias treinados por mes.
 5. Mais de um workout no mesmo dia conta como apenas 1 dia treinado.
 6. Ao desabilitar streak salvo, o app pede confirmacao e apaga a meta correspondente.
 7. Cards de streak aparecem apenas para metas ativas.
-8. Clicar em um card de streak abre as mesmas configuracoes.
+8. Clicar em um card de streak abre a sidebar direto em `Streak settings`.
 9. Quando uma meta ativa e atingida, o app mostra um popup de parabens.
 10. O popup usa `localStorage` para evitar reaparecer em todo refresh do mesmo periodo/meta.
+
+## Settings sidebar
+
+- `Settings` abre um painel lateral, nao um modal central.
+- A sidebar possui scroll interno e rodape fixo para salvar streaks.
+- Secoes atuais:
+  - `Streak settings`
+  - `Popup settings`
+- `Popup settings` controla `Enable personal record pop-ups`.
+- A preferencia de PR popup usa `localStorage` e nao altera os dados de PR.
 
 ## Personal record popups
 
@@ -104,7 +114,7 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
   - maior numero de repeticoes
 - Se o workout gerar varios PRs, o app mostra um unico popup consolidado.
 - O popup nao aparece ao apenas abrir ou recarregar o dashboard.
-- Em `Settings`, o usuario pode desativar `Enable personal record pop-ups`.
+- Em `Settings > Popup settings`, o usuario pode desativar `Enable personal record pop-ups`.
 - A preferencia de popup usa `localStorage` no MVP e nao remove/caltera os PRs calculados pelo backend.
 
 ## Validacoes principais

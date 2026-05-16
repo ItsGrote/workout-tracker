@@ -232,6 +232,10 @@ Validacoes:
 - o frontend nao envia `userId`
 - mais de um workout no mesmo dia conta como apenas 1 dia para consistencia
 
+Uso no frontend: a sidebar `Settings > Streak settings` chama esta rota com
+`credentials: "include"` e o backend salva a meta apenas para o usuario
+autenticado.
+
 ## Seguranca
 
 - APIs usam Supabase Auth.
