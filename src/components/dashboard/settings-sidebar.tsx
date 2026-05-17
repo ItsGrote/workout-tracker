@@ -8,11 +8,13 @@ type SettingsSection = "streak" | "popups";
 type SettingsSidebarProps = {
   activeSection: SettingsSection;
   arePersonalRecordPopupsEnabled: boolean;
+  areWorkoutSummaryPopupsEnabled: boolean;
   goals: GoalsResponse;
   isOpen: boolean;
   onClose: () => void;
   onPersonalRecordPopupsChange: (enabled: boolean) => void;
   onSaved: (goals: GoalsResponse) => void;
+  onWorkoutSummaryPopupsChange: (enabled: boolean) => void;
 };
 
 const parseGoal = (value: string) => {
@@ -48,11 +50,13 @@ const readGoalError = async (response: Response) => {
 export function SettingsSidebar({
   activeSection,
   arePersonalRecordPopupsEnabled,
+  areWorkoutSummaryPopupsEnabled,
   goals,
   isOpen,
   onClose,
   onPersonalRecordPopupsChange,
   onSaved,
+  onWorkoutSummaryPopupsChange,
 }: SettingsSidebarProps) {
   const [section, setSection] = useState<SettingsSection>(activeSection);
   const [weeklyEnabled, setWeeklyEnabled] = useState(false);
@@ -337,6 +341,27 @@ export function SettingsSidebar({
                       <span className="mt-1 block text-sm text-[var(--muted)]">
                         PRs are still calculated when this is off; only the
                         celebration pop-up is hidden.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div className="mt-4 rounded border border-[var(--border)] p-4">
+                  <label className="flex items-start gap-3">
+                    <input
+                      checked={areWorkoutSummaryPopupsEnabled}
+                      className="mt-1"
+                      onChange={(event) =>
+                        onWorkoutSummaryPopupsChange(event.target.checked)
+                      }
+                      type="checkbox"
+                    />
+                    <span>
+                      <span className="font-semibold">
+                        Enable workout summary popup
+                      </span>
+                      <span className="mt-1 block text-sm text-[var(--muted)]">
+                        Shows volume comparison, total volume, records and
+                        active streak progress after saving a workout.
                       </span>
                     </span>
                   </label>

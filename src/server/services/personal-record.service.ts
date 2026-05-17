@@ -7,14 +7,17 @@ import type {
   PersonalRecordScope,
 } from "@/server/types/personal-record.types";
 import type { PersonalRecordFiltersInput } from "@/server/validations/personal-record.validation";
+import {
+  calculateExerciseVolume,
+  calculateWorkoutVolume,
+  roundMetric,
+} from "@/server/services/workout-metrics";
 
 type RecordSourceWorkout = Awaited<
   ReturnType<typeof personalRecordRepository.findRecordSources>
 >[number];
 
 type RecordSourceExercise = RecordSourceWorkout["exercises"][number];
-type RecordSourceSet = RecordSourceExercise["sets"][number];
-
 type BestRecordState = {
   value: number;
   record: PersonalRecord;
@@ -34,25 +37,7 @@ type Candidate = {
   exerciseId?: string;
 };
 
-const roundValue = (value: number) => Math.round(value * 100) / 100;
-
 const normalizeKey = (value: string) => value.trim().toLowerCase();
-
-const calculateSetVolume = (set: RecordSourceSet) =>
-  Number(set.weightKg) * set.repetitions;
-
-const calculateExerciseVolume = (exercise: RecordSourceExercise) =>
-  roundValue(
-    exercise.sets.reduce((total, set) => total + calculateSetVolume(set), 0),
-  );
-
-const calculateWorkoutVolume = (workout: RecordSourceWorkout) =>
-  roundValue(
-    workout.exercises.reduce(
-      (total, exercise) => total + calculateExerciseVolume(exercise),
-      0,
-    ),
-  );
 
 const formatDate = (date: Date) => date.toISOString();
 
@@ -67,7 +52,7 @@ const formatFilters = (filters: PersonalRecordFiltersInput) => ({
 const toRecord = (candidate: Candidate): PersonalRecord => ({
   metric: candidate.metric,
   scope: candidate.scope,
-  value: roundValue(candidate.value),
+  value: roundMetric(candidate.value),
   date: formatDate(candidate.date),
   message: candidate.message,
   exerciseName: candidate.exerciseName,
@@ -82,7 +67,7 @@ const toEvent = (
   previousValue: number | null,
 ): PersonalRecordEvent => ({
   ...toRecord(candidate),
-  previousValue: previousValue === null ? null : roundValue(previousValue),
+  previousValue: previousValue === null ? null : roundMetric(previousValue),
 });
 
 const isInsideEventWindow = (

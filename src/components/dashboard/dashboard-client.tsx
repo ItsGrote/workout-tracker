@@ -19,16 +19,20 @@ import { SummaryCard } from "./summary-card";
 import { TemplateEditorModal } from "./template-editor-modal";
 import { TemplateManagementCard } from "./template-management-card";
 import { WorkoutManagementCard } from "./workout-management-card";
+import { WorkoutSummaryPopup } from "./workout-summary-popup";
 import type {
   CreateWorkoutInitialDraft,
   DashboardData,
   PersonalRecord,
   WorkoutResponse,
+  WorkoutSummaryResponse,
   WorkoutTemplateResponse,
 } from "./types";
 
 const PERSONAL_RECORD_POPUPS_KEY =
   "workout-evolution-personal-record-popups-enabled";
+const WORKOUT_SUMMARY_POPUPS_KEY =
+  "workout-evolution-workout-summary-popups-enabled";
 const SHOWN_PERSONAL_RECORD_KEY_PREFIX =
   "workout-evolution-personal-record-shown";
 
@@ -92,6 +96,12 @@ export function DashboardClient() {
   >([]);
   const [arePersonalRecordPopupsEnabled, setArePersonalRecordPopupsEnabled] =
     useState(true);
+  const [areWorkoutSummaryPopupsEnabled, setAreWorkoutSummaryPopupsEnabled] =
+    useState(true);
+  const [pendingWorkoutSummary, setPendingWorkoutSummary] =
+    useState<WorkoutSummaryResponse | null>(null);
+  const [workoutSummaryPopup, setWorkoutSummaryPopup] =
+    useState<WorkoutSummaryResponse | null>(null);
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
@@ -165,6 +175,9 @@ export function DashboardClient() {
     setArePersonalRecordPopupsEnabled(
       window.localStorage.getItem(PERSONAL_RECORD_POPUPS_KEY) !== "false",
     );
+    setAreWorkoutSummaryPopupsEnabled(
+      window.localStorage.getItem(WORKOUT_SUMMARY_POPUPS_KEY) !== "false",
+    );
   }, []);
 
   useEffect(() => {
@@ -220,6 +233,11 @@ export function DashboardClient() {
   const updatePersonalRecordPopupPreference = (enabled: boolean) => {
     setArePersonalRecordPopupsEnabled(enabled);
     window.localStorage.setItem(PERSONAL_RECORD_POPUPS_KEY, String(enabled));
+  };
+
+  const updateWorkoutSummaryPopupPreference = (enabled: boolean) => {
+    setAreWorkoutSummaryPopupsEnabled(enabled);
+    window.localStorage.setItem(WORKOUT_SUMMARY_POPUPS_KEY, String(enabled));
   };
 
   const openSettings = (section: SettingsSection) => {
@@ -339,19 +357,20 @@ export function DashboardClient() {
     }
   };
 
-  const maybeShowPersonalRecordPopup = useCallback(
+  const showPostWorkoutFeedback = useCallback(
     async (workout: WorkoutResponse) => {
-      if (!arePersonalRecordPopupsEnabled || typeof window === "undefined") {
+      if (
+        (!arePersonalRecordPopupsEnabled && !areWorkoutSummaryPopupsEnabled) ||
+        typeof window === "undefined"
+      ) {
         return;
       }
 
       try {
-        const params = new URLSearchParams({ workoutId: workout.id });
-        const personalRecords =
-          await requestJson<DashboardData["personalRecords"]>(
-            `/api/personal-records?${params.toString()}`,
-          );
-        const exerciseRecords = personalRecords.newRecords.filter(
+        const summary = await requestJson<WorkoutSummaryResponse>(
+          `/api/workouts/${workout.id}/summary`,
+        );
+        const exerciseRecords = summary.personalRecords.filter(
           (record) =>
             record.scope === "exercise" &&
             [
@@ -373,6 +392,9 @@ export function DashboardClient() {
         });
 
         if (unseenRecords.length === 0) {
+          if (areWorkoutSummaryPopupsEnabled) {
+            setWorkoutSummaryPopup(summary);
+          }
           return;
         }
 
@@ -387,15 +409,25 @@ export function DashboardClient() {
           window.localStorage.setItem(key, "shown");
         }
 
-        setPersonalRecordPopupRecords(unseenRecords);
+        if (arePersonalRecordPopupsEnabled) {
+          setPendingWorkoutSummary(
+            areWorkoutSummaryPopupsEnabled ? summary : null,
+          );
+          setPersonalRecordPopupRecords(unseenRecords);
+          return;
+        }
+
+        if (areWorkoutSummaryPopupsEnabled) {
+          setWorkoutSummaryPopup(summary);
+        }
       } catch (caughtError) {
         setBannerMessage(
-          "Workout saved, but personal records could not be checked right now.",
+          "Workout saved, but the summary could not be checked right now.",
         );
         window.setTimeout(() => setBannerMessage(null), 5000);
       }
     },
-    [arePersonalRecordPopupsEnabled],
+    [arePersonalRecordPopupsEnabled, areWorkoutSummaryPopupsEnabled],
   );
 
   if (isLoading) {
@@ -525,7 +557,7 @@ export function DashboardClient() {
               window.setTimeout(() => setBannerMessage(null), 5000);
 
               if (nextData) {
-                void maybeShowPersonalRecordPopup(workout);
+                void showPostWorkoutFeedback(workout);
               }
             });
           }}
@@ -576,7 +608,7 @@ export function DashboardClient() {
             void loadDashboard().then(() => {
               setBannerMessage(message);
               window.setTimeout(() => setBannerMessage(null), 5000);
-              void maybeShowPersonalRecordPopup(workout);
+              void showPostWorkoutFeedback(workout);
             });
           }}
           workout={editingWorkout}
@@ -585,6 +617,7 @@ export function DashboardClient() {
         <SettingsSidebar
           activeSection={activeSettingsSection}
           arePersonalRecordPopupsEnabled={arePersonalRecordPopupsEnabled}
+          areWorkoutSummaryPopupsEnabled={areWorkoutSummaryPopupsEnabled}
           goals={data.goals}
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
@@ -595,6 +628,7 @@ export function DashboardClient() {
               window.setTimeout(() => setBannerMessage(null), 5000);
             });
           }}
+          onWorkoutSummaryPopupsChange={updateWorkoutSummaryPopupPreference}
         />
 
         <GoalAchievementPopup
@@ -604,7 +638,18 @@ export function DashboardClient() {
 
         <PersonalRecordPopup
           records={personalRecordPopupRecords}
-          onClose={() => setPersonalRecordPopupRecords([])}
+          onClose={() => {
+            setPersonalRecordPopupRecords([]);
+            if (pendingWorkoutSummary) {
+              setWorkoutSummaryPopup(pendingWorkoutSummary);
+              setPendingWorkoutSummary(null);
+            }
+          }}
+        />
+
+        <WorkoutSummaryPopup
+          summary={workoutSummaryPopup}
+          onClose={() => setWorkoutSummaryPopup(null)}
         />
       </section>
     </main>

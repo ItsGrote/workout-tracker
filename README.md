@@ -66,6 +66,7 @@ As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth
 - `PATCH /api/workouts/:id`: edita workout.
 - `DELETE /api/workouts/:id`: exclui workout.
 - `POST /api/workouts/:id/duplicate`: duplica workout.
+- `GET /api/workouts/:id/summary`: resume volume, comparacao, PRs e streaks apos salvar workout.
 - `GET /api/workouts/:id/exercises`: lista exercicios de um workout.
 - `POST /api/workouts/:id/exercises`: cria exercicio em um workout.
 - `GET /api/workouts/:id/exercises/:exerciseId`: busca exercicio por id.
@@ -111,6 +112,7 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - listar workouts em blocos de 6 com `View more`
 - configurar streak semanal e mensal na sidebar `Settings`
 - receber popup consolidado de novos PRs apos criar/editar workout
+- receber popup de resumo do workout apos salvar treino real
 - desativar popups de PR em `Settings > Popup settings`
 - acessar `/progression` para montar graficos personalizados
 

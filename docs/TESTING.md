@@ -168,6 +168,28 @@ workout real ainda deve exigir reps e peso antes de salvar.
 Risco protegido: template preencher reps/peso automaticamente, set types Prisma
 nao serem normalizados para o formulario e fluxo manual perder valores padrao.
 
+### Workout summary service - mock de repositories/services
+
+Funcionalidade testada: comparacao percentual, volume total, PRs do workout e
+streaks ativos retornados no summary pos-workout.
+
+Motivo do teste: o popup de resumo usa dados motivacionais sensiveis; uma
+comparacao errada ou `Infinity%` quebraria a confianca no produto.
+
+Risco protegido: comparacao positiva/negativa incorreta, ausencia de treino
+anterior, divisao por zero, PR count errado, streaks inativos exibidos e summary
+de workout de outro usuario.
+
+### API route de workout summary - handler real com auth/repositories mockados
+
+Funcionalidade testada: `GET /api/workouts/:id/summary`.
+
+Motivo do teste: garantir que o endpoint privado respeita sessao Supabase e
+retorna erro seguro.
+
+Risco protegido: usuario anonimo acessar summary, userA acessar summary de
+workout de userB e stack trace vazar para o frontend.
+
 ### API routes de templates - handlers reais com auth/repository mockados
 
 Funcionalidade testada: `GET /api/templates`, `POST /api/templates`,

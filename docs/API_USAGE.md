@@ -73,6 +73,36 @@ Duplica workout do usuario autenticado.
 
 Resposta: novo workout duplicado, com data atual.
 
+### `GET /api/workouts/:id/summary`
+
+Retorna o resumo motivacional de um workout salvo.
+
+Resposta resumida:
+
+```json
+{
+  "workoutId": "workout_id",
+  "totalVolume": 1500,
+  "comparison": {
+    "status": "compared",
+    "percentageChange": 50,
+    "message": "+50% volume compared to your previous Legs workout"
+  },
+  "personalRecords": [],
+  "streaks": {
+    "weekly": { "trainedDays": 3, "goal": 4 },
+    "monthly": { "trainedDays": 12, "goal": 20 }
+  }
+}
+```
+
+Observacoes:
+
+- usado pelo popup pos-workout;
+- compara com workout anterior de mesmo nome ou, se nao houver, mesma categoria;
+- se nao houver treino anterior comparavel, `percentageChange` vem como `null`;
+- `userId` vem da sessao Supabase.
+
 ## Exercises
 
 ### `GET /api/workouts/:id/exercises`

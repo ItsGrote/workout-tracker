@@ -61,6 +61,23 @@ export type PersonalRecordsResponse = {
   newRecords: PersonalRecord[];
 };
 
+export type WorkoutSummaryResponse = {
+  comparison: {
+    message: string;
+    percentageChange: number | null;
+    previousLabel: string | null;
+    previousVolume: number | null;
+    status: "compared" | "no_previous" | "previous_zero";
+  };
+  personalRecords: PersonalRecord[];
+  streaks: {
+    monthly: { goal: number; trainedDays: number } | null;
+    weekly: { goal: number; trainedDays: number } | null;
+  };
+  totalVolume: number;
+  workoutId: string;
+};
+
 export type DashboardData = {
   progression: ProgressionResponse;
   consistency: ConsistencyResponse;

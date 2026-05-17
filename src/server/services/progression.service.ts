@@ -4,31 +4,11 @@ import type {
   ProgressionResponse,
 } from "@/server/types/progression.types";
 import type { ProgressionFiltersInput } from "@/server/validations/progression.validation";
-
-type WorkoutVolumeSource = Awaited<
-  ReturnType<typeof progressionRepository.findWorkoutVolumeSources>
->[number];
-
-type ExerciseVolumeSource = WorkoutVolumeSource["exercises"][number];
-type SetVolumeSource = ExerciseVolumeSource["sets"][number];
-
-const roundVolume = (volume: number) => Math.round(volume * 100) / 100;
-
-const calculateSetVolume = (set: SetVolumeSource) =>
-  Number(set.weightKg) * set.repetitions;
-
-const calculateExerciseVolume = (exercise: ExerciseVolumeSource) =>
-  roundVolume(
-    exercise.sets.reduce((total, set) => total + calculateSetVolume(set), 0),
-  );
-
-const calculateWorkoutVolume = (workout: WorkoutVolumeSource) =>
-  roundVolume(
-    workout.exercises.reduce(
-      (total, exercise) => total + calculateExerciseVolume(exercise),
-      0,
-    ),
-  );
+import {
+  calculateExerciseVolume,
+  calculateWorkoutVolume,
+  roundMetric,
+} from "@/server/services/workout-metrics";
 
 const formatDate = (date: Date) => date.toISOString();
 
@@ -71,11 +51,10 @@ export const progressionService = {
 
     return {
       filters: formatFilters(filters),
-      totalVolume: roundVolume(
+      totalVolume: roundMetric(
         points.reduce((total, point) => total + point.totalVolume, 0),
       ),
       points,
     };
   },
 };
-

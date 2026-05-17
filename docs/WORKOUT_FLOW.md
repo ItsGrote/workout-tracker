@@ -19,7 +19,9 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
    - set type: `warm-up`, `recognition-activation` ou `working`
 9. Ao salvar, o frontend envia o workout completo para `POST /api/workouts`.
 10. Dashboard recarrega progressao, consistencia, metas, PRs e lista de workouts.
-11. Se o workout salvo gerar PRs de exercicio, o app pode mostrar um popup consolidado.
+11. O frontend busca `GET /api/workouts/:id/summary`.
+12. Se houver popup de PR ativo e novos PRs, o popup de PR aparece primeiro.
+13. Ao fechar o PR, ou se nao houver PR novo, o app mostra o summary popup se estiver ativo.
 
 ## Edicao
 
@@ -143,6 +145,21 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
 - O popup nao aparece ao apenas abrir ou recarregar o dashboard.
 - Em `Settings > Popup settings`, o usuario pode desativar `Enable personal record pop-ups`.
 - A preferencia de popup usa `localStorage` no MVP e nao remove/caltera os PRs calculados pelo backend.
+
+## Workout summary popup
+
+- Apos salvar um workout real, o frontend consulta `GET /api/workouts/:id/summary`.
+- O popup nao aparece ao criar/editar template, abrir dashboard ou recarregar pagina.
+- A ordem exibida e:
+  - comparacao percentual de volume;
+  - volume total do treino atual;
+  - PRs atingidos;
+  - streaks ativos.
+- Comparacao usa workout anterior de mesmo nome; se nao houver, usa mesma categoria.
+- Se nao houver workout anterior comparavel, mostra mensagem de primeiro treino na categoria.
+- Se o volume anterior for zero, nao mostra porcentagem infinita.
+- Em `Settings > Popup settings`, o usuario pode controlar `Enable workout summary popup`.
+- A preferencia usa `localStorage` no MVP.
 
 ## Validacoes principais
 

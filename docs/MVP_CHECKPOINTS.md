@@ -353,3 +353,29 @@ Pronto quando:
 - Template nao entra em progressao, streak, PR ou graficos.
 - APIs de template usam `userId` da sessao autenticada e bloqueiam ownership cruzado.
 - `npm run test`, `npm run typecheck` e `npm run build` passam.
+
+## 19. Workout summary and comparison insights
+
+Status: implementado; testes automatizados passando; testes manuais pendentes.
+
+Objetivo: mostrar um popup pos-workout com comparacao de volume, volume total,
+PRs e streaks ativos apos salvar um workout real.
+
+Arquivos provaveis:
+- `src/app/api/workouts/[id]/summary/route.ts`
+- `src/server/controllers/workout-summary.controller.ts`
+- `src/server/services/workout-summary.service.ts`
+- `src/server/repositories/workout-summary.repository.ts`
+- `src/components/dashboard/workout-summary-popup.tsx`
+- `src/components/dashboard/settings-sidebar.tsx`
+- `tests/services/workout-summary.service.test.ts`
+- `tests/api/workout-summary-route.test.ts`
+
+Pronto quando:
+- Summary aparece somente apos salvar workout real.
+- Comparacao usa workout anterior de mesmo nome ou mesma categoria.
+- Volume anterior zero nao gera `Infinity%`.
+- Summary lista volume total, PRs e streaks ativos.
+- PR popup, quando exibido, aparece antes do summary.
+- Usuario pode desativar summary popup em `Settings > Popup settings`.
+- API usa `userId` da sessao e bloqueia ownership cruzado.

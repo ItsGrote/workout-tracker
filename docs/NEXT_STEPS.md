@@ -7,6 +7,7 @@
 - Criar area dedicada para listagem completa de treinos.
 - Melhorar estados vazios com exemplos mais guiados.
 - Refinar feedback visual de PRs apos salvar treino com animacoes sutis.
+- Refinar visual do workout summary popup e adicionar transicoes sutis.
 - Refinar visual da sidebar de settings.
 - Substituir confirmacoes nativas por dialogs consistentes com o design.
 - Refinar responsividade e densidade visual da pagina `/progression`.
@@ -16,6 +17,7 @@
 - Adicionar testes de componente para criacao/edicao de workout.
 - Adicionar testes de componente para templates e start workout por template.
 - Adicionar testes de componente para popup consolidado de PR.
+- Adicionar testes de componente para workout summary popup.
 - Adicionar testes de API para `/api/progression/analytics`.
 - Adicionar testes de API para `/api/goals`, `/api/consistency`,
   `/api/progression` e `/api/personal-records`.
