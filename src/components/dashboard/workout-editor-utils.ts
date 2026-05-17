@@ -1,4 +1,8 @@
-import type { ApiSetType, WorkoutResponse } from "./types";
+import type {
+  ApiSetType,
+  CreateWorkoutInitialDraft,
+  WorkoutResponse,
+} from "./types";
 
 export type PublicSetType = "warm-up" | "recognition-activation" | "working";
 
@@ -23,6 +27,13 @@ export type WorkoutDraft = {
   category: string;
   date: string;
   exercises: ExerciseDraft[];
+};
+
+export type CreateWorkoutFormDraft = {
+  category: string;
+  date: string;
+  exercises: ExerciseDraft[];
+  name: string;
 };
 
 export const SET_TYPES: PublicSetType[] = [
@@ -64,6 +75,31 @@ export const createExerciseDraft = (name = "Bench Press"): ExerciseDraft => ({
   draftId: createDraftId(),
   name,
   sets: [createSetDraft()],
+});
+
+export const createDefaultWorkoutFormDraft = (): CreateWorkoutFormDraft => ({
+  category: "Chest",
+  date: todayForInput(),
+  exercises: [createExerciseDraft()],
+  name: "Push A",
+});
+
+export const createWorkoutFormDraftFromTemplate = (
+  draft: CreateWorkoutInitialDraft,
+): CreateWorkoutFormDraft => ({
+  category: draft.category ?? "",
+  date: todayForInput(),
+  exercises: draft.exercises.map((exercise) => ({
+    draftId: createDraftId(),
+    name: exercise.name,
+    sets: exercise.sets.map((set) => ({
+      draftId: createDraftId(),
+      repetitions: set.repetitions ?? "",
+      setType: toPublicSetType(set.setType),
+      weightKg: set.weightKg ?? "",
+    })),
+  })),
+  name: draft.name,
 });
 
 export const workoutToDraft = (workout: WorkoutResponse): WorkoutDraft => ({
@@ -160,4 +196,3 @@ export const validateWorkoutDraft = (draft: WorkoutDraft) => {
 
 export const normalizeDraft = (draft: WorkoutDraft) =>
   JSON.stringify(draftToPayload(draft));
-

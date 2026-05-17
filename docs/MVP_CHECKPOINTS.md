@@ -348,6 +348,7 @@ Pronto quando:
 - Usuario cria, edita e exclui templates.
 - Usuario salva workout existente como template.
 - Usuario inicia workout a partir de template sem criar workout automaticamente.
+- Usuario usa template diretamente no modal `Create workout`.
 - Template nao exige reps/peso.
 - Template nao entra em progressao, streak, PR ou graficos.
 - APIs de template usam `userId` da sessao autenticada e bloqueiam ownership cruzado.

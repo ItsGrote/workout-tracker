@@ -1,70 +1,34 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import type { ApiSetType, CreateWorkoutInitialDraft, WorkoutResponse } from "./types";
-
-type SetType = "warm-up" | "recognition-activation" | "working";
-
-type SetDraft = {
-  id: string;
-  weightKg: string;
-  repetitions: string;
-  setType: SetType;
-};
-
-type ExerciseDraft = {
-  id: string;
-  name: string;
-  sets: SetDraft[];
-};
+import type {
+  CreateWorkoutInitialDraft,
+  WorkoutResponse,
+  WorkoutTemplateResponse,
+} from "./types";
+import {
+  createDefaultWorkoutFormDraft,
+  createExerciseDraft,
+  createSetDraft,
+  createWorkoutFormDraftFromTemplate,
+  type CreateWorkoutFormDraft,
+  type ExerciseDraft,
+  type PublicSetType,
+  type SetDraft,
+} from "./workout-editor-utils";
 
 type CreateWorkoutModalProps = {
   initialDraft?: CreateWorkoutInitialDraft | null;
   isOpen: boolean;
   onClose: () => void;
   onCreated: (workout: WorkoutResponse) => void;
+  templates: WorkoutTemplateResponse[];
 };
 
-const createId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : Math.random().toString(36).slice(2);
-
-const todayForInput = () => new Date().toISOString().slice(0, 10);
-
-const normalizeSetType = (setType: ApiSetType): SetType => {
-  if (setType === "WARM_UP") {
-    return "warm-up";
-  }
-
-  if (setType === "RECOGNITION_ACTIVATION") {
-    return "recognition-activation";
-  }
-
-  if (setType === "WORKING") {
-    return "working";
-  }
-
-  return setType;
-};
-
-const createSet = (
-  overrides: Partial<Omit<SetDraft, "id">> = {},
-): SetDraft => ({
-  id: createId(),
-  weightKg: overrides.weightKg ?? "40",
-  repetitions: overrides.repetitions ?? "10",
-  setType: overrides.setType ?? "working",
-});
-
-const createExercise = (): ExerciseDraft => ({
-  id: createId(),
-  name: "Bench Press",
-  sets: [createSet()],
-});
-
-const readCreateError = async (response: Response) => {
-  const fallbackMessage = "Could not create workout. Check the fields and try again.";
+const readCreateError = async (
+  response: Response,
+  fallbackMessage = "Could not create workout. Check the fields and try again.",
+) => {
 
   try {
     const contentType = response.headers.get("content-type") ?? "";
@@ -90,41 +54,40 @@ export function CreateWorkoutModal({
   isOpen,
   onClose,
   onCreated,
+  templates,
 }: CreateWorkoutModalProps) {
   const [workoutName, setWorkoutName] = useState("Push A");
   const [category, setCategory] = useState("Chest");
-  const [date, setDate] = useState(todayForInput());
+  const [date, setDate] = useState(createDefaultWorkoutFormDraft().date);
   const [exercises, setExercises] = useState<ExerciseDraft[]>([
-    createExercise(),
+    createExerciseDraft(),
   ]);
+  const [applyingTemplateId, setApplyingTemplateId] = useState<string | null>(
+    null,
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const applyWorkoutDraft = (draft: CreateWorkoutFormDraft) => {
+    setWorkoutName(draft.name);
+    setCategory(draft.category);
+    setDate(draft.date);
+    setExercises(draft.exercises);
+  };
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    setWorkoutName(initialDraft?.name ?? "Push A");
-    setCategory(initialDraft?.category ?? "Chest");
-    setDate(todayForInput());
-    setExercises(
+    applyWorkoutDraft(
       initialDraft
-        ? initialDraft.exercises.map((exercise) => ({
-            id: createId(),
-            name: exercise.name,
-            sets: exercise.sets.map((set) =>
-              createSet({
-                repetitions: set.repetitions ?? "",
-                setType: normalizeSetType(set.setType),
-                weightKg: set.weightKg ?? "",
-              }),
-            ),
-          }))
-        : [createExercise()],
+        ? createWorkoutFormDraftFromTemplate(initialDraft)
+        : createDefaultWorkoutFormDraft(),
     );
     setError(null);
     setIsSaving(false);
+    setApplyingTemplateId(null);
   }, [initialDraft, isOpen]);
 
   if (!isOpen) {
@@ -137,7 +100,9 @@ export function CreateWorkoutModal({
   ) => {
     setExercises((current) =>
       current.map((exercise) =>
-        exercise.id === exerciseId ? { ...exercise, ...update } : exercise,
+        exercise.draftId === exerciseId
+          ? { ...exercise, ...update }
+          : exercise,
       ),
     );
   };
@@ -149,11 +114,11 @@ export function CreateWorkoutModal({
   ) => {
     setExercises((current) =>
       current.map((exercise) =>
-        exercise.id === exerciseId
+        exercise.draftId === exerciseId
           ? {
               ...exercise,
               sets: exercise.sets.map((set) =>
-                set.id === setId ? { ...set, ...update } : set,
+                set.draftId === setId ? { ...set, ...update } : set,
               ),
             }
           : exercise,
@@ -164,33 +129,62 @@ export function CreateWorkoutModal({
   const addExercise = () => {
     setExercises((current) => [
       ...current,
-      { ...createExercise(), name: `Exercise ${current.length + 1}` },
+      { ...createExerciseDraft(), name: `Exercise ${current.length + 1}` },
     ]);
   };
 
   const removeExercise = (exerciseId: string) => {
     setExercises((current) =>
-      current.filter((exercise) => exercise.id !== exerciseId),
+      current.filter((exercise) => exercise.draftId !== exerciseId),
     );
   };
 
   const addSet = (exerciseId: string) => {
     setExercises((current) =>
       current.map((exercise) =>
-        exercise.id === exerciseId
-          ? { ...exercise, sets: [...exercise.sets, createSet()] }
+        exercise.draftId === exerciseId
+          ? { ...exercise, sets: [...exercise.sets, createSetDraft()] }
           : exercise,
       ),
     );
   };
 
+  const applyTemplate = async (template: WorkoutTemplateResponse) => {
+    setError(null);
+    setApplyingTemplateId(template.id);
+
+    try {
+      const response = await fetch(`/api/templates/${template.id}/start`, {
+        credentials: "include",
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        setError(
+          await readCreateError(
+            response,
+            "Could not apply template. It may have been deleted.",
+          ),
+        );
+        return;
+      }
+
+      const draft = (await response.json()) as CreateWorkoutInitialDraft;
+      applyWorkoutDraft(createWorkoutFormDraftFromTemplate(draft));
+    } catch {
+      setError("Could not reach the server while applying the template.");
+    } finally {
+      setApplyingTemplateId(null);
+    }
+  };
+
   const removeSet = (exerciseId: string, setId: string) => {
     setExercises((current) =>
       current.map((exercise) =>
-        exercise.id === exerciseId
+        exercise.draftId === exerciseId
           ? {
               ...exercise,
-              sets: exercise.sets.filter((set) => set.id !== setId),
+              sets: exercise.sets.filter((set) => set.draftId !== setId),
             }
           : exercise,
       ),
@@ -325,6 +319,44 @@ export function CreateWorkoutModal({
           </button>
         </div>
 
+        <section className="mt-5 rounded border border-[var(--border)] bg-[#fbfcfd] p-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-semibold">Use template</h3>
+            <p className="text-sm text-[var(--muted)]">
+              Fill this workout from a saved structure. Reps and weight stay
+              empty until you complete the real workout.
+            </p>
+          </div>
+
+          {templates.length === 0 ? (
+            <p className="mt-3 rounded border border-dashed border-[var(--border)] bg-white p-3 text-sm text-[var(--muted)]">
+              No templates yet.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {templates.map((template) => {
+                const isApplying = applyingTemplateId === template.id;
+
+                return (
+                  <button
+                    className="rounded border border-[var(--border)] bg-white px-3 py-2 text-left text-sm font-medium disabled:opacity-60"
+                    disabled={isSaving || applyingTemplateId !== null}
+                    key={template.id}
+                    onClick={() => void applyTemplate(template)}
+                    type="button"
+                  >
+                    {isApplying ? "Applying..." : template.name}
+                    <span className="block text-xs font-normal text-[var(--muted)]">
+                      {template.category ?? "No category"} ·{" "}
+                      {template.exercises.length} exercises
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
           <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-1">
             Workout name
@@ -374,7 +406,7 @@ export function CreateWorkoutModal({
           {exercises.map((exercise, exerciseIndex) => (
             <section
               className="rounded border border-[var(--border)] bg-[#fbfcfd] p-4"
-              key={exercise.id}
+              key={exercise.draftId}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <label className="flex flex-1 flex-col gap-2 text-sm font-medium">
@@ -382,7 +414,7 @@ export function CreateWorkoutModal({
                   <input
                     className="rounded border border-[var(--border)] bg-white px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
                     onChange={(event) =>
-                      updateExercise(exercise.id, {
+                      updateExercise(exercise.draftId, {
                         name: event.target.value,
                       })
                     }
@@ -391,7 +423,7 @@ export function CreateWorkoutModal({
                 </label>
                 <button
                   className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
-                  onClick={() => removeExercise(exercise.id)}
+                  onClick={() => removeExercise(exercise.draftId)}
                   type="button"
                 >
                   Remove exercise
@@ -402,7 +434,7 @@ export function CreateWorkoutModal({
                 <p className="text-sm font-semibold">Sets</p>
                 <button
                   className="rounded border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium"
-                  onClick={() => addSet(exercise.id)}
+                  onClick={() => addSet(exercise.draftId)}
                   type="button"
                 >
                   + Add set
@@ -419,7 +451,7 @@ export function CreateWorkoutModal({
                 {exercise.sets.map((set, setIndex) => (
                   <div
                     className="grid gap-3 rounded border border-[var(--border)] bg-white p-3 sm:grid-cols-[1fr_1fr_1.4fr_auto]"
-                    key={set.id}
+                    key={set.draftId}
                   >
                     <label className="flex flex-col gap-2 text-sm font-medium">
                       Weight
@@ -427,7 +459,7 @@ export function CreateWorkoutModal({
                         className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
                         min="0"
                         onChange={(event) =>
-                          updateSet(exercise.id, set.id, {
+                          updateSet(exercise.draftId, set.draftId, {
                             weightKg: event.target.value,
                           })
                         }
@@ -442,7 +474,7 @@ export function CreateWorkoutModal({
                         className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
                         min="0"
                         onChange={(event) =>
-                          updateSet(exercise.id, set.id, {
+                          updateSet(exercise.draftId, set.draftId, {
                             repetitions: event.target.value,
                           })
                         }
@@ -455,8 +487,8 @@ export function CreateWorkoutModal({
                       <select
                         className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
                         onChange={(event) =>
-                          updateSet(exercise.id, set.id, {
-                            setType: event.target.value as SetType,
+                          updateSet(exercise.draftId, set.draftId, {
+                            setType: event.target.value as PublicSetType,
                           })
                         }
                         value={set.setType}
@@ -470,7 +502,9 @@ export function CreateWorkoutModal({
                     </label>
                     <button
                       className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b] sm:self-end"
-                      onClick={() => removeSet(exercise.id, set.id)}
+                      onClick={() =>
+                        removeSet(exercise.draftId, set.draftId)
+                      }
                       type="button"
                     >
                       Remove set {setIndex + 1}
@@ -490,7 +524,7 @@ export function CreateWorkoutModal({
 
         <button
           className="mt-5 w-full rounded bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-          disabled={isSaving}
+          disabled={isSaving || applyingTemplateId !== null}
           type="submit"
         >
           {isSaving ? "Saving workout..." : "Save complete workout"}

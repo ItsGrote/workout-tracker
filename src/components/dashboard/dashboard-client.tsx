@@ -529,6 +529,7 @@ export function DashboardClient() {
               }
             });
           }}
+          templates={data.templates}
         />
 
         <TemplateEditorModal

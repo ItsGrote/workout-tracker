@@ -157,6 +157,17 @@ nao podem exigir reps/peso.
 Risco protegido: template vazio salvo, ownership cruzado, template criando
 workout real antes do save final e dados de template vazando para progresso.
 
+### Workout editor utilities - teste unitario puro
+
+Funcionalidade testada: conversao de draft de template para formulario de
+criacao de workout.
+
+Motivo do teste: o modal `Create workout` usa templates como atalho, mas o
+workout real ainda deve exigir reps e peso antes de salvar.
+
+Risco protegido: template preencher reps/peso automaticamente, set types Prisma
+nao serem normalizados para o formulario e fluxo manual perder valores padrao.
+
 ### API routes de templates - handlers reais com auth/repository mockados
 
 Funcionalidade testada: `GET /api/templates`, `POST /api/templates`,

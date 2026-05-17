@@ -5,16 +5,21 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
 ## Criacao
 
 1. Usuario clica em `+ Create workout`.
-2. Informa nome, categoria e data do workout.
-3. Adiciona um ou mais exercicios com `+ Add exercise`.
-4. Em cada exercicio, adiciona uma ou mais series com `+ Add set`.
-5. Em cada serie, preenche:
+2. Opcionalmente clica em `Use template` e escolhe um template existente.
+3. Se escolher template, o formulario recebe nome, categoria, exercicios,
+   quantidade de sets e tipos de set.
+4. Reps e weight vindos do template ficam vazios para serem preenchidos durante
+   o treino real.
+5. Informa ou ajusta nome, categoria e data do workout.
+6. Adiciona um ou mais exercicios com `+ Add exercise`, se necessario.
+7. Em cada exercicio, adiciona uma ou mais series com `+ Add set`, se necessario.
+8. Em cada serie, preenche:
    - weight
    - repetitions
    - set type: `warm-up`, `recognition-activation` ou `working`
-6. Ao salvar, o frontend envia o workout completo para `POST /api/workouts`.
-7. Dashboard recarrega progressao, consistencia, metas, PRs e lista de workouts.
-8. Se o workout salvo gerar PRs de exercicio, o app pode mostrar um popup consolidado.
+9. Ao salvar, o frontend envia o workout completo para `POST /api/workouts`.
+10. Dashboard recarrega progressao, consistencia, metas, PRs e lista de workouts.
+11. Se o workout salvo gerar PRs de exercicio, o app pode mostrar um popup consolidado.
 
 ## Edicao
 
@@ -65,6 +70,8 @@ Fluxos disponiveis:
 - `Delete template`: remove apenas o template; workouts reais salvos continuam.
 - `Start workout`: busca o template em `POST /api/templates/:id/start` e abre o
   modal de criacao de workout com exercicios/tipos de set preenchidos.
+- `Use template`: dentro do modal `Create workout`, aplica um template no
+  formulario atual sem criar workout no banco.
 
 Ao iniciar por template, reps e weight ficam vazios para o usuario preencher. O
 workout so passa a existir no banco quando `Save complete workout` envia

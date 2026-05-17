@@ -106,6 +106,7 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - duplicar workout
 - salvar workout existente como template
 - criar, editar, excluir e iniciar workouts a partir de templates
+- usar template diretamente dentro do modal `Create workout`
 - recarregar graficos apos alteracoes
 - listar workouts em blocos de 6 com `View more`
 - configurar streak semanal e mensal na sidebar `Settings`
