@@ -124,6 +124,85 @@ Edita serie, validando se ela pertence ao exercicio informado.
 
 Exclui uma serie.
 
+## Templates
+
+Templates sao estruturas semi-preenchidas para acelerar a criacao de workouts
+reais. Eles nao contam progresso, streak, PR ou graficos.
+
+### `GET /api/templates`
+
+Lista templates do usuario autenticado.
+
+Resposta: array de templates com exercicios e slots de series.
+
+### `POST /api/templates`
+
+Cria template.
+
+Payload:
+
+```json
+{
+  "name": "Chest + Arms",
+  "category": "Push",
+  "exercises": [
+    {
+      "name": "Bench Press",
+      "order": 1,
+      "sets": [
+        {
+          "setType": "working",
+          "order": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+Observacao: `repetitions` e `weightKg` nao fazem parte do template.
+
+### `GET /api/templates/:id`
+
+Busca template do usuario autenticado por id.
+
+### `PATCH /api/templates/:id`
+
+Edita template. Quando `exercises` e enviado, substitui a estrutura de
+exercicios e slots de series do template.
+
+### `DELETE /api/templates/:id`
+
+Exclui template do usuario autenticado. Workouts reais salvos nao sao alterados.
+
+### `POST /api/templates/:id/start`
+
+Retorna um draft de workout baseado no template.
+
+Resposta resumida:
+
+```json
+{
+  "name": "Chest + Arms",
+  "category": "Push",
+  "exercises": [
+    {
+      "name": "Bench Press",
+      "order": 1,
+      "sets": [
+        {
+          "setType": "WORKING",
+          "order": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+Essa rota nao cria workout no banco. O workout real so nasce quando o frontend
+envia `POST /api/workouts` com reps e peso preenchidos.
+
 ## Progression
 
 ### `GET /api/progression`

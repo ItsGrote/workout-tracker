@@ -82,6 +82,12 @@ As rotas abaixo sao privadas. O usuario deve estar autenticado com Supabase Auth
 - `GET /api/goals`: busca metas semanais/mensais do usuario.
 - `PUT /api/goals`: define metas semanais/mensais do usuario.
 - `GET /api/consistency`: retorna progresso semanal, mensal, historico e streak.
+- `GET /api/templates`: lista workout templates.
+- `POST /api/templates`: cria workout template.
+- `GET /api/templates/:id`: busca template por id.
+- `PATCH /api/templates/:id`: edita template.
+- `DELETE /api/templates/:id`: exclui template.
+- `POST /api/templates/:id/start`: retorna um draft para iniciar workout pelo template.
 
 ## Dashboard MVP
 
@@ -98,6 +104,8 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - excluir serie
 - excluir workout completo pelo modal de edicao
 - duplicar workout
+- salvar workout existente como template
+- criar, editar, excluir e iniciar workouts a partir de templates
 - recarregar graficos apos alteracoes
 - listar workouts em blocos de 6 com `View more`
 - configurar streak semanal e mensal na sidebar `Settings`
@@ -109,6 +117,8 @@ As metas de streak contam dias unicos treinados. Mais de um workout no mesmo
 dia nao aumenta o progresso de consistencia.
 Preferencias visuais simples, como popups de PR e configuracao dos graficos
 personalizados, usam `localStorage` no MVP.
+Templates nao contam como workouts realizados: nao geram volume, streaks,
+graficos ou PRs ate que o usuario salve um workout real a partir deles.
 
 ## Status real do MVP
 
@@ -117,6 +127,7 @@ Implementado e compilando:
 - autenticacao por email/senha com Supabase Auth
 - isolamento por usuario autenticado nas APIs privadas
 - gerenciamento de workouts, exercicios e series
+- workout templates para acelerar o registro de treinos
 - duplicacao e exclusao de workouts
 - calculos de volume, consistencia e PRs
 - popups de conquistas/metas e PRs

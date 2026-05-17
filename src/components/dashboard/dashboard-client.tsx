@@ -16,8 +16,16 @@ import { PersonalRecordsCard } from "./personal-records-card";
 import { ProgressionChart } from "./progression-chart";
 import { SettingsSidebar } from "./settings-sidebar";
 import { SummaryCard } from "./summary-card";
+import { TemplateEditorModal } from "./template-editor-modal";
+import { TemplateManagementCard } from "./template-management-card";
 import { WorkoutManagementCard } from "./workout-management-card";
-import type { DashboardData, PersonalRecord, WorkoutResponse } from "./types";
+import type {
+  CreateWorkoutInitialDraft,
+  DashboardData,
+  PersonalRecord,
+  WorkoutResponse,
+  WorkoutTemplateResponse,
+} from "./types";
 
 const PERSONAL_RECORD_POPUPS_KEY =
   "workout-evolution-personal-record-popups-enabled";
@@ -38,6 +46,25 @@ const requestJson = async <T,>(path: string): Promise<T> => {
   return response.json() as Promise<T>;
 };
 
+const readApiError = async (response: Response, fallback: string) => {
+  try {
+    const contentType = response.headers.get("content-type") ?? "";
+
+    if (contentType.includes("application/json")) {
+      const body = (await response.json()) as {
+        error?: string;
+        issues?: { message?: string }[];
+      };
+
+      return body.issues?.[0]?.message ?? body.error ?? fallback;
+    }
+
+    return (await response.text()) || fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export function DashboardClient() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,11 +72,17 @@ export function DashboardClient() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
   const [activeSettingsSection, setActiveSettingsSection] =
     useState<SettingsSection>("streak");
+  const [createWorkoutInitialDraft, setCreateWorkoutInitialDraft] =
+    useState<CreateWorkoutInitialDraft | null>(null);
   const [editingWorkout, setEditingWorkout] = useState<WorkoutResponse | null>(
     null,
   );
+  const [editingTemplate, setEditingTemplate] =
+    useState<WorkoutTemplateResponse | null>(null);
+  const [isTemplateActionLoading, setIsTemplateActionLoading] = useState(false);
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
   const [goalAchievementMessage, setGoalAchievementMessage] = useState<
     string | null
@@ -65,7 +98,7 @@ export function DashboardClient() {
     setError(null);
 
     try {
-      const [progression, consistency, goals, personalRecords, workouts] =
+      const [progression, consistency, goals, personalRecords, workouts, templates] =
         await Promise.all([
           requestJson<DashboardData["progression"]>("/api/progression"),
           requestJson<DashboardData["consistency"]>("/api/consistency"),
@@ -74,6 +107,7 @@ export function DashboardClient() {
             "/api/personal-records",
           ),
           requestJson<DashboardData["workouts"]>("/api/workouts"),
+          requestJson<DashboardData["templates"]>("/api/templates"),
         ]);
 
       const nextData = {
@@ -81,6 +115,7 @@ export function DashboardClient() {
         consistency,
         goals,
         personalRecords,
+        templates,
         workouts,
       };
       setData(nextData);
@@ -192,6 +227,118 @@ export function DashboardClient() {
     setIsSettingsOpen(true);
   };
 
+  const openCreateWorkout = (draft: CreateWorkoutInitialDraft | null = null) => {
+    setCreateWorkoutInitialDraft(draft);
+    setIsCreateOpen(true);
+  };
+
+  const showTemporaryBanner = (message: string) => {
+    setBannerMessage(message);
+    window.setTimeout(() => setBannerMessage(null), 5000);
+  };
+
+  const saveWorkoutAsTemplate = async (workout: WorkoutResponse) => {
+    const templateName =
+      window.prompt("Template name", `${workout.name} template`)?.trim() ?? "";
+
+    if (!templateName) {
+      return;
+    }
+
+    setIsTemplateActionLoading(true);
+
+    try {
+      const response = await fetch("/api/templates", {
+        body: JSON.stringify({
+          name: templateName,
+          category: workout.category,
+          exercises: workout.exercises.map((exercise, exerciseIndex) => ({
+            name: exercise.name,
+            order: exerciseIndex + 1,
+            sets: exercise.sets.map((set, setIndex) => ({
+              setType: set.setType,
+              order: setIndex + 1,
+            })),
+          })),
+        }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        showTemporaryBanner(
+          await readApiError(response, "Could not save template."),
+        );
+        return;
+      }
+
+      await loadDashboard();
+      showTemporaryBanner("Template saved. It will not affect progress yet.");
+    } catch {
+      showTemporaryBanner("Could not reach the server while saving template.");
+    } finally {
+      setIsTemplateActionLoading(false);
+    }
+  };
+
+  const startWorkoutFromTemplate = async (template: WorkoutTemplateResponse) => {
+    setIsTemplateActionLoading(true);
+
+    try {
+      const response = await fetch(`/api/templates/${template.id}/start`, {
+        credentials: "include",
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        showTemporaryBanner(
+          await readApiError(response, "Could not start workout from template."),
+        );
+        return;
+      }
+
+      openCreateWorkout((await response.json()) as CreateWorkoutInitialDraft);
+    } catch {
+      showTemporaryBanner("Could not reach the server while starting template.");
+    } finally {
+      setIsTemplateActionLoading(false);
+    }
+  };
+
+  const deleteTemplate = async (template: WorkoutTemplateResponse) => {
+    const confirmed = window.confirm(
+      "Deleting this template will not delete any saved workouts. Do you want to continue?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsTemplateActionLoading(true);
+
+    try {
+      const response = await fetch(`/api/templates/${template.id}`, {
+        credentials: "include",
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        showTemporaryBanner(
+          await readApiError(response, "Could not delete template."),
+        );
+        return;
+      }
+
+      await loadDashboard();
+      showTemporaryBanner("Template deleted. Saved workouts were not changed.");
+    } catch {
+      showTemporaryBanner("Could not reach the server while deleting template.");
+    } finally {
+      setIsTemplateActionLoading(false);
+    }
+  };
+
   const maybeShowPersonalRecordPopup = useCallback(
     async (workout: WorkoutResponse) => {
       if (!arePersonalRecordPopupsEnabled || typeof window === "undefined") {
@@ -292,7 +439,7 @@ export function DashboardClient() {
             </button>
             <button
               className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-[var(--accent)] text-3xl font-light leading-none text-white shadow-xl sm:static sm:h-auto sm:w-auto sm:rounded sm:px-4 sm:py-2 sm:text-sm sm:font-semibold"
-              onClick={() => setIsCreateOpen(true)}
+              onClick={() => openCreateWorkout()}
               title="Create workout"
               type="button"
             >
@@ -308,7 +455,7 @@ export function DashboardClient() {
         ) : null}
 
         {!hasWorkouts ? (
-          <EmptyOnboarding onCreateWorkout={() => setIsCreateOpen(true)} />
+          <EmptyOnboarding onCreateWorkout={() => openCreateWorkout()} />
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.4fr)]">
@@ -322,9 +469,25 @@ export function DashboardClient() {
 
         <WorkoutManagementCard
           workouts={data.workouts}
-          onCreate={() => setIsCreateOpen(true)}
+          onCreate={() => openCreateWorkout()}
           onDuplicate={() => setIsDuplicateOpen(true)}
           onEdit={setEditingWorkout}
+          onSaveAsTemplate={saveWorkoutAsTemplate}
+        />
+
+        <TemplateManagementCard
+          isBusy={isTemplateActionLoading}
+          onCreate={() => {
+            setEditingTemplate(null);
+            setIsTemplateEditorOpen(true);
+          }}
+          onDelete={deleteTemplate}
+          onEdit={(template) => {
+            setEditingTemplate(template);
+            setIsTemplateEditorOpen(true);
+          }}
+          onStart={startWorkoutFromTemplate}
+          templates={data.templates}
         />
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -348,8 +511,12 @@ export function DashboardClient() {
         <PersonalRecordsCard personalRecords={data.personalRecords} />
 
         <CreateWorkoutModal
+          initialDraft={createWorkoutInitialDraft}
           isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
+          onClose={() => {
+            setIsCreateOpen(false);
+            setCreateWorkoutInitialDraft(null);
+          }}
           onCreated={(workout) => {
             void loadDashboard().then((nextData) => {
               setBannerMessage(
@@ -362,6 +529,20 @@ export function DashboardClient() {
               }
             });
           }}
+        />
+
+        <TemplateEditorModal
+          isOpen={isTemplateEditorOpen}
+          onClose={() => {
+            setIsTemplateEditorOpen(false);
+            setEditingTemplate(null);
+          }}
+          onSaved={() => {
+            void loadDashboard().then(() => {
+              showTemporaryBanner("Template saved.");
+            });
+          }}
+          template={editingTemplate}
         />
 
         <DuplicateWorkoutModal

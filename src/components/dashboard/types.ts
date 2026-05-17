@@ -67,6 +67,7 @@ export type DashboardData = {
   goals: GoalsResponse;
   personalRecords: PersonalRecordsResponse;
   workouts: WorkoutResponse[];
+  templates: WorkoutTemplateResponse[];
 };
 
 export type ApiSetType =
@@ -98,4 +99,37 @@ export type WorkoutResponse = {
   category: string | null;
   date: string;
   exercises: WorkoutExerciseResponse[];
+};
+
+export type WorkoutTemplateSetResponse = {
+  id: string;
+  setType: ApiSetType;
+  order: number;
+};
+
+export type WorkoutTemplateExerciseResponse = {
+  id: string;
+  name: string;
+  order: number;
+  sets: WorkoutTemplateSetResponse[];
+};
+
+export type WorkoutTemplateResponse = {
+  id: string;
+  name: string;
+  category: string | null;
+  exercises: WorkoutTemplateExerciseResponse[];
+};
+
+export type CreateWorkoutInitialDraft = {
+  name: string;
+  category: string | null;
+  exercises: {
+    name: string;
+    sets: {
+      setType: ApiSetType;
+      repetitions?: string;
+      weightKg?: string;
+    }[];
+  }[];
 };

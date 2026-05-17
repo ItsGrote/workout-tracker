@@ -324,3 +324,31 @@ Pronto quando:
 - PRs detectam carga, repeticoes e volume sem falso positivo em empate.
 - Consistencia conta dias unicos e nao quebra com historico vazio.
 - `npm run test` passa com a suite anterior e a nova.
+
+## 18. Workout templates and faster workout logging
+
+Status: implementado; testes automatizados passando; testes manuais pendentes.
+
+Objetivo: permitir que o usuario salve estruturas de treino como templates e
+inicie workouts reais mais rapidamente sem contar templates como progresso.
+
+Arquivos provaveis:
+- `prisma/schema.prisma`
+- `src/app/api/templates/*`
+- `src/server/controllers/template.controller.ts`
+- `src/server/services/template.service.ts`
+- `src/server/repositories/template.repository.ts`
+- `src/server/validations/template.validation.ts`
+- `src/components/dashboard/template-management-card.tsx`
+- `src/components/dashboard/template-editor-modal.tsx`
+- `tests/services/template.service.test.ts`
+- `tests/api/template-routes.test.ts`
+
+Pronto quando:
+- Usuario cria, edita e exclui templates.
+- Usuario salva workout existente como template.
+- Usuario inicia workout a partir de template sem criar workout automaticamente.
+- Template nao exige reps/peso.
+- Template nao entra em progressao, streak, PR ou graficos.
+- APIs de template usam `userId` da sessao autenticada e bloqueiam ownership cruzado.
+- `npm run test`, `npm run typecheck` e `npm run build` passam.

@@ -50,6 +50,26 @@ Este documento descreve o fluxo principal do usuario no dashboard autenticado.
 5. A copia abre automaticamente no modal de edicao.
 6. Usuario pode ajustar e salvar edits.
 
+## Templates
+
+Template e um workout semi-preenchido usado como atalho. Ele nao e workout
+realizado e nao altera progresso, streak, PR ou graficos.
+
+Fluxos disponiveis:
+
+- `Create template`: cria estrutura do zero com nome, categoria, exercicios e
+  tipos de set.
+- `Save as template`: cria template a partir de workout existente, copiando
+  exercicios e tipos de set, mas sem reps/peso.
+- `Edit template`: altera nome, categoria, exercicios e tipos de set.
+- `Delete template`: remove apenas o template; workouts reais salvos continuam.
+- `Start workout`: busca o template em `POST /api/templates/:id/start` e abre o
+  modal de criacao de workout com exercicios/tipos de set preenchidos.
+
+Ao iniciar por template, reps e weight ficam vazios para o usuario preencher. O
+workout so passa a existir no banco quando `Save complete workout` envia
+`POST /api/workouts`.
+
 ## Graficos
 
 Apos criar, editar ou duplicar, o dashboard recarrega:
@@ -126,6 +146,9 @@ O frontend faz validacao basica antes de enviar:
 - set precisa de repetitions, weight e set type valido
 - repetitions deve ser inteiro positivo
 - weight deve ser numero valido e nao negativo
+- template precisa de nome e pelo menos 1 exercicio
+- exercicio de template precisa de nome e pelo menos 1 set
+- set de template precisa apenas de tipo valido e ordem; reps/weight nao sao exigidos
 
 O backend continua sendo a fonte final de validacao com Zod.
 

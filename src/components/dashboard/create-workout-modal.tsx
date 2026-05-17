@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import type { WorkoutResponse } from "./types";
+import { FormEvent, useEffect, useState } from "react";
+import type { ApiSetType, CreateWorkoutInitialDraft, WorkoutResponse } from "./types";
 
 type SetType = "warm-up" | "recognition-activation" | "working";
 
@@ -19,6 +19,7 @@ type ExerciseDraft = {
 };
 
 type CreateWorkoutModalProps = {
+  initialDraft?: CreateWorkoutInitialDraft | null;
   isOpen: boolean;
   onClose: () => void;
   onCreated: (workout: WorkoutResponse) => void;
@@ -31,11 +32,29 @@ const createId = () =>
 
 const todayForInput = () => new Date().toISOString().slice(0, 10);
 
-const createSet = (): SetDraft => ({
+const normalizeSetType = (setType: ApiSetType): SetType => {
+  if (setType === "WARM_UP") {
+    return "warm-up";
+  }
+
+  if (setType === "RECOGNITION_ACTIVATION") {
+    return "recognition-activation";
+  }
+
+  if (setType === "WORKING") {
+    return "working";
+  }
+
+  return setType;
+};
+
+const createSet = (
+  overrides: Partial<Omit<SetDraft, "id">> = {},
+): SetDraft => ({
   id: createId(),
-  weightKg: "40",
-  repetitions: "10",
-  setType: "working",
+  weightKg: overrides.weightKg ?? "40",
+  repetitions: overrides.repetitions ?? "10",
+  setType: overrides.setType ?? "working",
 });
 
 const createExercise = (): ExerciseDraft => ({
@@ -67,6 +86,7 @@ const readCreateError = async (response: Response) => {
 };
 
 export function CreateWorkoutModal({
+  initialDraft,
   isOpen,
   onClose,
   onCreated,
@@ -79,6 +99,33 @@ export function CreateWorkoutModal({
   ]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setWorkoutName(initialDraft?.name ?? "Push A");
+    setCategory(initialDraft?.category ?? "Chest");
+    setDate(todayForInput());
+    setExercises(
+      initialDraft
+        ? initialDraft.exercises.map((exercise) => ({
+            id: createId(),
+            name: exercise.name,
+            sets: exercise.sets.map((set) =>
+              createSet({
+                repetitions: set.repetitions ?? "",
+                setType: normalizeSetType(set.setType),
+                weightKg: set.weightKg ?? "",
+              }),
+            ),
+          }))
+        : [createExercise()],
+    );
+    setError(null);
+    setIsSaving(false);
+  }, [initialDraft, isOpen]);
 
   if (!isOpen) {
     return null;

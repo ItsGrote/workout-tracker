@@ -77,6 +77,15 @@ O dominio inicial do MVP comeca com tres modelos centrais:
 - `Exercise`: exercicio dentro de um treino.
 - `ExerciseSet`: serie de um exercicio, com repeticoes, peso em kg, ordem e tipo de serie.
 
+Templates usam modelos separados:
+
+- `WorkoutTemplate`: estrutura salva pelo usuario para acelerar criacao de workouts reais.
+- `ExerciseTemplate`: exercicio dentro de um template.
+- `ExerciseSetTemplate`: slot de serie com tipo e ordem, sem peso/repeticoes obrigatorios.
+
+Template nao e workout realizado. Ele nao entra em progresso, streak, PR ou
+graficos enquanto nao for usado para salvar um workout real.
+
 Tipos de serie suportados:
 
 - `warm-up`
@@ -99,6 +108,7 @@ Tipos de serie suportados:
 - Calculos derivados, como volume de treino, devem ficar nos services. Repositories apenas buscam os dados brutos necessarios.
 - Personal records sao calculados sob demanda a partir dos dados existentes; ainda nao ha tabela dedicada de PR no MVP.
 - Streaks e consistencia sao derivados de workouts e metas salvas. O streak nao deve ser persistido enquanto puder ser recalculado.
+- Templates sao persistidos separadamente dos workouts e nao devem ser consultados pelos services de progressao, PR ou consistencia.
 - O dashboard consome os endpoints HTTP existentes usando a sessao Supabase persistida em cookies.
 - Requests privadas do frontend devem usar `credentials: "include"` para enviar cookies de sessao.
 

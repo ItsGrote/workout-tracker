@@ -3,6 +3,7 @@
 ## UI/UX
 
 - Melhorar responsividade mobile do editor de workout.
+- Refinar UX visual da area de templates e substituir prompt/confirm nativos.
 - Criar area dedicada para listagem completa de treinos.
 - Melhorar estados vazios com exemplos mais guiados.
 - Refinar feedback visual de PRs apos salvar treino com animacoes sutis.
@@ -13,6 +14,7 @@
 ## Testes
 
 - Adicionar testes de componente para criacao/edicao de workout.
+- Adicionar testes de componente para templates e start workout por template.
 - Adicionar testes de componente para popup consolidado de PR.
 - Adicionar testes de API para `/api/progression/analytics`.
 - Adicionar testes de API para `/api/goals`, `/api/consistency`,
@@ -24,6 +26,7 @@
 
 - Criar pagina dedicada de evolucao por exercicio.
 - Criar pagina dedicada de historico de workouts.
+- Permitir criar template a partir de um workout com modal proprio em vez de `prompt`.
 - Permitir historico visual de metas semanais/mensais em calendario.
 - Evoluir preferencias de analytics de `localStorage` para persistencia no backend se virar necessidade real.
 

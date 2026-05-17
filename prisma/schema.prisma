@@ -59,3 +59,39 @@ model TrainingGoal {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model WorkoutTemplate {
+  id        String             @id @default(cuid())
+  userId    String
+  name      String             @db.VarChar(80)
+  category  String?            @db.VarChar(60)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  exercises ExerciseTemplate[]
+
+  @@index([userId])
+  @@index([name])
+}
+
+model ExerciseTemplate {
+  id         String                @id @default(cuid())
+  templateId String
+  name       String                @db.VarChar(80)
+  order      Int
+  template   WorkoutTemplate       @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  sets       ExerciseSetTemplate[]
+
+  @@index([templateId])
+  @@index([name])
+}
+
+model ExerciseSetTemplate {
+  id                 String           @id @default(cuid())
+  exerciseTemplateId String
+  setType            ExerciseSetType
+  order              Int
+  exerciseTemplate   ExerciseTemplate @relation(fields: [exerciseTemplateId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseTemplateId])
+  @@index([setType])
+}

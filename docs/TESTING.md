@@ -146,6 +146,28 @@ Risco protegido: dois workouts no mesmo dia contarem duas vezes, historico vazio
 quebrar a tela, semana atual quebrar streak antes de terminar e consultas sem
 filtro do usuario autenticado.
 
+### Template service - mock de repository
+
+Funcionalidade testada: criar, editar, deletar e iniciar workout draft a partir
+de template.
+
+Motivo do teste: templates parecem workouts, mas nao sao workouts realizados e
+nao podem exigir reps/peso.
+
+Risco protegido: template vazio salvo, ownership cruzado, template criando
+workout real antes do save final e dados de template vazando para progresso.
+
+### API routes de templates - handlers reais com auth/repository mockados
+
+Funcionalidade testada: `GET /api/templates`, `POST /api/templates`,
+`GET/PATCH/DELETE /api/templates/:id` e `POST /api/templates/:id/start`.
+
+Motivo do teste: garantir contrato HTTP privado e isolamento por usuario para o
+novo dominio de templates.
+
+Risco protegido: usuario anonimo acessar templates, userA acessar/editar/deletar
+template de userB, resposta com stack trace e start criando workout real no banco.
+
 ## Limitacoes
 
 - Ainda nao ha testes com banco isolado.
@@ -154,12 +176,16 @@ filtro do usuario autenticado.
   mockados; ainda nao ha servidor HTTP real nem Prisma real nos testes.
 - Delete cascade de workout/exercise depende do banco/repository real e ainda
   precisa de teste de integracao com banco isolado.
+- Garantia de que templates nao afetam PR/progressao/streak e coberta pela
+  separacao de dominio e mocks; ainda falta integracao com banco isolado para
+  validar queries reais.
 - Mocks garantem contrato dos services, mas nao substituem testes de integracao.
 
 ## Proximos testes recomendados
 
 - Testes de componente para criacao/edicao de workout.
 - Testes de componente para settings sidebar e popups.
+- Testes de componente para templates.
 - Testes de API para `/api/progression/analytics`.
 - Testes de controller/API para `/api/goals`, `/api/consistency`,
   `/api/progression` e `/api/personal-records`.

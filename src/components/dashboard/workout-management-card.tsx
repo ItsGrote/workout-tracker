@@ -6,6 +6,7 @@ type WorkoutManagementCardProps = {
   onCreate: () => void;
   onDuplicate: () => void;
   onEdit: (workout: WorkoutResponse) => void;
+  onSaveAsTemplate: (workout: WorkoutResponse) => void;
 };
 
 const formatDate = (date: string) =>
@@ -21,6 +22,7 @@ export function WorkoutManagementCard({
   onCreate,
   onDuplicate,
   onEdit,
+  onSaveAsTemplate,
 }: WorkoutManagementCardProps) {
   const [visibleCount, setVisibleCount] = useState(WORKOUT_PAGE_SIZE);
   const sortedWorkouts = useMemo(
@@ -83,13 +85,22 @@ export function WorkoutManagementCard({
                   {formatDate(workout.date)} · {workout.exercises.length} exercises
                 </p>
               </div>
-              <button
-                className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
-                onClick={() => onEdit(workout)}
-                type="button"
-              >
-                Edit workout
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  onClick={() => onSaveAsTemplate(workout)}
+                  type="button"
+                >
+                  Save as template
+                </button>
+                <button
+                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  onClick={() => onEdit(workout)}
+                  type="button"
+                >
+                  Edit workout
+                </button>
+              </div>
             </div>
           ))
         ) : (
