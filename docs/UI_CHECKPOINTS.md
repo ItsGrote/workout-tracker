@@ -297,7 +297,7 @@ de save.
 
 ## 8. Progression Analytics visual redesign
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 

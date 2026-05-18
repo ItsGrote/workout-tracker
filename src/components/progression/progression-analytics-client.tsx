@@ -138,14 +138,20 @@ const formatVolume = (value: number) => `${formatNumber(value)}kg`;
 const insightCardClass =
   "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
 
+const filterPanelClassName =
+  "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
+
+const emptyStateClassName =
+  "rounded-xl border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm leading-6 text-[var(--muted)]";
+
 const selectClassName =
-  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
+  "min-h-11 min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
 
 const secondaryActionClassName =
-  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
+  "min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
 
 const primaryActionClassName =
-  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2";
+  "min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2";
 
 const checkboxClassName =
   "h-5 w-5 rounded border-[var(--border)] accent-[var(--accent)]";
@@ -346,105 +352,153 @@ export function ProgressionAnalyticsClient() {
           <LogoutButton />
         </nav>
 
-        <header>
-          <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
-            Custom analytics
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
-            Build the exact evolution chart you want.
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            Pick a workout or exercise, choose a timeframe, then switch between
-            volume, load and repetition trends.
-          </p>
+        <header className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:p-6">
+          <div className="max-w-3xl">
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+              Progression analytics
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
+              Investigate the evolution behind each session.
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+              Choose a workout or exercise, narrow the timeframe and read the
+              trend through volume, load and repetition signals.
+            </p>
+          </div>
         </header>
 
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
-          <div className="grid gap-4 lg:grid-cols-4">
-            <label className="flex flex-col gap-2 text-sm font-medium">
-              Analytics type
-              <select
-                className={selectClassName}
-                onChange={(event) => {
-                  setTarget(event.target.value as AnalyticsTarget);
+        <section className="grid gap-4 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
+          <div className={filterPanelClassName}>
+            <p className="text-sm font-semibold text-[var(--foreground)]">
+              What are you analyzing?
+            </p>
+            <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+              Switch between workout-level volume and exercise-level
+              performance trends.
+            </p>
+
+            <div className="mt-4 grid gap-2">
+              <button
+                className={`min-h-14 rounded-xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 ${
+                  target === "workout"
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-white shadow-sm shadow-[#1f3a45]/15"
+                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                }`}
+                onClick={() => {
+                  setTarget("workout");
                   setSelectedValue("");
                 }}
-                value={target}
+                type="button"
               >
-                <option value="">Choose analytics type</option>
-                <option value="workout">Workout Analytics</option>
-                <option value="exercise">Exercise Analytics</option>
-              </select>
-            </label>
-
-            {target === "workout" ? (
-              <label className="flex flex-col gap-2 text-sm font-medium">
-                Workout filter
-                <select
-                  className={selectClassName}
-                  onChange={(event) => {
-                    setWorkoutFilter(event.target.value as WorkoutFilter);
-                    setSelectedValue("");
-                  }}
-                  value={workoutFilter}
-                >
-                  <option value="name">Workout name</option>
-                  <option value="category">Workout category</option>
-                </select>
-              </label>
-            ) : null}
-
-            <SearchableSelect
-              disabled={!target || isLoading}
-              emptyMessage={selectionEmptyMessage}
-              label={
-                target === "exercise"
-                  ? "Exercise"
-                  : workoutFilter === "name"
-                    ? "Workout name"
-                    : "Workout category"
-              }
-              onChange={setSelectedValue}
-              options={selectedOptions}
-              placeholder={
-                target ? "Search and select an option" : "Choose chart type first"
-              }
-              value={selectedValue}
-            />
-
-            <label className="flex flex-col gap-2 text-sm font-medium">
-              Time range
-              <select
-                className={selectClassName}
-                onChange={(event) => setRange(event.target.value as RangeOption)}
-                value={range}
+                <span className="block text-sm font-semibold">
+                  Workout Analytics
+                </span>
+                <span className="mt-1 block text-xs opacity-80">
+                  Compare full workout volume over time.
+                </span>
+              </button>
+              <button
+                className={`min-h-14 rounded-xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 ${
+                  target === "exercise"
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-white shadow-sm shadow-[#1f3a45]/15"
+                    : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                }`}
+                onClick={() => {
+                  setTarget("exercise");
+                  setSelectedValue("");
+                }}
+                type="button"
               >
-                {rangeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <span className="block text-sm font-semibold">
+                  Exercise Analytics
+                </span>
+                <span className="mt-1 block text-xs opacity-80">
+                  Track volume, weight and reps for one movement.
+                </span>
+              </button>
+            </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-3">
-            <label className="flex flex-col gap-2 text-sm font-medium">
-              Chart style
-              <select
-                className={selectClassName}
-                onChange={(event) => setChartKind(event.target.value as ChartKind)}
-                value={chartKind}
-              >
-                <option value="bar">Bar chart</option>
-                <option value="line">Line chart</option>
-              </select>
-            </label>
+          <div className={filterPanelClassName}>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-semibold text-[var(--foreground)]">
+                Analysis filters
+              </p>
+              <p className="text-sm leading-6 text-[var(--muted)]">
+                Keep the chart focused on the exact trend you want to inspect.
+              </p>
+            </div>
 
-            {target === "exercise" ? (
-              <>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {target === "workout" ? (
                 <label className="flex flex-col gap-2 text-sm font-medium">
-                  Y axis
+                  Workout filter
+                  <select
+                    className={selectClassName}
+                    onChange={(event) => {
+                      setWorkoutFilter(event.target.value as WorkoutFilter);
+                      setSelectedValue("");
+                    }}
+                    value={workoutFilter}
+                  >
+                    <option value="name">Workout name</option>
+                    <option value="category">Workout category</option>
+                  </select>
+                </label>
+              ) : null}
+
+              <div className={target === "workout" ? "" : "md:col-span-2"}>
+                <SearchableSelect
+                  disabled={!target || isLoading}
+                  emptyMessage={selectionEmptyMessage}
+                  label={
+                    target === "exercise"
+                      ? "Exercise"
+                      : workoutFilter === "name"
+                        ? "Workout name"
+                        : "Workout category"
+                  }
+                  onChange={setSelectedValue}
+                  options={selectedOptions}
+                  placeholder={
+                    target
+                      ? "Search and select an option"
+                      : "Choose analytics type first"
+                  }
+                  value={selectedValue}
+                />
+              </div>
+
+              <label className="flex flex-col gap-2 text-sm font-medium">
+                Time range
+                <select
+                  className={selectClassName}
+                  onChange={(event) => setRange(event.target.value as RangeOption)}
+                  value={range}
+                >
+                  {rangeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-medium">
+                Chart style
+                <select
+                  className={selectClassName}
+                  onChange={(event) => setChartKind(event.target.value as ChartKind)}
+                  value={chartKind}
+                >
+                  <option value="bar">Bar chart</option>
+                  <option value="line">Line chart</option>
+                </select>
+              </label>
+
+              {target === "exercise" ? (
+                <label className="flex flex-col gap-2 text-sm font-medium">
+                  Y axis metric
                   <select
                     className={selectClassName}
                     onChange={(event) =>
@@ -459,26 +513,28 @@ export function ProgressionAnalyticsClient() {
                     ))}
                   </select>
                 </label>
+              ) : null}
+            </div>
 
-                <label className="flex items-end gap-2 pb-2 text-sm font-medium">
-                  <input
-                    className={checkboxClassName}
-                    checked={showAverageWeight}
-                    onChange={(event) =>
-                      setShowAverageWeight(event.target.checked)
-                    }
-                    type="checkbox"
-                  />
-                  Show average weight
-                </label>
-              </>
+            {target === "exercise" ? (
+              <label className="mt-4 flex min-h-11 items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-sm font-medium">
+                <input
+                  className={checkboxClassName}
+                  checked={showAverageWeight}
+                  onChange={(event) =>
+                    setShowAverageWeight(event.target.checked)
+                  }
+                  type="checkbox"
+                />
+                Show average weight
+              </label>
             ) : null}
           </div>
         </section>
 
-        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:p-6">
           {isLoading ? (
-            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
+            <p className={emptyStateClassName}>
               Loading progression options...
             </p>
           ) : error ? (
@@ -486,22 +542,43 @@ export function ProgressionAnalyticsClient() {
               {error}
             </div>
           ) : hasNoData ? (
-            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
-              No workouts found yet.
-            </p>
+            <div className={emptyStateClassName}>
+              <p className="font-semibold text-[var(--foreground)]">
+                No workouts found yet.
+              </p>
+              <p className="mt-1">
+                Save your first workout to unlock progression analytics.
+              </p>
+            </div>
           ) : !canShowChart ? (
-            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
-              Choose a chart type and select a saved item to build a custom
-              progression chart.
-            </p>
+            <div className={emptyStateClassName}>
+              <p className="font-semibold text-[var(--foreground)]">
+                Choose what evolution you want to inspect.
+              </p>
+              <p className="mt-1">
+                Select Workout Analytics or Exercise Analytics, then pick a
+                saved item to build the chart.
+              </p>
+            </div>
           ) : chartData.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
-              Not enough data yet to build this chart.
-            </p>
+            <div className={emptyStateClassName}>
+              <p className="font-semibold text-[var(--foreground)]">
+                Not enough data yet to build this chart.
+              </p>
+              <p className="mt-1">
+                Continue logging workouts in this selection to reveal the
+                progression line.
+              </p>
+            </div>
           ) : (
             <>
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
+                  <p className="text-sm font-medium uppercase tracking-[0.14em] text-[var(--accent)]">
+                    {target === "exercise"
+                      ? "Exercise evolution"
+                      : "Workout evolution"}
+                  </p>
                   <h2 className="text-xl font-semibold">
                     {selectedValue} -{" "}
                     {target === "exercise"
@@ -520,35 +597,56 @@ export function ProgressionAnalyticsClient() {
                 ) : null}
               </div>
 
-              <div className="mt-5 h-[340px]">
+              <div className="mt-5 h-[360px] sm:h-[420px]">
                 <ResponsiveContainer height="100%" width="100%">
                   {chartKind === "bar" ? (
                     <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="displayDate" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="chartValue" fill="var(--accent)" />
+                      <CartesianGrid stroke="#d8cfc1" strokeDasharray="3 3" />
+                      <XAxis dataKey="displayDate" tickLine={false} />
+                      <YAxis tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          background: "var(--surface)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "12px",
+                        }}
+                        cursor={{ fill: "#efe4d3" }}
+                      />
+                      <Bar
+                        dataKey="chartValue"
+                        fill="var(--accent)"
+                        radius={[6, 6, 0, 0]}
+                      />
                       {target === "exercise" && showAverageWeight ? (
-                        <Bar dataKey="averageWeight" fill="#4f6f91" />
+                        <Bar
+                          dataKey="averageWeight"
+                          fill="#8d7658"
+                          radius={[6, 6, 0, 0]}
+                        />
                       ) : null}
                     </BarChart>
                   ) : (
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="displayDate" />
-                      <YAxis />
-                      <Tooltip />
+                      <CartesianGrid stroke="#d8cfc1" strokeDasharray="3 3" />
+                      <XAxis dataKey="displayDate" tickLine={false} />
+                      <YAxis tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          background: "var(--surface)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "12px",
+                        }}
+                      />
                       <Line
                         dataKey="chartValue"
                         stroke="var(--accent)"
-                        strokeWidth={2}
+                        strokeWidth={3}
                         type="monotone"
                       />
                       {target === "exercise" && showAverageWeight ? (
                         <Line
                           dataKey="averageWeight"
-                          stroke="#4f6f91"
+                          stroke="#8d7658"
                           strokeWidth={2}
                           type="monotone"
                         />
@@ -560,11 +658,16 @@ export function ProgressionAnalyticsClient() {
 
               {analytics?.insights ? (
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold">
-                    {target === "exercise"
-                      ? "Exercise insights"
-                      : "Workout insights"}
-                  </h3>
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      {target === "exercise"
+                        ? "Exercise insights"
+                        : "Workout insights"}
+                    </h3>
+                    <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                      Read these as training signals, not scoreboard noise.
+                    </p>
+                  </div>
                   {analytics.insights.kind === "workout" ? (
                     <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                       <article className={insightCardClass}>
