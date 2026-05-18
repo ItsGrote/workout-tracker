@@ -15,7 +15,7 @@ const formatDate = (date: string) =>
     day: "2-digit",
   }).format(new Date(date));
 
-const WORKOUT_PAGE_SIZE = 6;
+const WORKOUT_PAGE_SIZE = 3;
 
 export function WorkoutManagementCard({
   workouts,
@@ -48,24 +48,24 @@ export function WorkoutManagementCard({
         <div>
           <h2 className="text-xl font-semibold">Workouts</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Create, duplicate or edit saved workout structure.
+            Create from scratch or use templates for faster workout logging.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            className="rounded bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+            className="min-h-10 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
             onClick={onCreate}
             type="button"
           >
             + Create workout
           </button>
           <button
-            className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium disabled:opacity-60"
+            className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-[var(--muted)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-55"
             disabled={workouts.length === 0}
             onClick={onDuplicate}
             type="button"
           >
-            Duplicate workout
+            Advanced: duplicate
           </button>
         </div>
       </div>
@@ -87,14 +87,14 @@ export function WorkoutManagementCard({
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20"
                   onClick={() => onSaveAsTemplate(workout)}
                   type="button"
                 >
                   Save as template
                 </button>
                 <button
-                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20"
                   onClick={() => onEdit(workout)}
                   type="button"
                 >
@@ -120,7 +120,7 @@ export function WorkoutManagementCard({
           }
           type="button"
         >
-          View more
+          View 3 more
         </button>
       ) : null}
     </section>

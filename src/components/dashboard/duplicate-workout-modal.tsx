@@ -104,10 +104,13 @@ export function DuplicateWorkoutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-black/30 p-3 sm:items-center sm:justify-center">
-      <section className="w-full rounded border border-[var(--border)] bg-[var(--surface)] p-5 shadow-xl sm:max-w-xl">
-        <div className="flex items-start justify-between gap-4">
+    <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
+      <section className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-xl sm:rounded-2xl">
+        <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+              Advanced action
+            </p>
             <h2 className="text-xl font-semibold">Duplicate workout</h2>
             <p className="mt-1 text-sm text-[var(--muted)]">
               Choose a previous workout. The copy will use today's date.
@@ -126,7 +129,7 @@ export function DuplicateWorkoutModal({
           {workouts.length > 0 ? (
             workouts.map((workout) => (
               <label
-                className={`rounded-md border p-3 text-sm transition ${
+                className={`rounded-lg border p-3 text-sm shadow-sm shadow-[#1f3a45]/5 transition ${
                   selectedWorkoutId === workout.id
                     ? "border-[var(--accent)] bg-[var(--accent-soft)]"
                     : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
@@ -146,7 +149,7 @@ export function DuplicateWorkoutModal({
               </label>
             ))
           ) : (
-            <p className="rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
               No previous workouts available to duplicate.
             </p>
           )}
@@ -158,14 +161,16 @@ export function DuplicateWorkoutModal({
           </p>
         ) : null}
 
-        <button
-          className={`mt-5 w-full ${primaryButtonClassName}`}
-          disabled={isDuplicating || workouts.length === 0}
-          onClick={duplicateWorkout}
-          type="button"
-        >
-          {isDuplicating ? "Duplicating..." : "Duplicate and edit"}
-        </button>
+        <div className="sticky bottom-0 -mx-5 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+          <button
+            className={`w-full ${primaryButtonClassName}`}
+            disabled={isDuplicating || workouts.length === 0}
+            onClick={duplicateWorkout}
+            type="button"
+          >
+            {isDuplicating ? "Duplicating..." : "Duplicate and edit"}
+          </button>
+        </div>
       </section>
     </div>
   );

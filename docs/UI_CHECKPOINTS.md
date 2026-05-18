@@ -209,7 +209,7 @@ grafico basico.
 
 ## 6. Modal and editor redesign
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 

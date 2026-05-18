@@ -27,7 +27,7 @@ type TemplateEditorModalProps = {
 };
 
 const inputClassName =
-  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15";
+  "min-h-11 min-w-0 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15";
 
 const selectClassName = inputClassName;
 
@@ -236,13 +236,16 @@ export function TemplateEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-black/30 p-3 sm:items-center sm:justify-center">
+    <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
       <form
-        className="max-h-[92vh] w-full overflow-y-auto rounded border border-[var(--border)] bg-[var(--surface)] p-5 shadow-xl sm:max-w-3xl"
+        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-4xl sm:rounded-2xl"
         onSubmit={handleSubmit}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+              Template editor
+            </p>
             <h2 className="text-xl font-semibold">
               {template ? "Edit template" : "Create template"}
             </h2>
@@ -295,7 +298,7 @@ export function TemplateEditorModal({
         <div className="mt-4 flex flex-col gap-4">
           {exercises.map((exercise, exerciseIndex) => (
             <section
-              className="rounded border border-[var(--border)] bg-[#fbfcfd] p-4"
+              className="rounded-xl border border-[#d8c3a5] bg-[var(--accent-soft)] p-4 shadow-sm shadow-[#1f3a45]/5"
               key={exercise.id}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -340,10 +343,10 @@ export function TemplateEditorModal({
               <div className="mt-3 flex flex-col gap-3">
                 {exercise.sets.map((set, setIndex) => (
                   <div
-                    className="grid gap-3 rounded border border-[var(--border)] bg-white p-3 sm:grid-cols-[1fr_auto]"
+                    className="grid min-w-0 gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm shadow-[#1f3a45]/5 sm:grid-cols-[minmax(0,1fr)_auto]"
                     key={set.id}
                   >
-                    <label className="flex flex-col gap-2 text-sm font-medium">
+                    <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
                       Set {setIndex + 1}
                       <select
                         className={selectClassName}
@@ -387,13 +390,15 @@ export function TemplateEditorModal({
           </p>
         ) : null}
 
-        <button
-          className={`mt-5 w-full ${primaryButtonClassName}`}
-          disabled={isSaving}
-          type="submit"
-        >
-          {isSaving ? "Saving template..." : "Save template"}
-        </button>
+        <div className="sticky bottom-0 -mx-5 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+          <button
+            className={`w-full ${primaryButtonClassName}`}
+            disabled={isSaving}
+            type="submit"
+          >
+            {isSaving ? "Saving template..." : "Save template"}
+          </button>
+        </div>
       </form>
     </div>
   );
