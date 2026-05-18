@@ -444,40 +444,42 @@ export function DashboardClient() {
   }
 
   return (
-    <main className="min-h-screen px-4 py-5 sm:px-6 lg:px-8">
+    <main className="min-h-screen px-4 pb-24 pt-5 sm:px-6 sm:pb-8 lg:px-8">
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <DashboardNav />
 
-        <header className="flex flex-col gap-3">
-          <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
-            Training command center
-          </p>
-          <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end">
-            <div>
-              <h1 className="text-3xl font-semibold sm:text-4xl">
+        <header className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:p-6">
+          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+            <div className="max-w-3xl">
+              <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+                Training command center
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
                 Your progress is already happening.
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-                See consistency, volume and records before visible body changes
-                catch up.
+                Log the next session, keep streaks visible and watch the volume
+                story build before physical changes catch up.
               </p>
             </div>
-            <button
-              className="rounded border border-[var(--border)] px-4 py-2 text-sm font-semibold"
-              onClick={() => openSettings("streak")}
-              type="button"
-            >
-              Settings
-            </button>
-            <button
-              className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-[var(--accent)] text-3xl font-light leading-none text-white shadow-xl sm:static sm:h-auto sm:w-auto sm:rounded sm:px-4 sm:py-2 sm:text-sm sm:font-semibold"
-              onClick={() => openCreateWorkout()}
-              title="Create workout"
-              type="button"
-            >
-              +
-              <span className="hidden sm:inline"> Create workout</span>
-            </button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <button
+                className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20"
+                onClick={() => openSettings("streak")}
+                type="button"
+              >
+                Settings
+              </button>
+              <button
+                className="fixed bottom-5 right-5 z-40 h-14 w-14 rounded-full bg-[var(--accent)] text-3xl font-light leading-none text-white shadow-xl shadow-[#1f3a45]/25 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 sm:static sm:min-h-11 sm:w-auto sm:rounded-lg sm:px-4 sm:py-2.5 sm:text-sm sm:font-semibold"
+                onClick={() => openCreateWorkout()}
+                title="Create workout"
+                type="button"
+              >
+                +
+                <span className="hidden sm:inline"> Create workout</span>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -490,57 +492,64 @@ export function DashboardClient() {
           <EmptyOnboarding onCreateWorkout={() => openCreateWorkout()} />
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.9fr)_minmax(0,1.4fr)]">
-          <ConsistencyCard
-            consistency={data.consistency}
-            goals={data.goals}
-            onEditGoals={() => openSettings("streak")}
-          />
-          <ProgressionChart points={data.progression.points} />
+        <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.35fr)]">
+          <div className="flex flex-col gap-6">
+            <ConsistencyCard
+              consistency={data.consistency}
+              goals={data.goals}
+              onEditGoals={() => openSettings("streak")}
+            />
+
+            <TemplateManagementCard
+              isBusy={isTemplateActionLoading}
+              onCreate={() => {
+                setEditingTemplate(null);
+                setIsTemplateEditorOpen(true);
+              }}
+              onDelete={deleteTemplate}
+              onEdit={(template) => {
+                setEditingTemplate(template);
+                setIsTemplateEditorOpen(true);
+              }}
+              onStart={startWorkoutFromTemplate}
+              templates={data.templates}
+            />
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <SummaryCard
+                label="Total Volume"
+                value={data.progression.totalVolume.toString()}
+                detail="Every saved set converted into measurable progress."
+              />
+              <SummaryCard
+                label="Latest Workout Volume"
+                value={latestVolume}
+                detail="Your most recent training volume point."
+              />
+              <SummaryCard
+                label="Personal Records"
+                value={topRecordCount.toString()}
+                detail="Current best efforts from existing workouts."
+              />
+            </div>
+
+            <ProgressionChart points={data.progression.points} />
+          </div>
         </div>
 
-        <WorkoutManagementCard
-          workouts={data.workouts}
-          onCreate={() => openCreateWorkout()}
-          onDuplicate={() => setIsDuplicateOpen(true)}
-          onEdit={setEditingWorkout}
-          onSaveAsTemplate={saveWorkoutAsTemplate}
-        />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)]">
+          <WorkoutManagementCard
+            workouts={data.workouts}
+            onCreate={() => openCreateWorkout()}
+            onDuplicate={() => setIsDuplicateOpen(true)}
+            onEdit={setEditingWorkout}
+            onSaveAsTemplate={saveWorkoutAsTemplate}
+          />
 
-        <TemplateManagementCard
-          isBusy={isTemplateActionLoading}
-          onCreate={() => {
-            setEditingTemplate(null);
-            setIsTemplateEditorOpen(true);
-          }}
-          onDelete={deleteTemplate}
-          onEdit={(template) => {
-            setEditingTemplate(template);
-            setIsTemplateEditorOpen(true);
-          }}
-          onStart={startWorkoutFromTemplate}
-          templates={data.templates}
-        />
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <SummaryCard
-            label="Total Volume"
-            value={data.progression.totalVolume.toString()}
-            detail="Every saved set converted into measurable progress."
-          />
-          <SummaryCard
-            label="Latest Workout Volume"
-            value={latestVolume}
-            detail="Your most recent training volume point."
-          />
-          <SummaryCard
-            label="Personal Records"
-            value={topRecordCount.toString()}
-            detail="Current best efforts from existing workouts."
-          />
+          <PersonalRecordsCard personalRecords={data.personalRecords} />
         </div>
-
-        <PersonalRecordsCard personalRecords={data.personalRecords} />
 
         <CreateWorkoutModal
           initialDraft={createWorkoutInitialDraft}

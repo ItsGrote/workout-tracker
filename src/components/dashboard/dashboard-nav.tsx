@@ -10,14 +10,14 @@ const navItems = [
 
 export function DashboardNav() {
   return (
-    <nav className="flex flex-col gap-3 rounded border border-[var(--border)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
+    <nav className="flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm shadow-[#1f3a45]/5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap gap-2">
         {navItems.map((item) => (
           <Link
-            className={`rounded px-3 py-2 text-sm font-medium ${
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 ${
               item.status === "active"
-                ? "bg-[var(--foreground)] text-white"
-                : "border border-[var(--border)] text-[var(--muted)]"
+                ? "bg-[var(--accent)] text-white shadow-sm shadow-[#1f3a45]/10"
+                : "border border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
             }`}
             href={item.href}
             key={item.label}

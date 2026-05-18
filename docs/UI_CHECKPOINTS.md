@@ -131,7 +131,7 @@ parte do mesmo produto premium.
 
 ## 4. Card system
 
-Status: `IN PROGRESS`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -172,7 +172,7 @@ de design system.
 
 ## 5. Dashboard layout refinement
 
-Status: `NOT STARTED`
+Status: `COMPLETED`
 
 ### Objetivo
 

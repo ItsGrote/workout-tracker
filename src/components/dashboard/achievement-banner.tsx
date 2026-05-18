@@ -13,9 +13,10 @@ export function AchievementBanner({
       : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]";
 
   return (
-    <div className={`animate-rise rounded border px-4 py-3 text-sm ${colorClass}`}>
+    <div
+      className={`animate-rise rounded-xl border px-4 py-3 text-sm shadow-sm shadow-[#1f3a45]/5 ${colorClass}`}
+    >
       {message}
     </div>
   );
 }
-
