@@ -1,8 +1,11 @@
 import { progressionAnalyticsRepository } from "@/server/repositories/progression-analytics.repository";
 import type {
+  ExerciseAnalyticsInsights,
+  ExerciseAnalyticsMetric,
   ProgressionAnalyticsOptions,
   ProgressionAnalyticsPoint,
   ProgressionAnalyticsResponse,
+  WorkoutAnalyticsInsights,
 } from "@/server/types/progression-analytics.types";
 import type { ProgressionAnalyticsQueryInput } from "@/server/validations/progression-analytics.validation";
 
@@ -58,6 +61,24 @@ const calculateWorkoutVolume = (workout: AnalyticsWorkoutSource) =>
     ),
   );
 
+const sortSources = (workouts: AnalyticsWorkoutSource[]) =>
+  [...workouts].sort((first, second) => {
+    const dateDelta = first.date.getTime() - second.date.getTime();
+
+    if (dateDelta !== 0) {
+      return dateDelta;
+    }
+
+    const createdAtDelta =
+      first.createdAt.getTime() - second.createdAt.getTime();
+
+    if (createdAtDelta !== 0) {
+      return createdAtDelta;
+    }
+
+    return first.id.localeCompare(second.id);
+  });
+
 const createOptions = (
   sources: Awaited<ReturnType<typeof progressionAnalyticsRepository.findOptions>>,
 ): ProgressionAnalyticsOptions => ({
@@ -75,11 +96,49 @@ const createOptions = (
 const limitPoints = (points: ProgressionAnalyticsPoint[]) =>
   points.length > MAX_POINTS ? points.slice(points.length - MAX_POINTS) : points;
 
+const buildProgressionComparison = (
+  firstValue: number | undefined,
+  latestValue: number | undefined,
+  readyMessage: (percentageChange: number) => string,
+) => {
+  if (firstValue === undefined || latestValue === undefined) {
+    return {
+      firstValue: firstValue ?? null,
+      latestValue: latestValue ?? null,
+      message: "Complete more workouts to see progression trends",
+      percentageChange: null,
+      status: "not_enough_data" as const,
+    };
+  }
+
+  if (firstValue <= 0) {
+    return {
+      firstValue,
+      latestValue,
+      message: "First recorded value has no volume to compare safely",
+      percentageChange: null,
+      status: "previous_zero" as const,
+    };
+  }
+
+  const percentageChange = roundMetric(
+    ((latestValue - firstValue) / firstValue) * 100,
+  );
+
+  return {
+    firstValue,
+    latestValue,
+    message: readyMessage(percentageChange),
+    percentageChange,
+    status: "ready" as const,
+  };
+};
+
 const createWorkoutPoints = (
   workouts: AnalyticsWorkoutSource[],
 ): ProgressionAnalyticsPoint[] =>
   limitPoints(
-    workouts.map((workout) => ({
+    sortSources(workouts).map((workout) => ({
       date: workout.date.toISOString(),
       label: workout.name,
       volume: calculateWorkoutVolume(workout),
@@ -90,7 +149,7 @@ const createExercisePoints = (
   workouts: AnalyticsWorkoutSource[],
 ): ProgressionAnalyticsPoint[] =>
   limitPoints(
-    workouts.map((workout) => {
+    sortSources(workouts).map((workout) => {
       const sets = workout.exercises.flatMap((exercise) => exercise.sets);
       const volume = workout.exercises.reduce(
         (total, exercise) => total + calculateExerciseVolume(exercise),
@@ -118,6 +177,83 @@ const createExercisePoints = (
     }),
   );
 
+const sum = (values: number[]) =>
+  roundMetric(values.reduce((total, value) => total + value, 0));
+
+const average = (values: number[]) =>
+  values.length ? roundMetric(sum(values) / values.length) : 0;
+
+const metricValue = (
+  point: ProgressionAnalyticsPoint,
+  metric: ExerciseAnalyticsMetric,
+) => {
+  if (metric === "max-weight") {
+    return point.maxWeight ?? 0;
+  }
+
+  if (metric === "average-reps") {
+    return point.averageReps ?? 0;
+  }
+
+  return point.volume;
+};
+
+const createWorkoutInsights = (
+  points: ProgressionAnalyticsPoint[],
+): WorkoutAnalyticsInsights => {
+  const volumes = points.map((point) => point.volume);
+  const firstPoint = points[0];
+  const latestPoint = points.at(-1);
+
+  return {
+    averageVolume: average(volumes),
+    highestVolume: volumes.length ? Math.max(...volumes) : 0,
+    kind: "workout",
+    progression: buildProgressionComparison(
+      points.length > 1 ? firstPoint?.volume : undefined,
+      points.length > 1 ? latestPoint?.volume : undefined,
+      (percentageChange) => {
+        const sign = percentageChange > 0 ? "+" : "";
+        return `${sign}${percentageChange}% progression since first workout`;
+      },
+    ),
+    totalAccumulatedVolume: sum(volumes),
+    workoutsAnalyzed: points.length,
+  };
+};
+
+const createExerciseInsights = (
+  points: ProgressionAnalyticsPoint[],
+  metric: ExerciseAnalyticsMetric,
+): ExerciseAnalyticsInsights => {
+  const volumes = points.map((point) => point.volume);
+  const weights = points.flatMap((point) =>
+    typeof point.averageWeight === "number" ? [point.averageWeight] : [],
+  );
+  const firstPoint = points[0];
+  const latestPoint = points.at(-1);
+
+  return {
+    averageWeight: average(weights),
+    highestWeight: points.length
+      ? Math.max(...points.map((point) => point.maxWeight ?? 0))
+      : 0,
+    kind: "exercise",
+    progression: buildProgressionComparison(
+      points.length > 1 && firstPoint ? metricValue(firstPoint, metric) : undefined,
+      points.length > 1 && latestPoint
+        ? metricValue(latestPoint, metric)
+        : undefined,
+      (percentageChange) => {
+        const sign = percentageChange > 0 ? "+" : "";
+        return `${sign}${percentageChange}% progression`;
+      },
+    ),
+    sessionsAnalyzed: points.length,
+    totalAccumulatedVolume: sum(volumes),
+  };
+};
+
 export const progressionAnalyticsService = {
   async getAnalytics(
     userId: string,
@@ -131,6 +267,7 @@ export const progressionAnalyticsService = {
       return {
         options,
         points: [],
+        insights: null,
         filters: {
           target: query.target,
           workoutFilter: query.workoutFilter,
@@ -155,13 +292,18 @@ export const progressionAnalyticsService = {
       exerciseName:
         query.target === "exercise" ? query.selectedValue : undefined,
     });
+    const points =
+      query.target === "exercise"
+        ? createExercisePoints(workouts)
+        : createWorkoutPoints(workouts);
 
     return {
       options,
-      points:
+      points,
+      insights:
         query.target === "exercise"
-          ? createExercisePoints(workouts)
-          : createWorkoutPoints(workouts),
+          ? createExerciseInsights(points, query.exerciseMetric)
+          : createWorkoutInsights(points),
       filters: {
         target: query.target,
         workoutFilter: query.workoutFilter,

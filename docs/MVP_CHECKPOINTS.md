@@ -253,8 +253,12 @@ Pronto quando:
 - Pagina exige escolha antes de renderizar grafico.
 - Usuario alterna entre grafico de workout e exercise.
 - Workout permite filtro por nome ou categoria.
+- Workout mostra insights de evolucao percentual, maior volume, media, total
+  acumulado e workouts analisados.
 - Exercise permite eixo Y de volume, max weight e average reps.
 - Average weight pode ser mostrado/escondido.
+- Exercise mostra insights de progressao, maior carga, carga media, volume
+  acumulado e sessoes analisadas.
 - Intervalos permitidos sao 7d, 30d, 90d, 1y e all time.
 - Tipo visual alterna entre bar chart e line chart.
 - Preferencias sao restauradas via `localStorage`.

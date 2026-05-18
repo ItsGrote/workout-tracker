@@ -55,7 +55,7 @@ export const progressionAnalyticsRepository = {
           orderBy: { order: "asc" },
         },
       },
-      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }],
     });
   },
 };

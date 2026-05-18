@@ -115,6 +115,8 @@ Ele tambem inclui o fluxo principal de gerenciamento de treinos:
 - receber popup de resumo do workout apos salvar treino real
 - desativar popups de PR em `Settings > Popup settings`
 - acessar `/progression` para montar graficos personalizados
+- visualizar insights automaticos em `/progression`, como evolucao percentual,
+  maior volume, medias e sessoes analisadas
 
 As metas de streak contam dias unicos treinados. Mais de um workout no mesmo
 dia nao aumenta o progresso de consistencia.

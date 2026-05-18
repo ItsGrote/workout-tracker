@@ -278,12 +278,27 @@ Resposta resumida:
       "averageReps": 8,
       "averageWeight": 70
     }
-  ]
+  ],
+  "insights": {
+    "kind": "exercise",
+    "progression": {
+      "status": "ready",
+      "percentageChange": 28.57,
+      "message": "+28.57% progression"
+    },
+    "highestWeight": 90,
+    "averageWeight": 75,
+    "totalAccumulatedVolume": 2380,
+    "sessionsAnalyzed": 2
+  }
 }
 ```
 
 O frontend usa essa rota em `/progression`. O endpoint calcula metricas no service
-e filtra por `userId` autenticado.
+e filtra por `userId` autenticado. Para Workout Analytics, `insights` retorna
+evolucao percentual, maior volume, volume medio, volume acumulado e workouts
+analisados. Para Exercise Analytics, retorna evolucao percentual pela metrica
+selecionada, maior carga, carga media, volume acumulado e sessoes analisadas.
 
 ## Personal Records
 

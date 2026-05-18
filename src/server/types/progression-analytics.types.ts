@@ -23,6 +23,36 @@ export type ProgressionAnalyticsPoint = {
   averageWeight?: number;
 };
 
+export type ProgressionAnalyticsComparison = {
+  firstValue: number | null;
+  latestValue: number | null;
+  message: string;
+  percentageChange: number | null;
+  status: "ready" | "not_enough_data" | "previous_zero";
+};
+
+export type WorkoutAnalyticsInsights = {
+  averageVolume: number;
+  highestVolume: number;
+  kind: "workout";
+  progression: ProgressionAnalyticsComparison;
+  totalAccumulatedVolume: number;
+  workoutsAnalyzed: number;
+};
+
+export type ExerciseAnalyticsInsights = {
+  averageWeight: number;
+  highestWeight: number;
+  kind: "exercise";
+  progression: ProgressionAnalyticsComparison;
+  sessionsAnalyzed: number;
+  totalAccumulatedVolume: number;
+};
+
+export type ProgressionAnalyticsInsights =
+  | WorkoutAnalyticsInsights
+  | ExerciseAnalyticsInsights;
+
 export type ProgressionAnalyticsOptions = {
   workoutNames: string[];
   workoutCategories: string[];
@@ -32,6 +62,7 @@ export type ProgressionAnalyticsOptions = {
 export type ProgressionAnalyticsResponse = {
   options: ProgressionAnalyticsOptions;
   points: ProgressionAnalyticsPoint[];
+  insights: ProgressionAnalyticsInsights | null;
   filters: {
     target?: ProgressionAnalyticsTarget;
     workoutFilter?: WorkoutAnalyticsFilter;

@@ -104,6 +104,12 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
 - Average weight pode ser mostrado/escondido como serie adicional.
 - A pagina usa `GET /api/progression/analytics`.
 - A ultima configuracao escolhida usa `localStorage` no MVP.
+- Workout Analytics exibe insights nesta ordem: evolucao percentual, highest
+  volume, average volume, total accumulated volume e workouts analyzed.
+- Exercise Analytics exibe insights nesta ordem: progression percentage,
+  highest weight, average weight, total accumulated volume e sessions analyzed.
+- A evolucao percentual compara o primeiro ponto do intervalo com o ponto mais
+  recente, ordenando por `date`, `createdAt` e `id`, e evita `Infinity%`.
 
 ## Lista de workouts
 

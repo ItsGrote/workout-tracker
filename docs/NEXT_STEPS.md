@@ -26,10 +26,11 @@
 
 ## Produto
 
-- Criar pagina dedicada de evolucao por exercicio.
 - Criar pagina dedicada de historico de workouts.
 - Permitir criar template a partir de um workout com modal proprio em vez de `prompt`.
 - Permitir historico visual de metas semanais/mensais em calendario.
+- Permitir salvar presets nomeados de analytics se o uso da pagina `/progression`
+  crescer alem da preferencia local simples.
 - Evoluir preferencias de analytics de `localStorage` para persistencia no backend se virar necessidade real.
 
 ## Deploy

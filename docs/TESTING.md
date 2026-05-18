@@ -125,6 +125,18 @@ Motivo do teste: graficos de evolucao dependem diretamente desses calculos.
 Risco protegido: volume incorreto com multiplas series, pesos/repeticoes
 diferentes, exercicio sem series e filtros sem `userId` autenticado.
 
+### Progression analytics service - mock de repository
+
+Funcionalidade testada: insights de Workout Analytics e Exercise Analytics em
+`GET /api/progression/analytics`.
+
+Motivo do teste: a pagina `/progression` transforma dados de treino em feedback
+de evolucao; percentuais, medias e totais precisam ser confiaveis.
+
+Risco protegido: porcentagem com `Infinity%`, historico vazio quebrando insights,
+ordenacao incorreta quando ha multiplos workouts no mesmo dia, medias/totais
+errados, metrica de exercicio ignorada e consulta sem `userId` autenticado.
+
 ### Personal records service - mock de repository
 
 Funcionalidade testada: deteccao de PR de maior carga, repeticoes e volume.

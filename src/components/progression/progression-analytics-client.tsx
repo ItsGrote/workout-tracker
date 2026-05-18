@@ -31,6 +31,32 @@ type AnalyticsPoint = {
   averageWeight?: number;
 };
 
+type AnalyticsComparison = {
+  firstValue: number | null;
+  latestValue: number | null;
+  message: string;
+  percentageChange: number | null;
+  status: "ready" | "not_enough_data" | "previous_zero";
+};
+
+type WorkoutInsights = {
+  averageVolume: number;
+  highestVolume: number;
+  kind: "workout";
+  progression: AnalyticsComparison;
+  totalAccumulatedVolume: number;
+  workoutsAnalyzed: number;
+};
+
+type ExerciseInsights = {
+  averageWeight: number;
+  highestWeight: number;
+  kind: "exercise";
+  progression: AnalyticsComparison;
+  sessionsAnalyzed: number;
+  totalAccumulatedVolume: number;
+};
+
 type AnalyticsResponse = {
   options: {
     workoutNames: string[];
@@ -38,6 +64,7 @@ type AnalyticsResponse = {
     exerciseNames: string[];
   };
   points: AnalyticsPoint[];
+  insights: WorkoutInsights | ExerciseInsights | null;
 };
 
 type SavedPreferences = {
@@ -98,6 +125,14 @@ const formatDate = (date: string) =>
     month: "short",
     day: "2-digit",
   }).format(new Date(date));
+
+const formatNumber = (value: number) =>
+  new Intl.NumberFormat("en", { maximumFractionDigits: 2 }).format(value);
+
+const formatVolume = (value: number) => `${formatNumber(value)}kg`;
+
+const insightCardClass =
+  "rounded border border-[var(--border)] bg-white p-4 shadow-sm";
 
 const loadPreferences = (): SavedPreferences => {
   if (typeof window === "undefined") {
@@ -299,7 +334,7 @@ export function ProgressionAnalyticsClient() {
         <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
           <div className="grid gap-4 lg:grid-cols-4">
             <label className="flex flex-col gap-2 text-sm font-medium">
-              Chart type
+              Analytics type
               <select
                 className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
                 onChange={(event) => {
@@ -308,9 +343,9 @@ export function ProgressionAnalyticsClient() {
                 }}
                 value={target}
               >
-                <option value="">Choose chart type</option>
-                <option value="workout">Workout</option>
-                <option value="exercise">Exercise</option>
+                <option value="">Choose analytics type</option>
+                <option value="workout">Workout Analytics</option>
+                <option value="exercise">Exercise Analytics</option>
               </select>
             </label>
 
@@ -493,6 +528,119 @@ export function ProgressionAnalyticsClient() {
                   )}
                 </ResponsiveContainer>
               </div>
+
+              {analytics?.insights ? (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold">
+                    {target === "exercise"
+                      ? "Exercise insights"
+                      : "Workout insights"}
+                  </h3>
+                  {analytics.insights.kind === "workout" ? (
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Evolution
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {analytics.insights.progression.percentageChange ===
+                          null
+                            ? "Not enough yet"
+                            : `${analytics.insights.progression.percentageChange > 0 ? "+" : ""}${analytics.insights.progression.percentageChange}%`}
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                          {analytics.insights.progression.message}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Highest volume
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(analytics.insights.highestVolume)}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Average volume
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(analytics.insights.averageVolume)}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Total accumulated volume
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(
+                            analytics.insights.totalAccumulatedVolume,
+                          )}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Workouts analyzed
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {analytics.insights.workoutsAnalyzed}
+                        </p>
+                      </article>
+                    </div>
+                  ) : (
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Progression
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {analytics.insights.progression.percentageChange ===
+                          null
+                            ? "Not enough yet"
+                            : `${analytics.insights.progression.percentageChange > 0 ? "+" : ""}${analytics.insights.progression.percentageChange}%`}
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                          {analytics.insights.progression.message}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Highest weight
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(analytics.insights.highestWeight)}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Average weight
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(analytics.insights.averageWeight)}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Total accumulated volume
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {formatVolume(
+                            analytics.insights.totalAccumulatedVolume,
+                          )}
+                        </p>
+                      </article>
+                      <article className={insightCardClass}>
+                        <p className="text-xs font-semibold uppercase text-[var(--muted)]">
+                          Sessions analyzed
+                        </p>
+                        <p className="mt-2 text-lg font-semibold">
+                          {analytics.insights.sessionsAnalyzed}
+                        </p>
+                      </article>
+                    </div>
+                  )}
+                </div>
+              ) : null}
             </>
           )}
         </section>
