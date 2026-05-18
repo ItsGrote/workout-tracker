@@ -23,12 +23,12 @@ export function TemplateManagementCard({
         <div>
           <h2 className="text-xl font-semibold">Templates</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Save workout structure and start faster without counting progress
-            until the real workout is saved.
+            Reusable structures for faster logging. They never count as
+            completed workouts until you fill and save a real session.
           </p>
         </div>
         <button
-          className="rounded bg-[var(--foreground)] px-3 py-2 text-sm font-medium text-white"
+          className="min-h-10 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
           onClick={onCreate}
           type="button"
         >
@@ -40,13 +40,18 @@ export function TemplateManagementCard({
         {templates.length > 0 ? (
           templates.map((template) => (
             <div
-              className="flex flex-col gap-3 rounded-lg border border-[#d8c3a5] bg-[var(--accent-soft)] p-4 shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] lg:flex-row lg:items-center lg:justify-between"
+              className="flex flex-col gap-3 rounded-xl border border-[#d8c3a5] bg-[var(--accent-soft)] p-4 shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] lg:flex-row lg:items-center lg:justify-between"
               key={template.id}
             >
               <div>
-                <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
-                  Template
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                    Structure preset
+                  </span>
+                  <span className="rounded-full border border-[#d8c3a5] bg-[var(--surface)] px-2.5 py-1 text-xs font-medium text-[var(--muted)]">
+                    Not logged
+                  </span>
+                </div>
                 <p className="mt-2 font-medium">
                   {template.name} - {template.category ?? "No category"}
                 </p>
@@ -56,20 +61,20 @@ export function TemplateManagementCard({
                     (total, exercise) => total + exercise.sets.length,
                     0,
                   )}{" "}
-                  set slots
+                  set slots · no reps or weight saved
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="rounded bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                  className="min-h-10 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onStart(template)}
                   type="button"
                 >
-                  Start workout
+                  Use structure
                 </button>
                 <button
-                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium disabled:opacity-60"
+                  className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onEdit(template)}
                   type="button"
@@ -77,7 +82,7 @@ export function TemplateManagementCard({
                   Edit
                 </button>
                 <button
-                  className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b] disabled:opacity-60"
+                  className="min-h-10 rounded-lg border border-[#e1b8b8] bg-[#fff7f7] px-3 py-2 text-sm font-medium text-[#7b3b3b] transition hover:bg-[#fbecec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7b3b3b]/20 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onDelete(template)}
                   type="button"
@@ -88,10 +93,15 @@ export function TemplateManagementCard({
             </div>
           ))
         ) : (
-          <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
-            No templates yet. Create one from scratch or save an existing
-            workout as a template.
-          </p>
+          <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
+            <p className="font-semibold text-[var(--foreground)]">
+              No structure presets yet.
+            </p>
+            <p className="mt-1 leading-6">
+              Create a template for repeated workout structure. It will not log
+              progress, streaks or PRs until you use it to save a real workout.
+            </p>
+          </div>
         )}
       </div>
     </section>

@@ -338,17 +338,28 @@ export function CreateWorkoutModal({
 
         <section className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--accent-soft)] p-4">
           <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-semibold">Use template</h3>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-sm font-semibold">Use template</h3>
+              <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                Structure only
+              </span>
+            </div>
             <p className="text-sm text-[var(--muted)]">
-              Fill this workout from a saved structure. Reps and weight stay
-              empty until you complete the real workout.
+              Apply a reusable structure preset. No workout is saved yet, and
+              reps/weight stay empty until you complete this real session.
             </p>
           </div>
 
           {templates.length === 0 ? (
-            <p className="mt-3 rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--muted)]">
-              No templates yet.
-            </p>
+            <div className="mt-3 rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)] p-3 text-sm text-[var(--muted)]">
+              <p className="font-semibold text-[var(--foreground)]">
+                No templates yet.
+              </p>
+              <p className="mt-1">
+                Create a template when you want to reuse exercise and set type
+                structure without saving workout performance.
+              </p>
+            </div>
           ) : (
             <div className="mt-3 flex flex-wrap gap-2">
               {templates.map((template) => {
@@ -365,7 +376,7 @@ export function CreateWorkoutModal({
                     {isApplying ? "Applying..." : template.name}
                     <span className="block text-xs font-normal text-[var(--muted)]">
                       {template.category ?? "No category"} ·{" "}
-                      {template.exercises.length} exercises
+                      {template.exercises.length} exercise slots · fill reps/weight next
                     </span>
                   </button>
                 );

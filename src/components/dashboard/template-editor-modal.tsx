@@ -250,8 +250,8 @@ export function TemplateEditorModal({
               {template ? "Edit template" : "Create template"}
             </h2>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              Templates store exercise structure only. Weight and reps are filled
-              when you save a real workout.
+              Templates are reusable structure presets. They do not store
+              performance, volume, streaks or personal records.
             </p>
           </div>
           <button
@@ -282,8 +282,18 @@ export function TemplateEditorModal({
           </label>
         </div>
 
+        <div className="mt-5 rounded-xl border border-dashed border-[#d8c3a5] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
+          <p className="font-semibold text-[var(--foreground)]">
+            Structure only
+          </p>
+          <p className="mt-1 leading-6">
+            Add exercises and set types here. Reps and weight stay out of the
+            template and are filled only when creating the real workout.
+          </p>
+        </div>
+
         <div className="mt-6 flex items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold">Exercises</h3>
+          <h3 className="text-lg font-semibold">Template structure</h3>
           <button
             className={primaryButtonClassName}
             onClick={() =>
@@ -303,7 +313,7 @@ export function TemplateEditorModal({
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <label className="flex flex-1 flex-col gap-2 text-sm font-medium">
-                  Exercise {exerciseIndex + 1}
+                  Exercise slot {exerciseIndex + 1}
                   <input
                     className={inputClassName}
                     onChange={(event) =>
@@ -326,7 +336,7 @@ export function TemplateEditorModal({
               </div>
 
               <div className="mt-4 flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold">Set types</p>
+                <p className="text-sm font-semibold">Set type slots</p>
                 <button
                   className={secondaryButtonClassName}
                   onClick={() =>
@@ -347,7 +357,7 @@ export function TemplateEditorModal({
                     key={set.id}
                   >
                     <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
-                      Set {setIndex + 1}
+                      Slot {setIndex + 1}
                       <select
                         className={selectClassName}
                         onChange={(event) =>
@@ -396,7 +406,7 @@ export function TemplateEditorModal({
             disabled={isSaving}
             type="submit"
           >
-            {isSaving ? "Saving template..." : "Save template"}
+            {isSaving ? "Saving structure..." : "Save structure preset"}
           </button>
         </div>
       </form>

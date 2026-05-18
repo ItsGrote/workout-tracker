@@ -297,7 +297,7 @@ de save.
 
 ## 8. Progression Analytics visual redesign
 
-Status: `IN PROGRESS`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -346,7 +346,7 @@ Foco:
 
 ## 9. Template experience polish
 
-Status: `NOT STARTED`
+Status: `COMPLETED`
 
 ### Objetivo
 
