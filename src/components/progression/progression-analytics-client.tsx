@@ -136,7 +136,7 @@ const formatNumber = (value: number) =>
 const formatVolume = (value: number) => `${formatNumber(value)}kg`;
 
 const insightCardClass =
-  "rounded border border-[var(--border)] bg-white p-4 shadow-sm";
+  "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
 
 const selectClassName =
   "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
@@ -328,7 +328,7 @@ export function ProgressionAnalyticsClient() {
   return (
     <main className="min-h-screen px-4 py-5 sm:px-6 lg:px-8">
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <nav className="flex flex-col gap-3 rounded border border-[var(--border)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
+        <nav className="flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-sm shadow-[#1f3a45]/5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
             <Link
               className={secondaryActionClassName}
@@ -359,7 +359,7 @@ export function ProgressionAnalyticsClient() {
           </p>
         </header>
 
-        <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
           <div className="grid gap-4 lg:grid-cols-4">
             <label className="flex flex-col gap-2 text-sm font-medium">
               Analytics type
@@ -476,26 +476,26 @@ export function ProgressionAnalyticsClient() {
           </div>
         </section>
 
-        <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
+        <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
           {isLoading ? (
-            <p className="rounded border border-dashed border-[var(--border)] p-6 text-sm text-[var(--muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
               Loading progression options...
             </p>
           ) : error ? (
-            <div className="rounded border border-[#e1b8b8] bg-[#fff7f7] p-4 text-sm text-[#7b3b3b]">
+            <div className="rounded-lg border border-[#e1b8b8] bg-[#fff7f7] p-4 text-sm text-[#7b3b3b]">
               {error}
             </div>
           ) : hasNoData ? (
-            <p className="rounded border border-dashed border-[var(--border)] p-6 text-sm text-[var(--muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
               No workouts found yet.
             </p>
           ) : !canShowChart ? (
-            <p className="rounded border border-dashed border-[var(--border)] p-6 text-sm text-[var(--muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
               Choose a chart type and select a saved item to build a custom
               progression chart.
             </p>
           ) : chartData.length === 0 ? (
-            <p className="rounded border border-dashed border-[var(--border)] p-6 text-sm text-[var(--muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm text-[var(--muted)]">
               Not enough data yet to build this chart.
             </p>
           ) : (
@@ -514,7 +514,7 @@ export function ProgressionAnalyticsClient() {
                   </p>
                 </div>
                 {chartData.length === 1 ? (
-                  <p className="rounded border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)]">
+                  <p className="rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-2 text-sm text-[var(--muted)]">
                     Add more workouts to see a clearer trend.
                   </p>
                 ) : null}

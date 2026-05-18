@@ -18,7 +18,7 @@ export function TemplateManagementCard({
   templates,
 }: TemplateManagementCardProps) {
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
+    <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Templates</h2>
@@ -40,11 +40,14 @@ export function TemplateManagementCard({
         {templates.length > 0 ? (
           templates.map((template) => (
             <div
-              className="flex flex-col gap-3 rounded border border-[var(--border)] p-3 lg:flex-row lg:items-center lg:justify-between"
+              className="flex flex-col gap-3 rounded-lg border border-[#d8c3a5] bg-[var(--accent-soft)] p-4 shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] lg:flex-row lg:items-center lg:justify-between"
               key={template.id}
             >
               <div>
-                <p className="font-medium">
+                <span className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                  Template
+                </span>
+                <p className="mt-2 font-medium">
                   {template.name} - {template.category ?? "No category"}
                 </p>
                 <p className="mt-1 text-sm text-[var(--muted)]">
@@ -85,7 +88,7 @@ export function TemplateManagementCard({
             </div>
           ))
         ) : (
-          <p className="rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+          <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
             No templates yet. Create one from scratch or save an existing
             workout as a template.
           </p>

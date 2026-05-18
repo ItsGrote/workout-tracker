@@ -6,8 +6,10 @@ type SummaryCardProps = {
 
 export function SummaryCard({ label, value, detail }: SummaryCardProps) {
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
-      <p className="text-sm font-medium text-[var(--muted)]">{label}</p>
+    <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+        {label}
+      </p>
       <p className="mt-3 text-3xl font-semibold text-[var(--foreground)]">
         {value}
       </p>
@@ -15,4 +17,3 @@ export function SummaryCard({ label, value, detail }: SummaryCardProps) {
     </section>
   );
 }
-

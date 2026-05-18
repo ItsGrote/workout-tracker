@@ -92,7 +92,7 @@ adicionar fontes externas.
 
 ## 3. Button and form controls polish
 
-Status: `IN PROGRESS`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -131,7 +131,7 @@ parte do mesmo produto premium.
 
 ## 4. Card system
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 

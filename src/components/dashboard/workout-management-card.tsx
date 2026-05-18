@@ -43,7 +43,7 @@ export function WorkoutManagementCard({
   }, [workouts]);
 
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
+    <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">Workouts</h2>
@@ -74,7 +74,7 @@ export function WorkoutManagementCard({
         {visibleWorkouts.length > 0 ? (
           visibleWorkouts.map((workout) => (
             <div
-              className="flex flex-col gap-3 rounded border border-[var(--border)] p-3 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] sm:flex-row sm:items-center sm:justify-between"
               key={workout.id}
             >
               <div>
@@ -104,7 +104,7 @@ export function WorkoutManagementCard({
             </div>
           ))
         ) : (
-          <p className="rounded border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
+          <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
             No workouts yet. Create your first workout to start tracking volume.
           </p>
         )}
@@ -112,7 +112,7 @@ export function WorkoutManagementCard({
 
       {hasMoreWorkouts ? (
         <button
-          className="mt-4 w-full rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+          className="mt-4 w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20"
           onClick={() =>
             setVisibleCount((current) =>
               Math.min(current + WORKOUT_PAGE_SIZE, sortedWorkouts.length),

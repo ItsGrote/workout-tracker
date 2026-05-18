@@ -4,7 +4,7 @@ type EmptyOnboardingProps = {
 
 export function EmptyOnboarding({ onCreateWorkout }: EmptyOnboardingProps) {
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+    <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:p-6">
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
@@ -27,13 +27,13 @@ export function EmptyOnboarding({ onCreateWorkout }: EmptyOnboardingProps) {
         </div>
 
         <ol className="grid gap-3 text-sm">
-          <li className="rounded border border-[var(--border)] p-3">
+          <li className="rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] p-3">
             1. Create a workout for today
           </li>
-          <li className="rounded border border-[var(--border)] p-3">
+          <li className="rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] p-3">
             2. Add one exercise and one set
           </li>
-          <li className="rounded border border-[var(--border)] p-3">
+          <li className="rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] p-3">
             3. Watch your volume graph appear
           </li>
         </ol>
@@ -41,4 +41,3 @@ export function EmptyOnboarding({ onCreateWorkout }: EmptyOnboardingProps) {
     </section>
   );
 }
-

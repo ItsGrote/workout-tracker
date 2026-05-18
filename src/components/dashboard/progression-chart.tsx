@@ -28,7 +28,7 @@ export function ProgressionChart({ points }: ProgressionChartProps) {
   }));
 
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--surface)] p-5">
+    <section className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5">
       <div className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold">Volume Over Time</h2>
         <p className="text-sm text-[var(--muted)]">
@@ -59,7 +59,7 @@ export function ProgressionChart({ points }: ProgressionChartProps) {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center rounded border border-dashed border-[var(--border)] px-6 text-center">
+          <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] px-6 text-center">
             <p className="text-base font-medium">No volume trend yet</p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-[var(--muted)]">
               Create your first workout and this chart will start showing your
