@@ -380,7 +380,7 @@ realizados. Melhorar listagem, editor e integracao com create workout.
 
 ## 10. Empty, loading and error states
 
-Status: `NOT STARTED`
+Status: `COMPLETED`
 
 ### Objetivo
 

@@ -93,8 +93,11 @@ export function TemplateManagementCard({
             </div>
           ))
         ) : (
-          <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
-            <p className="font-semibold text-[var(--foreground)]">
+          <div className="rounded-xl border border-dashed border-[#d8c3a5] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
+            <span className="inline-flex rounded-full border border-[#d8c3a5] bg-[var(--surface)] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+              Structure shortcut
+            </span>
+            <p className="mt-3 font-semibold text-[var(--foreground)]">
               No structure presets yet.
             </p>
             <p className="mt-1 leading-6">

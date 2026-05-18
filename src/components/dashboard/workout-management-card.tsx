@@ -104,9 +104,15 @@ export function WorkoutManagementCard({
             </div>
           ))
         ) : (
-          <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
-            No workouts yet. Create your first workout to start tracking volume.
-          </p>
+          <div className="rounded-xl border border-dashed border-[#d8c3a5] bg-[var(--accent-soft)] p-4 text-sm text-[var(--muted)]">
+            <p className="font-semibold text-[var(--foreground)]">
+              No workouts saved yet.
+            </p>
+            <p className="mt-1 leading-6">
+              Create your first workout to start building volume history,
+              streak progress and future PRs.
+            </p>
+          </div>
         )}
       </div>
 

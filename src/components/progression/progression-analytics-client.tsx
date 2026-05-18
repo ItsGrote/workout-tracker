@@ -142,7 +142,10 @@ const filterPanelClassName =
   "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
 
 const emptyStateClassName =
-  "rounded-xl border border-dashed border-[var(--border)] bg-[var(--accent-soft)] p-6 text-sm leading-6 text-[var(--muted)]";
+  "rounded-2xl border border-dashed border-[#d8c3a5] bg-[var(--accent-soft)] p-5 text-sm leading-6 text-[var(--muted)] shadow-sm shadow-[#1f3a45]/5 sm:p-6";
+
+const loadingBlockClassName =
+  "animate-pulse rounded-xl border border-[var(--border)] bg-[var(--accent-soft)] shadow-sm shadow-[#1f3a45]/5";
 
 const selectClassName =
   "min-h-11 min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
@@ -534,16 +537,45 @@ export function ProgressionAnalyticsClient() {
 
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:p-6">
           {isLoading ? (
-            <p className={emptyStateClassName}>
-              Loading progression options...
-            </p>
+            <div className="space-y-5">
+              <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className={`${loadingBlockClassName} h-3 w-36`} />
+                  <div className={`${loadingBlockClassName} mt-3 h-6 w-64 max-w-full`} />
+                  <div className={`${loadingBlockClassName} mt-3 h-3 w-72 max-w-full`} />
+                </div>
+                <div className={`${loadingBlockClassName} h-10 w-48 max-w-full`} />
+              </div>
+              <div className={`${loadingBlockClassName} h-[320px] sm:h-[380px]`} />
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <div className={`${loadingBlockClassName} h-28`} />
+                <div className={`${loadingBlockClassName} h-28`} />
+                <div className={`${loadingBlockClassName} h-28`} />
+                <div className={`${loadingBlockClassName} h-28`} />
+                <div className={`${loadingBlockClassName} h-28`} />
+              </div>
+              <p className="sr-only">Loading progression analytics.</p>
+            </div>
           ) : error ? (
-            <div className="rounded-lg border border-[#e1b8b8] bg-[#fff7f7] p-4 text-sm text-[#7b3b3b]">
-              {error}
+            <div className="rounded-2xl border border-[#e1b8b8] bg-[#fff7f7] p-5 text-sm text-[#7b3b3b] shadow-sm shadow-[#1f3a45]/5">
+              <p className="inline-flex rounded-full border border-[#e1b8b8] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]">
+                Analytics unavailable
+              </p>
+              <p className="mt-3 font-semibold text-[#2b1515]">
+                We could not load this progression view.
+              </p>
+              <p className="mt-1 leading-6">{error}</p>
+              <p className="mt-1 leading-6 text-[#7b3b3b]/80">
+                Your workouts are safe. Try changing the filter or refreshing
+                the page.
+              </p>
             </div>
           ) : hasNoData ? (
             <div className={emptyStateClassName}>
-              <p className="font-semibold text-[var(--foreground)]">
+              <p className="inline-flex rounded-full border border-[#d8c3a5] bg-[var(--surface)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+                No training history
+              </p>
+              <p className="mt-3 font-semibold text-[var(--foreground)]">
                 No workouts found yet.
               </p>
               <p className="mt-1">
@@ -552,7 +584,10 @@ export function ProgressionAnalyticsClient() {
             </div>
           ) : !canShowChart ? (
             <div className={emptyStateClassName}>
-              <p className="font-semibold text-[var(--foreground)]">
+              <p className="inline-flex rounded-full border border-[#d8c3a5] bg-[var(--surface)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+                Choose a signal
+              </p>
+              <p className="mt-3 font-semibold text-[var(--foreground)]">
                 Choose what evolution you want to inspect.
               </p>
               <p className="mt-1">
@@ -562,7 +597,10 @@ export function ProgressionAnalyticsClient() {
             </div>
           ) : chartData.length === 0 ? (
             <div className={emptyStateClassName}>
-              <p className="font-semibold text-[var(--foreground)]">
+              <p className="inline-flex rounded-full border border-[#d8c3a5] bg-[var(--surface)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+                More data needed
+              </p>
+              <p className="mt-3 font-semibold text-[var(--foreground)]">
                 Not enough data yet to build this chart.
               </p>
               <p className="mt-1">
