@@ -209,7 +209,7 @@ grafico basico.
 
 ## 6. Modal and editor redesign
 
-Status: `IN PROGRESS`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -257,7 +257,7 @@ Foco:
 
 ## 7. Settings sidebar refinement
 
-Status: `NOT STARTED`
+Status: `COMPLETED`
 
 ### Objetivo
 
