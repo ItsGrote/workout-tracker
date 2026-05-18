@@ -47,6 +47,18 @@ const readGoalError = async (response: Response) => {
   }
 };
 
+const inputClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
+
+const primaryButtonClassName =
+  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
+
+const secondaryButtonClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
+
+const checkboxClassName =
+  "mt-1 h-5 w-5 rounded border-[var(--border)] accent-[var(--accent)]";
+
 export function SettingsSidebar({
   activeSection,
   arePersonalRecordPopupsEnabled,
@@ -197,7 +209,7 @@ export function SettingsSidebar({
             <h2 className="mt-2 text-2xl font-semibold">User settings</h2>
           </div>
           <button
-            className="rounded border border-[var(--border)] px-3 py-2 text-sm"
+            className={secondaryButtonClassName}
             onClick={onClose}
             type="button"
           >
@@ -212,10 +224,10 @@ export function SettingsSidebar({
               ["popups", "Popup settings"],
             ].map(([value, label]) => (
               <button
-                className={`mb-2 w-full rounded px-3 py-2 text-left text-sm font-medium ${
+                className={`mb-2 min-h-11 w-full rounded-md px-3 py-2.5 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 ${
                   section === value
-                    ? "bg-[var(--foreground)] text-white"
-                    : "border border-[var(--border)] text-[var(--muted)]"
+                    ? "bg-[var(--accent)] text-white"
+                    : "border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--foreground)]"
                 }`}
                 key={value}
                 onClick={() => {
@@ -244,7 +256,7 @@ export function SettingsSidebar({
                     <label className="flex items-start gap-3">
                       <input
                         checked={weeklyEnabled}
-                        className="mt-1"
+                        className={checkboxClassName}
                         onChange={(event) =>
                           requestWeeklyToggle(event.target.checked)
                         }
@@ -263,7 +275,7 @@ export function SettingsSidebar({
                       <label className="mt-4 flex flex-col gap-2 text-sm font-medium">
                         Weekly goal
                         <input
-                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          className={inputClassName}
                           inputMode="numeric"
                           max="7"
                           min="1"
@@ -282,7 +294,7 @@ export function SettingsSidebar({
                     <label className="flex items-start gap-3">
                       <input
                         checked={monthlyEnabled}
-                        className="mt-1"
+                        className={checkboxClassName}
                         onChange={(event) =>
                           requestMonthlyToggle(event.target.checked)
                         }
@@ -301,7 +313,7 @@ export function SettingsSidebar({
                       <label className="mt-4 flex flex-col gap-2 text-sm font-medium">
                         Monthly goal
                         <input
-                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          className={inputClassName}
                           inputMode="numeric"
                           max="31"
                           min="1"
@@ -328,7 +340,7 @@ export function SettingsSidebar({
                   <label className="flex items-start gap-3">
                     <input
                       checked={arePersonalRecordPopupsEnabled}
-                      className="mt-1"
+                      className={checkboxClassName}
                       onChange={(event) =>
                         onPersonalRecordPopupsChange(event.target.checked)
                       }
@@ -349,7 +361,7 @@ export function SettingsSidebar({
                   <label className="flex items-start gap-3">
                     <input
                       checked={areWorkoutSummaryPopupsEnabled}
-                      className="mt-1"
+                      className={checkboxClassName}
                       onChange={(event) =>
                         onWorkoutSummaryPopupsChange(event.target.checked)
                       }
@@ -384,7 +396,7 @@ export function SettingsSidebar({
               </p>
             ) : null}
             <button
-              className="w-full rounded bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              className={`w-full ${primaryButtonClassName}`}
               disabled={isSaving || Boolean(validationError)}
               onClick={saveSettings}
               type="button"

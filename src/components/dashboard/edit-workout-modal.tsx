@@ -26,6 +26,20 @@ type EditWorkoutModalProps = {
 
 type UnsavedAction = "close" | null;
 
+const inputClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15";
+
+const selectClassName = inputClassName;
+
+const primaryButtonClassName =
+  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
+
+const secondaryButtonClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55";
+
+const dangerButtonClassName =
+  "min-h-11 rounded-md border border-[#d8aaa2] bg-[#fff8f5] px-4 py-2.5 text-sm font-semibold text-[#8a3326] transition hover:bg-[#fbece7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8a3326]/20 disabled:cursor-not-allowed disabled:opacity-55";
+
 const groupSetsByType = (sets: SetDraft[]) =>
   SET_TYPES.map((setType) => ({
     setType,
@@ -349,14 +363,14 @@ export function EditWorkoutModal({
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              className="rounded border border-[var(--border)] px-3 py-2 text-sm"
+              className={secondaryButtonClassName}
               onClick={requestClose}
               type="button"
             >
               Close
             </button>
             <button
-              className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              className={primaryButtonClassName}
               disabled={isSaving || isDeleting}
               onClick={saveDraft}
               type="button"
@@ -370,7 +384,7 @@ export function EditWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium">
             Workout name
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) => updateDraft({ name: event.target.value })}
               value={draft.name}
             />
@@ -378,7 +392,7 @@ export function EditWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium">
             Category
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) =>
                 updateDraft({ category: event.target.value })
               }
@@ -388,7 +402,7 @@ export function EditWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium">
             Date
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) => updateDraft({ date: event.target.value })}
               type="date"
               value={draft.date}
@@ -401,7 +415,7 @@ export function EditWorkoutModal({
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-semibold">Exercises</h3>
               <button
-                className="rounded bg-[var(--foreground)] px-3 py-2 text-sm font-medium text-white"
+                className={primaryButtonClassName}
                 onClick={addExercise}
                 type="button"
               >
@@ -413,8 +427,8 @@ export function EditWorkoutModal({
                 <button
                   className={`rounded border px-3 py-2 text-left text-sm ${
                     selectedExercise?.draftId === exercise.draftId
-                      ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                      : "border-[var(--border)]"
+                      ? "border-[var(--accent)] bg-[var(--accent-soft)] font-semibold"
+                      : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
                   }`}
                   key={exercise.draftId}
                   onClick={() => setSelectedExerciseId(exercise.draftId)}
@@ -433,7 +447,7 @@ export function EditWorkoutModal({
                   <label className="flex flex-1 flex-col gap-2 text-sm font-medium">
                     Exercise name
                     <input
-                      className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                      className={inputClassName}
                       onChange={(event) =>
                         updateExercise(selectedExercise.draftId, {
                           name: event.target.value,
@@ -443,7 +457,7 @@ export function EditWorkoutModal({
                     />
                   </label>
                   <button
-                    className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
+                    className={dangerButtonClassName}
                     onClick={() => removeExercise(selectedExercise.draftId)}
                     type="button"
                   >
@@ -458,8 +472,8 @@ export function EditWorkoutModal({
                       <button
                         className={`rounded border px-3 py-2 text-sm ${
                           selectedSetType === group.setType
-                            ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                            : "border-[var(--border)]"
+                            ? "border-[var(--accent)] bg-[var(--accent-soft)] font-semibold"
+                            : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
                         }`}
                         key={group.setType}
                         onClick={() => setSelectedSetType(group.setType)}
@@ -474,7 +488,7 @@ export function EditWorkoutModal({
                 <div className="mt-5 flex items-center justify-between gap-3">
                   <h4 className="font-semibold">{selectedSetType} sets</h4>
                   <button
-                    className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                    className={secondaryButtonClassName}
                     onClick={() => addSet(selectedExercise.draftId)}
                     type="button"
                   >
@@ -497,7 +511,7 @@ export function EditWorkoutModal({
                       <label className="flex flex-col gap-2 text-sm font-medium">
                         Reps
                         <input
-                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          className={inputClassName}
                           min="1"
                           onChange={(event) =>
                             updateSet(selectedExercise.draftId, set.draftId, {
@@ -511,7 +525,7 @@ export function EditWorkoutModal({
                       <label className="flex flex-col gap-2 text-sm font-medium">
                         Weight
                         <input
-                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          className={inputClassName}
                           min="0"
                           onChange={(event) =>
                             updateSet(selectedExercise.draftId, set.draftId, {
@@ -526,7 +540,7 @@ export function EditWorkoutModal({
                       <label className="flex flex-col gap-2 text-sm font-medium">
                         Set type
                         <select
-                          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                          className={selectClassName}
                           onChange={(event) =>
                             updateSet(selectedExercise.draftId, set.draftId, {
                               setType: event.target.value as PublicSetType,
@@ -542,7 +556,7 @@ export function EditWorkoutModal({
                         </select>
                       </label>
                       <button
-                        className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b] sm:self-end"
+                        className={`${dangerButtonClassName} sm:self-end`}
                         onClick={() =>
                           removeSet(selectedExercise.draftId, set.draftId)
                         }
@@ -570,7 +584,7 @@ export function EditWorkoutModal({
 
         <div className="mt-6 border-t border-[var(--border)] pt-4">
           <button
-            className="rounded border border-[#e1b8b8] px-4 py-2 text-sm font-semibold text-[#7b3b3b] disabled:opacity-60"
+            className={dangerButtonClassName}
             disabled={isSaving || isDeleting}
             onClick={deleteWorkout}
             type="button"
@@ -589,7 +603,7 @@ export function EditWorkoutModal({
               </p>
               <div className="mt-5 grid gap-2 sm:grid-cols-3">
                 <button
-                  className="rounded bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white"
+                  className={primaryButtonClassName}
                   disabled={isSaving}
                   onClick={handleSaveAndClose}
                   type="button"
@@ -597,14 +611,14 @@ export function EditWorkoutModal({
                   Save changes
                 </button>
                 <button
-                  className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
+                  className={dangerButtonClassName}
                   onClick={onClose}
                   type="button"
                 >
                   Discard changes
                 </button>
                 <button
-                  className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium"
+                  className={secondaryButtonClassName}
                   onClick={() => setPendingUnsavedAction(null)}
                   type="button"
                 >

@@ -20,7 +20,7 @@ Status possiveis:
 
 ## 1. Visual foundation tokens
 
-Status: `NOT STARTED`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -92,7 +92,7 @@ adicionar fontes externas.
 
 ## 3. Button and form controls polish
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 

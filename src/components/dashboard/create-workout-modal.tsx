@@ -25,6 +25,20 @@ type CreateWorkoutModalProps = {
   templates: WorkoutTemplateResponse[];
 };
 
+const inputClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15";
+
+const selectClassName = inputClassName;
+
+const primaryButtonClassName =
+  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
+
+const secondaryButtonClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55";
+
+const dangerButtonClassName =
+  "min-h-11 rounded-md border border-[#d8aaa2] bg-[#fff8f5] px-4 py-2.5 text-sm font-semibold text-[#8a3326] transition hover:bg-[#fbece7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8a3326]/20";
+
 const readCreateError = async (
   response: Response,
   fallbackMessage = "Could not create workout. Check the fields and try again.",
@@ -311,7 +325,7 @@ export function CreateWorkoutModal({
             </p>
           </div>
           <button
-            className="rounded border border-[var(--border)] px-3 py-1 text-sm"
+            className="min-h-10 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
             onClick={onClose}
             type="button"
           >
@@ -339,7 +353,7 @@ export function CreateWorkoutModal({
 
                 return (
                   <button
-                    className="rounded border border-[var(--border)] bg-white px-3 py-2 text-left text-sm font-medium disabled:opacity-60"
+                    className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-left text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-55"
                     disabled={isSaving || applyingTemplateId !== null}
                     key={template.id}
                     onClick={() => void applyTemplate(template)}
@@ -361,7 +375,7 @@ export function CreateWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-1">
             Workout name
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) => setWorkoutName(event.target.value)}
               value={workoutName}
             />
@@ -369,7 +383,7 @@ export function CreateWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-1">
             Category
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) => setCategory(event.target.value)}
               value={category}
             />
@@ -377,7 +391,7 @@ export function CreateWorkoutModal({
           <label className="flex flex-col gap-2 text-sm font-medium sm:col-span-1">
             Date
             <input
-              className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+              className={inputClassName}
               onChange={(event) => setDate(event.target.value)}
               type="date"
               value={date}
@@ -388,7 +402,7 @@ export function CreateWorkoutModal({
         <div className="mt-6 flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold">Exercises</h3>
           <button
-            className="rounded bg-[var(--foreground)] px-3 py-2 text-sm font-medium text-white"
+            className={primaryButtonClassName}
             onClick={addExercise}
             type="button"
           >
@@ -412,7 +426,7 @@ export function CreateWorkoutModal({
                 <label className="flex flex-1 flex-col gap-2 text-sm font-medium">
                   Exercise {exerciseIndex + 1}
                   <input
-                    className="rounded border border-[var(--border)] bg-white px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                    className={inputClassName}
                     onChange={(event) =>
                       updateExercise(exercise.draftId, {
                         name: event.target.value,
@@ -422,7 +436,7 @@ export function CreateWorkoutModal({
                   />
                 </label>
                 <button
-                  className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b]"
+                  className={dangerButtonClassName}
                   onClick={() => removeExercise(exercise.draftId)}
                   type="button"
                 >
@@ -433,7 +447,7 @@ export function CreateWorkoutModal({
               <div className="mt-4 flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold">Sets</p>
                 <button
-                  className="rounded border border-[var(--border)] bg-white px-3 py-2 text-sm font-medium"
+                  className={secondaryButtonClassName}
                   onClick={() => addSet(exercise.draftId)}
                   type="button"
                 >
@@ -456,7 +470,7 @@ export function CreateWorkoutModal({
                     <label className="flex flex-col gap-2 text-sm font-medium">
                       Weight
                       <input
-                        className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                        className={inputClassName}
                         min="0"
                         onChange={(event) =>
                           updateSet(exercise.draftId, set.draftId, {
@@ -471,7 +485,7 @@ export function CreateWorkoutModal({
                     <label className="flex flex-col gap-2 text-sm font-medium">
                       Reps
                       <input
-                        className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                        className={inputClassName}
                         min="0"
                         onChange={(event) =>
                           updateSet(exercise.draftId, set.draftId, {
@@ -485,7 +499,7 @@ export function CreateWorkoutModal({
                     <label className="flex flex-col gap-2 text-sm font-medium">
                       Set type
                       <select
-                        className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                        className={selectClassName}
                         onChange={(event) =>
                           updateSet(exercise.draftId, set.draftId, {
                             setType: event.target.value as PublicSetType,
@@ -501,7 +515,7 @@ export function CreateWorkoutModal({
                       </select>
                     </label>
                     <button
-                      className="rounded border border-[#e1b8b8] px-3 py-2 text-sm font-medium text-[#7b3b3b] sm:self-end"
+                      className={`${dangerButtonClassName} sm:self-end`}
                       onClick={() =>
                         removeSet(exercise.draftId, set.draftId)
                       }
@@ -523,7 +537,7 @@ export function CreateWorkoutModal({
         ) : null}
 
         <button
-          className="mt-5 w-full rounded bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+          className={`mt-5 w-full ${primaryButtonClassName}`}
           disabled={isSaving || applyingTemplateId !== null}
           type="submit"
         >

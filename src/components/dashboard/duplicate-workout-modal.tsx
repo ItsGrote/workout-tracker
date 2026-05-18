@@ -17,6 +17,14 @@ const formatDate = (date: string) =>
     year: "numeric",
   }).format(new Date(date));
 
+const secondaryButtonClassName =
+  "min-h-10 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
+
+const primaryButtonClassName =
+  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
+
+const radioClassName = "h-4 w-4 accent-[var(--accent)]";
+
 const readDuplicateError = async (response: Response) => {
   const fallbackMessage = "Could not duplicate workout. Please try again.";
 
@@ -106,7 +114,7 @@ export function DuplicateWorkoutModal({
             </p>
           </div>
           <button
-            className="rounded border border-[var(--border)] px-3 py-1 text-sm"
+            className={secondaryButtonClassName}
             onClick={onClose}
             type="button"
           >
@@ -118,15 +126,15 @@ export function DuplicateWorkoutModal({
           {workouts.length > 0 ? (
             workouts.map((workout) => (
               <label
-                className={`rounded border p-3 text-sm ${
+                className={`rounded-md border p-3 text-sm transition ${
                   selectedWorkoutId === workout.id
                     ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                    : "border-[var(--border)]"
+                    : "border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
                 }`}
                 key={workout.id}
               >
                 <input
-                  className="mr-2"
+                  className={`${radioClassName} mr-2`}
                   checked={selectedWorkoutId === workout.id}
                   onChange={() => setSelectedWorkoutId(workout.id)}
                   type="radio"
@@ -151,7 +159,7 @@ export function DuplicateWorkoutModal({
         ) : null}
 
         <button
-          className="mt-5 w-full rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className={`mt-5 w-full ${primaryButtonClassName}`}
           disabled={isDuplicating || workouts.length === 0}
           onClick={duplicateWorkout}
           type="button"

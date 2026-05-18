@@ -138,6 +138,18 @@ const formatVolume = (value: number) => `${formatNumber(value)}kg`;
 const insightCardClass =
   "rounded border border-[var(--border)] bg-white p-4 shadow-sm";
 
+const selectClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
+
+const secondaryActionClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
+
+const primaryActionClassName =
+  "min-h-11 rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2";
+
+const checkboxClassName =
+  "h-5 w-5 rounded border-[var(--border)] accent-[var(--accent)]";
+
 const loadPreferences = (): SavedPreferences => {
   if (typeof window === "undefined") {
     return {};
@@ -319,13 +331,13 @@ export function ProgressionAnalyticsClient() {
         <nav className="flex flex-col gap-3 rounded border border-[var(--border)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
             <Link
-              className="rounded border border-[var(--border)] px-3 py-2 text-sm font-medium text-[var(--muted)]"
+              className={secondaryActionClassName}
               href="/"
             >
               Dashboard
             </Link>
             <Link
-              className="rounded bg-[var(--foreground)] px-3 py-2 text-sm font-medium text-white"
+              className={primaryActionClassName}
               href="/progression"
             >
               Progression
@@ -352,7 +364,7 @@ export function ProgressionAnalyticsClient() {
             <label className="flex flex-col gap-2 text-sm font-medium">
               Analytics type
               <select
-                className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                className={selectClassName}
                 onChange={(event) => {
                   setTarget(event.target.value as AnalyticsTarget);
                   setSelectedValue("");
@@ -369,7 +381,7 @@ export function ProgressionAnalyticsClient() {
               <label className="flex flex-col gap-2 text-sm font-medium">
                 Workout filter
                 <select
-                  className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                  className={selectClassName}
                   onChange={(event) => {
                     setWorkoutFilter(event.target.value as WorkoutFilter);
                     setSelectedValue("");
@@ -403,7 +415,7 @@ export function ProgressionAnalyticsClient() {
             <label className="flex flex-col gap-2 text-sm font-medium">
               Time range
               <select
-                className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                className={selectClassName}
                 onChange={(event) => setRange(event.target.value as RangeOption)}
                 value={range}
               >
@@ -420,7 +432,7 @@ export function ProgressionAnalyticsClient() {
             <label className="flex flex-col gap-2 text-sm font-medium">
               Chart style
               <select
-                className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                className={selectClassName}
                 onChange={(event) => setChartKind(event.target.value as ChartKind)}
                 value={chartKind}
               >
@@ -434,7 +446,7 @@ export function ProgressionAnalyticsClient() {
                 <label className="flex flex-col gap-2 text-sm font-medium">
                   Y axis
                   <select
-                    className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+                    className={selectClassName}
                     onChange={(event) =>
                       setExerciseMetric(event.target.value as ExerciseMetric)
                     }
@@ -450,6 +462,7 @@ export function ProgressionAnalyticsClient() {
 
                 <label className="flex items-end gap-2 pb-2 text-sm font-medium">
                   <input
+                    className={checkboxClassName}
                     checked={showAverageWeight}
                     onChange={(event) =>
                       setShowAverageWeight(event.target.checked)

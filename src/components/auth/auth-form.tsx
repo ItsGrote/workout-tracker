@@ -15,6 +15,12 @@ type AuthFormProps = {
 
 const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
+const inputClassName =
+  "min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15";
+
+const primaryButtonClassName =
+  "mt-6 min-h-11 w-full rounded-md bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55";
+
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -80,7 +86,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       <label className="flex flex-col gap-2 text-sm font-medium">
         Email
         <input
-          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+          className={inputClassName}
           onChange={(event) => setEmail(event.target.value)}
           required
           type="email"
@@ -91,7 +97,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       <label className="mt-4 flex flex-col gap-2 text-sm font-medium">
         Password
         <input
-          className="rounded border border-[var(--border)] px-3 py-2 font-normal outline-none focus:border-[var(--accent)]"
+          className={inputClassName}
           minLength={6}
           onChange={(event) => setPassword(event.target.value)}
           required
@@ -113,7 +119,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       ) : null}
 
       <button
-        className="mt-6 w-full rounded bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className={primaryButtonClassName}
         disabled={isSubmitting}
         type="submit"
       >
