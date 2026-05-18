@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -14,13 +14,17 @@ import {
   YAxis,
 } from "recharts";
 import { LogoutButton } from "@/components/auth/logout-button";
+import {
+  buildAnalyticsSearchParams,
+  getSelectedOptions,
+  type AnalyticsTarget,
+  type ExerciseMetric,
+  type RangeOption,
+  type WorkoutFilter,
+} from "./progression-analytics-state";
 import { SearchableSelect } from "./searchable-select";
 
-type AnalyticsTarget = "workout" | "exercise";
-type WorkoutFilter = "name" | "category";
-type RangeOption = "7d" | "30d" | "90d" | "1y" | "all";
 type ChartKind = "bar" | "line";
-type ExerciseMetric = "volume" | "max-weight" | "average-reps";
 
 type AnalyticsPoint = {
   date: string;
@@ -159,55 +163,65 @@ export function ProgressionAnalyticsClient() {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
+  const requestSequenceRef = useRef(0);
 
   const selectedOptions = useMemo(() => {
     if (!analytics) {
       return [];
     }
 
-    if (target === "exercise") {
-      return analytics.options.exerciseNames;
-    }
-
-    return workoutFilter === "name"
-      ? analytics.options.workoutNames
-      : analytics.options.workoutCategories;
+    return getSelectedOptions(analytics.options, target, workoutFilter);
   }, [analytics, target, workoutFilter]);
 
   const loadAnalytics = useCallback(async () => {
+    if (!hasLoadedPreferences) {
+      return;
+    }
+
+    const requestId = requestSequenceRef.current + 1;
+    requestSequenceRef.current = requestId;
     setIsLoading(true);
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const params = buildAnalyticsSearchParams({
         range,
         exerciseMetric,
+        selectedValue,
+        target,
+        workoutFilter,
       });
 
-      if (target) {
-        params.set("target", target);
-      }
-
-      if (target === "workout") {
-        params.set("workoutFilter", workoutFilter);
-      }
-
-      if (selectedValue) {
-        params.set("selectedValue", selectedValue);
-      }
-
       const nextAnalytics = await requestAnalytics(params);
+      if (requestSequenceRef.current !== requestId) {
+        return;
+      }
+
       setAnalytics(nextAnalytics);
     } catch (caughtError) {
+      if (requestSequenceRef.current !== requestId) {
+        return;
+      }
+
       setError(
         caughtError instanceof Error
           ? caughtError.message
           : "Could not load progression analytics.",
       );
     } finally {
-      setIsLoading(false);
+      if (requestSequenceRef.current === requestId) {
+        setIsLoading(false);
+      }
     }
-  }, [exerciseMetric, range, selectedValue, target, workoutFilter]);
+  }, [
+    exerciseMetric,
+    hasLoadedPreferences,
+    range,
+    selectedValue,
+    target,
+    workoutFilter,
+  ]);
 
   useEffect(() => {
     const preferences = loadPreferences();
@@ -233,6 +247,7 @@ export function ProgressionAnalyticsClient() {
     if (typeof preferences.showAverageWeight === "boolean") {
       setShowAverageWeight(preferences.showAverageWeight);
     }
+    setHasLoadedPreferences(true);
   }, []);
 
   useEffect(() => {
@@ -240,7 +255,7 @@ export function ProgressionAnalyticsClient() {
   }, [loadAnalytics]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (!hasLoadedPreferences || typeof window === "undefined") {
       return;
     }
 
@@ -259,6 +274,7 @@ export function ProgressionAnalyticsClient() {
   }, [
     chartKind,
     exerciseMetric,
+    hasLoadedPreferences,
     range,
     selectedValue,
     showAverageWeight,
