@@ -29,18 +29,21 @@ vi.mock("@/server/services/consistency.service", () => ({
 
 const workoutSource = ({
   category = "Legs",
+  createdAt = "2026-05-10T13:00:00.000Z",
   date = "2026-05-10T12:00:00.000Z",
   id = "workout_current",
   name = "Legs",
   sets = [{ repetitions: 10, weightKg: 1 }],
 }: {
   category?: string | null;
+  createdAt?: string;
   date?: string;
   id?: string;
   name?: string;
   sets?: Array<{ repetitions: number; weightKg: number }>;
 } = {}) => ({
   category,
+  createdAt: new Date(createdAt),
   date: new Date(date),
   exercises: [
     {
@@ -127,6 +130,92 @@ describe("workoutSummaryService", () => {
     expect(summary.comparison).toMatchObject({
       percentageChange: 50,
       previousVolume: 10,
+      status: "compared",
+    });
+  });
+
+  it("compares the second workout with the previous workout of the same name on the same day", async () => {
+    const { workoutSummaryService } = await import(
+      "@/server/services/workout-summary.service"
+    );
+    workoutSummaryRepositoryMock.findWorkoutById.mockResolvedValueOnce(
+      workoutSource({
+        createdAt: "2026-05-17T18:00:00.000Z",
+        date: "2026-05-17T12:00:00.000Z",
+        sets: [{ repetitions: 15, weightKg: 100 }],
+      }),
+    );
+    workoutSummaryRepositoryMock.findPreviousByName.mockResolvedValueOnce(
+      workoutSource({
+        createdAt: "2026-05-17T10:00:00.000Z",
+        date: "2026-05-17T12:00:00.000Z",
+        id: "workout_previous_same_day",
+        sets: [{ repetitions: 10, weightKg: 100 }],
+      }),
+    );
+
+    const summary = await workoutSummaryService.getSummary(
+      TEST_USER_A_ID,
+      "workout_current",
+    );
+
+    expect(
+      workoutSummaryRepositoryMock.findPreviousByName,
+    ).toHaveBeenCalledWith({
+      currentCreatedAt: new Date("2026-05-17T18:00:00.000Z"),
+      currentDate: new Date("2026-05-17T12:00:00.000Z"),
+      currentWorkoutId: "workout_current",
+      name: "Legs",
+      userId: TEST_USER_A_ID,
+    });
+    expect(summary.comparison).toMatchObject({
+      message: "+50% volume compared to your previous Legs workout",
+      percentageChange: 50,
+      previousVolume: 1000,
+      status: "compared",
+    });
+  });
+
+  it("falls back to the previous workout of the same category on the same day", async () => {
+    const { workoutSummaryService } = await import(
+      "@/server/services/workout-summary.service"
+    );
+    workoutSummaryRepositoryMock.findWorkoutById.mockResolvedValueOnce(
+      workoutSource({
+        createdAt: "2026-05-17T18:00:00.000Z",
+        date: "2026-05-17T12:00:00.000Z",
+        name: "Legs PM",
+        sets: [{ repetitions: 15, weightKg: 100 }],
+      }),
+    );
+    workoutSummaryRepositoryMock.findPreviousByName.mockResolvedValueOnce(null);
+    workoutSummaryRepositoryMock.findPreviousByCategory.mockResolvedValueOnce(
+      workoutSource({
+        createdAt: "2026-05-17T10:00:00.000Z",
+        date: "2026-05-17T12:00:00.000Z",
+        id: "workout_previous_same_category",
+        name: "Legs AM",
+        sets: [{ repetitions: 10, weightKg: 100 }],
+      }),
+    );
+
+    const summary = await workoutSummaryService.getSummary(
+      TEST_USER_A_ID,
+      "workout_current",
+    );
+
+    expect(
+      workoutSummaryRepositoryMock.findPreviousByCategory,
+    ).toHaveBeenCalledWith({
+      category: "Legs",
+      currentCreatedAt: new Date("2026-05-17T18:00:00.000Z"),
+      currentDate: new Date("2026-05-17T12:00:00.000Z"),
+      currentWorkoutId: "workout_current",
+      userId: TEST_USER_A_ID,
+    });
+    expect(summary.comparison).toMatchObject({
+      percentageChange: 50,
+      previousVolume: 1000,
       status: "compared",
     });
   });

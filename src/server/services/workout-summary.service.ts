@@ -76,11 +76,17 @@ const findPreviousComparableWorkout = async (
   userId: string,
   workout: SummaryWorkout,
 ) => {
-  const previousByName = await workoutSummaryRepository.findPreviousByName(
+  const lookup = {
+    currentCreatedAt: workout.createdAt,
+    currentDate: workout.date,
+    currentWorkoutId: workout.id,
     userId,
-    workout.name,
-    workout.date,
-  );
+  };
+
+  const previousByName = await workoutSummaryRepository.findPreviousByName({
+    ...lookup,
+    name: workout.name,
+  });
 
   if (previousByName) {
     return previousByName;
@@ -90,11 +96,10 @@ const findPreviousComparableWorkout = async (
     return null;
   }
 
-  return workoutSummaryRepository.findPreviousByCategory(
-    userId,
-    workout.category,
-    workout.date,
-  );
+  return workoutSummaryRepository.findPreviousByCategory({
+    ...lookup,
+    category: workout.category,
+  });
 };
 
 export const workoutSummaryService = {

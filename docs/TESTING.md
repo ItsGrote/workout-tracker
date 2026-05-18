@@ -171,14 +171,27 @@ nao serem normalizados para o formulario e fluxo manual perder valores padrao.
 ### Workout summary service - mock de repositories/services
 
 Funcionalidade testada: comparacao percentual, volume total, PRs do workout e
-streaks ativos retornados no summary pos-workout.
+streaks ativos retornados no summary pos-workout, incluindo workouts comparaveis
+salvos no mesmo dia.
 
 Motivo do teste: o popup de resumo usa dados motivacionais sensiveis; uma
 comparacao errada ou `Infinity%` quebraria a confianca no produto.
 
 Risco protegido: comparacao positiva/negativa incorreta, ausencia de treino
-anterior, divisao por zero, PR count errado, streaks inativos exibidos e summary
-de workout de outro usuario.
+anterior, divisao por zero, ignorar treinos do mesmo dia, PR count errado,
+streaks inativos exibidos e summary de workout de outro usuario.
+
+### Workout summary repository - mock de Prisma
+
+Funcionalidade testada: query que escolhe o workout anterior relevante para o
+summary.
+
+Motivo do teste: multiplos workouts no mesmo dia precisam respeitar a ordem real
+de salvamento sem comparar o workout atual consigo mesmo.
+
+Risco protegido: `date < current.date` ignorar treinos do mesmo dia, comparar
+contra dados de outro usuario, escolher workout atual como anterior e ordenar
+sem desempate por `createdAt`/`id`.
 
 ### API route de workout summary - handler real com auth/repositories mockados
 

@@ -7,6 +7,43 @@ const includeVolumeTree = {
   },
 };
 
+type PreviousWorkoutLookup = {
+  currentCreatedAt: Date;
+  currentDate: Date;
+  currentWorkoutId: string;
+  userId: string;
+};
+
+const buildPreviousWorkoutWhere = ({
+  currentCreatedAt,
+  currentDate,
+  currentWorkoutId,
+}: PreviousWorkoutLookup) => ({
+  AND: [
+    { id: { not: currentWorkoutId } },
+    {
+      OR: [
+        { date: { lt: currentDate } },
+        {
+          date: currentDate,
+          createdAt: { lt: currentCreatedAt },
+        },
+        {
+          date: currentDate,
+          createdAt: currentCreatedAt,
+          id: { lt: currentWorkoutId },
+        },
+      ],
+    },
+  ],
+});
+
+const previousWorkoutOrderBy = [
+  { date: "desc" as const },
+  { createdAt: "desc" as const },
+  { id: "desc" as const },
+];
+
 export const workoutSummaryRepository = {
   findWorkoutById(id: string, userId: string) {
     return prisma.workout.findFirst({
@@ -15,27 +52,29 @@ export const workoutSummaryRepository = {
     });
   },
 
-  findPreviousByCategory(userId: string, category: string, beforeDate: Date) {
+  findPreviousByCategory(
+    lookup: PreviousWorkoutLookup & { category: string },
+  ) {
     return prisma.workout.findFirst({
       where: {
-        userId,
-        category,
-        date: { lt: beforeDate },
+        userId: lookup.userId,
+        category: lookup.category,
+        ...buildPreviousWorkoutWhere(lookup),
       },
       include: includeVolumeTree,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      orderBy: previousWorkoutOrderBy,
     });
   },
 
-  findPreviousByName(userId: string, name: string, beforeDate: Date) {
+  findPreviousByName(lookup: PreviousWorkoutLookup & { name: string }) {
     return prisma.workout.findFirst({
       where: {
-        userId,
-        name,
-        date: { lt: beforeDate },
+        userId: lookup.userId,
+        name: lookup.name,
+        ...buildPreviousWorkoutWhere(lookup),
       },
       include: includeVolumeTree,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      orderBy: previousWorkoutOrderBy,
     });
   },
 };

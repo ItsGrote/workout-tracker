@@ -100,6 +100,8 @@ Observacoes:
 
 - usado pelo popup pos-workout;
 - compara com workout anterior de mesmo nome ou, se nao houver, mesma categoria;
+- quando ha mais de um workout no mesmo dia, a comparacao usa `date`,
+  `createdAt` e `id` para encontrar o treino salvo imediatamente antes do atual;
 - se nao houver treino anterior comparavel, `percentageChange` vem como `null`;
 - `userId` vem da sessao Supabase.
 

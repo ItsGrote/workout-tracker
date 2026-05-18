@@ -156,6 +156,9 @@ Assim, o grafico de volume x tempo reflete os dados atuais.
   - PRs atingidos;
   - streaks ativos.
 - Comparacao usa workout anterior de mesmo nome; se nao houver, usa mesma categoria.
+- Quando existem varios workouts no mesmo dia, o backend escolhe o treino salvo
+  antes do atual usando `date`, `createdAt` e `id` como desempate, sem comparar
+  o workout atual consigo mesmo.
 - Se nao houver workout anterior comparavel, mostra mensagem de primeiro treino na categoria.
 - Se o volume anterior for zero, nao mostra porcentagem infinita.
 - Em `Settings > Popup settings`, o usuario pode controlar `Enable workout summary popup`.
