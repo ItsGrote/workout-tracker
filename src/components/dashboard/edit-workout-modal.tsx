@@ -594,14 +594,16 @@ export function EditWorkoutModal({
         </div>
 
         {pendingUnsavedAction ? (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 p-4">
-            <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15">
-              <h3 className="text-lg font-semibold">Unsaved changes</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                Save your edits before leaving, discard them, or cancel and keep
-                editing.
-              </p>
-              <div className="mt-5 grid gap-2 sm:grid-cols-3">
+          <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/35 p-3 sm:items-center">
+            <div className="flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-[#1f3a45]/15 sm:rounded-2xl">
+              <div className="min-h-0 overflow-y-auto p-5">
+                <h3 className="text-lg font-semibold">Unsaved changes</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Save your edits before leaving, discard them, or cancel and keep
+                  editing.
+                </p>
+              </div>
+              <div className="grid gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_-12px_24px_rgba(31,58,69,0.06)] sm:grid-cols-3">
                 <button
                   className={primaryButtonClassName}
                   disabled={isSaving}

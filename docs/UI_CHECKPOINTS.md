@@ -490,6 +490,54 @@ responsividade e polish visual.
 - Verificar contraste visual em light mode.
 - Verificar foco de teclado em inputs e botoes principais.
 
+## 13. Popup and feedback surfaces refinement
+
+Status: `COMPLETED`
+
+### Objetivo
+
+Refinar popups e superficies de feedback para garantir que CTAs principais
+permaneçam acessiveis em mobile e telas pequenas.
+
+Foco:
+
+- workout summary popup;
+- PR popup;
+- goal achievement popup;
+- confirmacoes customizadas;
+- scroll interno;
+- footer fixo dentro do popup;
+- hierarchy de recompensa e confirmacao.
+
+### Arquivos esperados
+
+- `src/components/dashboard/workout-summary-popup.tsx`
+- `src/components/dashboard/personal-record-popup.tsx`
+- `src/components/dashboard/goal-achievement-popup.tsx`
+- `src/components/dashboard/edit-workout-modal.tsx`
+
+### Riscos
+
+- CTA continuar fora da viewport.
+- Popup ficar bonito, mas menos utilizavel.
+- Scroll interno ficar desconfortavel.
+- Confundir confirmacoes nativas com popups customizados.
+
+### Dependencias
+
+- Checkpoints 1 a 9.
+
+### Estrategia de validacao
+
+- Testar workout summary popup grande e pequeno.
+- Testar PR popup com muitos records.
+- Testar goal achievement popup.
+- Testar confirmacao customizada de alteracoes nao salvas.
+- Testar viewport mobile e desktop.
+- Confirmar que CTAs ficam sempre visiveis.
+- Confirmar que confirmacoes nativas continuam funcionando, mesmo sem controle
+  visual customizado.
+
 ## Ordem segura resumida
 
 1. Visual foundation tokens.
@@ -504,6 +552,7 @@ responsividade e polish visual.
 10. Empty, loading and error states.
 11. Mobile polish pass.
 12. Final visual QA and accessibility pass.
+13. Popup and feedback surfaces refinement.
 
 Essa ordem reduz risco porque comeca por fundacao visual, avanca para componentes
 reutilizados e so depois entra nas telas e fluxos mais sensiveis.

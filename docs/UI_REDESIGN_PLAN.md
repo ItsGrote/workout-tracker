@@ -575,6 +575,32 @@ gerou dado, progresso e continuidade.
 - Celebracao discreta: micro animacao `rise` ou transicao suave, sem confete.
 - Botao de fechar claro.
 
+### Estrategia de popups e feedback surfaces
+
+Popups de recompensa e confirmacao devem garantir que a acao principal nunca
+fique fora da viewport. O padrao visual recomendado e:
+
+- overlay com fundo escuro suave;
+- card com `max-height` baseado na viewport;
+- header separado quando houver titulo/contexto;
+- conteudo com scroll interno;
+- footer fixo dentro do popup para CTAs;
+- CTA principal com altura minima confortavel;
+- mobile alinhado ao fim da tela, desktop centralizado;
+- sombras suaves e radius consistente.
+
+Esse padrao se aplica a:
+
+- workout summary popup;
+- PR popup;
+- goal achievement popup;
+- confirmacoes customizadas, como alteracoes nao salvas.
+
+Confirmacoes nativas baseadas em `window.confirm` continuam controladas pelo
+navegador e nao podem ser refinadas visualmente sem criar um componente de
+confirmacao proprio. Uma troca futura deve ser feita como checkpoint isolado,
+para evitar misturar redesign com mudanca de fluxo.
+
 ## 13. Estados vazios
 
 ### Principio

@@ -29,16 +29,21 @@ export function PersonalRecordPopup({
       : `${records.length} new personal records achieved`;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/25 p-4">
-      <section className="w-full max-w-lg rounded border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
-        <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
-          Personal record
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold">{title}</h2>
-        <ul className="mt-4 grid gap-2 text-sm">
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/35 p-3 sm:items-center">
+      <section className="flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-[#1f3a45]/20 sm:rounded-2xl">
+        <header className="border-b border-[var(--border)] p-5 sm:p-6">
+          <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
+            Personal record
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold">{title}</h2>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+            Your saved workout unlocked new performance markers.
+          </p>
+        </header>
+        <ul className="grid min-h-0 gap-2 overflow-y-auto p-5 text-sm sm:p-6">
           {records.map((record) => (
             <li
-              className="rounded border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-2"
+              className="rounded-lg border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-2"
               key={`${record.workoutId}-${record.exerciseId}-${record.metric}-${record.value}`}
             >
               <span className="font-semibold">
@@ -48,13 +53,15 @@ export function PersonalRecordPopup({
             </li>
           ))}
         </ul>
-        <button
-          className="mt-5 rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white"
-          onClick={onClose}
-          type="button"
-        >
-          Celebrate
-        </button>
+        <footer className="border-t border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_-12px_24px_rgba(31,58,69,0.06)]">
+          <button
+            className="min-h-11 w-full rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
+            onClick={onClose}
+            type="button"
+          >
+            Celebrate
+          </button>
+        </footer>
       </section>
     </div>
   );
