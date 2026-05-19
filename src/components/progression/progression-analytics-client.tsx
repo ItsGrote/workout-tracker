@@ -147,9 +147,6 @@ const emptyStateClassName =
 const loadingBlockClassName =
   "animate-pulse rounded-xl border border-[var(--border)] bg-[var(--accent-soft)] shadow-sm shadow-[#1f3a45]/5";
 
-const selectClassName =
-  "min-h-11 min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
-
 const secondaryActionClassName =
   "min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm shadow-[#1f3a45]/5 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
 
@@ -158,6 +155,110 @@ const primaryActionClassName =
 
 const checkboxClassName =
   "h-5 w-5 rounded border-[var(--border)] accent-[var(--accent)]";
+
+type FixedOption<T extends string> = {
+  label: string;
+  value: T;
+};
+
+type FixedOptionSelectProps<T extends string> = {
+  label: string;
+  onChange: (value: T) => void;
+  options: FixedOption<T>[];
+  value: T;
+};
+
+function FixedOptionSelect<T extends string>({
+  label,
+  onChange,
+  options,
+  value,
+}: FixedOptionSelectProps<T>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const selectedOption = options.find((option) => option.value === value);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div
+      className="relative isolate flex min-w-0 max-w-full flex-col gap-2 text-sm font-medium"
+      ref={containerRef}
+    >
+      <span className="min-w-0 truncate">{label}</span>
+      <button
+        aria-expanded={isOpen}
+        className="flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-left font-normal text-[var(--foreground)] outline-none transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:border-[var(--accent)] focus-visible:ring-2 focus-visible:ring-[var(--accent)]/15"
+        onClick={() => setIsOpen((current) => !current)}
+        type="button"
+      >
+        <span className="min-w-0 truncate">
+          {selectedOption?.label ?? "Select option"}
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-[var(--muted)]">
+          {isOpen ? "^" : "v"}
+        </span>
+      </button>
+
+      {isOpen ? (
+        <div className="relative z-10 mt-2 box-border max-h-60 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl border border-[var(--accent)] bg-[var(--surface)] p-1.5 shadow-lg shadow-[#1f3a45]/10 md:absolute md:inset-x-0 md:top-full md:z-50 md:shadow-xl">
+          {options.map((option) => {
+            const isSelected = option.value === value;
+
+            return (
+              <button
+                className={`min-h-11 w-full min-w-0 rounded-lg px-3 py-2.5 text-left text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 ${
+                  isSelected
+                    ? "bg-[var(--accent)] font-semibold text-white"
+                    : "text-[var(--foreground)] hover:bg-[var(--accent-soft)]"
+                }`}
+                key={option.value}
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+                type="button"
+              >
+                <span className="block whitespace-normal break-words">
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 const loadPreferences = (): SavedPreferences => {
   if (typeof window === "undefined") {
@@ -434,20 +535,18 @@ export function ProgressionAnalyticsClient() {
 
             <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-2">
               {target === "workout" ? (
-                <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
-                  Workout filter
-                  <select
-                    className={selectClassName}
-                    onChange={(event) => {
-                      setWorkoutFilter(event.target.value as WorkoutFilter);
-                      setSelectedValue("");
-                    }}
-                    value={workoutFilter}
-                  >
-                    <option value="name">Workout name</option>
-                    <option value="category">Workout category</option>
-                  </select>
-                </label>
+                <FixedOptionSelect
+                  label="Workout filter"
+                  onChange={(nextWorkoutFilter) => {
+                    setWorkoutFilter(nextWorkoutFilter);
+                    setSelectedValue("");
+                  }}
+                  options={[
+                    { label: "Workout name", value: "name" },
+                    { label: "Workout category", value: "category" },
+                  ]}
+                  value={workoutFilter}
+                />
               ) : null}
 
               <div
@@ -476,50 +575,30 @@ export function ProgressionAnalyticsClient() {
                 />
               </div>
 
-              <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
-                Time range
-                <select
-                  className={selectClassName}
-                  onChange={(event) => setRange(event.target.value as RangeOption)}
-                  value={range}
-                >
-                  {rangeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <FixedOptionSelect
+                label="Time range"
+                onChange={setRange}
+                options={rangeOptions}
+                value={range}
+              />
 
-              <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
-                Chart style
-                <select
-                  className={selectClassName}
-                  onChange={(event) => setChartKind(event.target.value as ChartKind)}
-                  value={chartKind}
-                >
-                  <option value="bar">Bar chart</option>
-                  <option value="line">Line chart</option>
-                </select>
-              </label>
+              <FixedOptionSelect
+                label="Chart style"
+                onChange={setChartKind}
+                options={[
+                  { label: "Bar chart", value: "bar" },
+                  { label: "Line chart", value: "line" },
+                ]}
+                value={chartKind}
+              />
 
               {target === "exercise" ? (
-                <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
-                  Y axis metric
-                  <select
-                    className={selectClassName}
-                    onChange={(event) =>
-                      setExerciseMetric(event.target.value as ExerciseMetric)
-                    }
-                    value={exerciseMetric}
-                  >
-                    {metricOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <FixedOptionSelect
+                  label="Y axis metric"
+                  onChange={setExerciseMetric}
+                  options={metricOptions}
+                  value={exerciseMetric}
+                />
               ) : null}
             </div>
 
