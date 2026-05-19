@@ -67,7 +67,7 @@ export function SearchableSelect({
       </label>
 
       {isOpen && !disabled ? (
-        <div className="absolute inset-x-0 z-50 mt-2 box-border max-h-[min(14rem,42dvh)] w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl border border-[var(--accent)] bg-[var(--surface)] p-1.5 shadow-xl shadow-[#1f3a45]/10">
+        <div className="relative z-10 mt-2 box-border max-h-[min(14rem,42dvh)] w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl border border-[var(--accent)] bg-[var(--surface)] p-1.5 shadow-lg shadow-[#1f3a45]/10 md:absolute md:inset-x-0 md:z-50 md:shadow-xl">
           <p className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
             {query ? "Filtered results" : "Available options"}
           </p>
