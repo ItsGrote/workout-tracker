@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AchievementBanner } from "./achievement-banner";
 import { ConsistencyCard } from "./consistency-card";
@@ -38,10 +39,25 @@ const SHOWN_PERSONAL_RECORD_KEY_PREFIX =
 
 type SettingsSection = "streak" | "popups";
 
+class UnauthorizedRequestError extends Error {
+  constructor() {
+    super("Authentication required.");
+    this.name = "UnauthorizedRequestError";
+  }
+}
+
+const isUnauthorizedRequestError = (
+  error: unknown,
+): error is UnauthorizedRequestError => error instanceof UnauthorizedRequestError;
+
 const requestJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(path, {
     credentials: "include",
   });
+
+  if (response.status === 401) {
+    throw new UnauthorizedRequestError();
+  }
 
   if (!response.ok) {
     throw new Error(`Request failed: ${path}`);
@@ -70,6 +86,7 @@ const readApiError = async (response: Response, fallback: string) => {
 };
 
 export function DashboardClient() {
+  const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,6 +120,10 @@ export function DashboardClient() {
   const [workoutSummaryPopup, setWorkoutSummaryPopup] =
     useState<WorkoutSummaryResponse | null>(null);
 
+  const redirectToLogin = useCallback(() => {
+    router.replace("/login");
+  }, [router]);
+
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -132,6 +153,11 @@ export function DashboardClient() {
 
       return nextData;
     } catch (caughtError) {
+      if (isUnauthorizedRequestError(caughtError)) {
+        redirectToLogin();
+        return null;
+      }
+
       setError(
         caughtError instanceof Error
           ? caughtError.message
@@ -142,7 +168,7 @@ export function DashboardClient() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [redirectToLogin]);
 
   const loadConsistencyData = useCallback(async () => {
     try {
@@ -155,13 +181,18 @@ export function DashboardClient() {
         current ? { ...current, consistency, goals } : current,
       );
     } catch (caughtError) {
+      if (isUnauthorizedRequestError(caughtError)) {
+        redirectToLogin();
+        return;
+      }
+
       setError(
         caughtError instanceof Error
           ? caughtError.message
           : "Unable to load consistency data.",
       );
     }
-  }, []);
+  }, [redirectToLogin]);
 
   useEffect(() => {
     void loadDashboard();
@@ -421,13 +452,22 @@ export function DashboardClient() {
           setWorkoutSummaryPopup(summary);
         }
       } catch (caughtError) {
+        if (isUnauthorizedRequestError(caughtError)) {
+          redirectToLogin();
+          return;
+        }
+
         setBannerMessage(
           "Workout saved, but the summary could not be checked right now.",
         );
         window.setTimeout(() => setBannerMessage(null), 5000);
       }
     },
-    [arePersonalRecordPopupsEnabled, areWorkoutSummaryPopupsEnabled],
+    [
+      arePersonalRecordPopupsEnabled,
+      areWorkoutSummaryPopupsEnabled,
+      redirectToLogin,
+    ],
   );
 
   if (isLoading) {
