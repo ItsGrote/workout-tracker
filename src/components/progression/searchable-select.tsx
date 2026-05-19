@@ -16,7 +16,7 @@ const inputClassName =
   "min-h-11 w-full min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 font-normal text-[var(--foreground)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 disabled:cursor-not-allowed disabled:bg-[var(--accent-soft)] disabled:opacity-70";
 
 const optionButtonClassName =
-  "min-h-11 w-full rounded-lg px-3 py-2.5 text-left text-sm text-[var(--foreground)] transition hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
+  "min-h-11 w-full min-w-0 rounded-lg px-3 py-2.5 text-left text-sm text-[var(--foreground)] transition hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20";
 
 export function SearchableSelect({
   disabled,
@@ -42,10 +42,10 @@ export function SearchableSelect({
   }, [options, query]);
 
   return (
-    <div className="relative min-w-0">
-      <label className="flex flex-col gap-2 text-sm font-medium">
-        <span className="flex items-center justify-between gap-3">
-          <span>{label}</span>
+    <div className="relative isolate w-full min-w-0 max-w-full overflow-visible">
+      <label className="flex min-w-0 max-w-full flex-col gap-2 text-sm font-medium">
+        <span className="flex min-w-0 items-center justify-between gap-3">
+          <span className="min-w-0 truncate">{label}</span>
           {value ? (
             <span className="rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--accent)]">
               Selected
@@ -67,7 +67,7 @@ export function SearchableSelect({
       </label>
 
       {isOpen && !disabled ? (
-        <div className="absolute z-20 mt-2 max-h-[min(16rem,45dvh)] w-full overflow-y-auto overscroll-contain rounded-xl border border-[var(--accent)] bg-[var(--surface)] p-1.5 shadow-xl shadow-[#1f3a45]/10">
+        <div className="absolute inset-x-0 z-50 mt-2 box-border max-h-[min(14rem,42dvh)] w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl border border-[var(--accent)] bg-[var(--surface)] p-1.5 shadow-xl shadow-[#1f3a45]/10">
           <p className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
             {query ? "Filtered results" : "Available options"}
           </p>
@@ -84,7 +84,9 @@ export function SearchableSelect({
                 }}
                 type="button"
               >
-                <span className="block break-words">{option}</span>
+                <span className="block whitespace-normal break-words">
+                  {option}
+                </span>
               </button>
             ))
           ) : (

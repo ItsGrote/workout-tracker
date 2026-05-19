@@ -71,7 +71,7 @@ export function TemplateManagementCard({
                   onClick={() => onStart(template)}
                   type="button"
                 >
-                  Use structure
+                  Use template
                 </button>
                 <button
                   className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55"

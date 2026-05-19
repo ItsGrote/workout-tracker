@@ -139,7 +139,7 @@ const insightCardClass =
   "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
 
 const filterPanelClassName =
-  "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
+  "min-w-0 max-w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm shadow-[#1f3a45]/5";
 
 const emptyStateClassName =
   "rounded-2xl border border-dashed border-[#d8c3a5] bg-[var(--accent-soft)] p-5 text-sm leading-6 text-[var(--muted)] shadow-sm shadow-[#1f3a45]/5 sm:p-6";
@@ -370,7 +370,7 @@ export function ProgressionAnalyticsClient() {
           </div>
         </header>
 
-        <section className="grid gap-4 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
+        <section className="grid min-w-0 gap-4 lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
           <div className={filterPanelClassName}>
             <p className="text-sm font-semibold text-[var(--foreground)]">
               What are you analyzing?
@@ -432,9 +432,9 @@ export function ProgressionAnalyticsClient() {
               </p>
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-2">
               {target === "workout" ? (
-                <label className="flex flex-col gap-2 text-sm font-medium">
+                <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
                   Workout filter
                   <select
                     className={selectClassName}
@@ -450,7 +450,11 @@ export function ProgressionAnalyticsClient() {
                 </label>
               ) : null}
 
-              <div className={target === "workout" ? "" : "md:col-span-2"}>
+              <div
+                className={`min-w-0 max-w-full ${
+                  target === "workout" ? "" : "md:col-span-2"
+                }`}
+              >
                 <SearchableSelect
                   disabled={!target || isLoading}
                   emptyMessage={selectionEmptyMessage}
@@ -472,7 +476,7 @@ export function ProgressionAnalyticsClient() {
                 />
               </div>
 
-              <label className="flex flex-col gap-2 text-sm font-medium">
+              <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
                 Time range
                 <select
                   className={selectClassName}
@@ -487,7 +491,7 @@ export function ProgressionAnalyticsClient() {
                 </select>
               </label>
 
-              <label className="flex flex-col gap-2 text-sm font-medium">
+              <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
                 Chart style
                 <select
                   className={selectClassName}
@@ -500,7 +504,7 @@ export function ProgressionAnalyticsClient() {
               </label>
 
               {target === "exercise" ? (
-                <label className="flex flex-col gap-2 text-sm font-medium">
+                <label className="flex min-w-0 flex-col gap-2 text-sm font-medium">
                   Y axis metric
                   <select
                     className={selectClassName}

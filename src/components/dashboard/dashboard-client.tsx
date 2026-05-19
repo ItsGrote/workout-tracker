@@ -495,26 +495,30 @@ export function DashboardClient() {
 
         <div className="grid gap-6 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.35fr)]">
           <div className="flex flex-col gap-6">
-            <ConsistencyCard
-              consistency={data.consistency}
-              goals={data.goals}
-              onEditGoals={() => openSettings("streak")}
-            />
+            <div className="order-2 xl:order-1">
+              <ConsistencyCard
+                consistency={data.consistency}
+                goals={data.goals}
+                onEditGoals={() => openSettings("streak")}
+              />
+            </div>
 
-            <TemplateManagementCard
-              isBusy={isTemplateActionLoading}
-              onCreate={() => {
-                setEditingTemplate(null);
-                setIsTemplateEditorOpen(true);
-              }}
-              onDelete={deleteTemplate}
-              onEdit={(template) => {
-                setEditingTemplate(template);
-                setIsTemplateEditorOpen(true);
-              }}
-              onStart={startWorkoutFromTemplate}
-              templates={data.templates}
-            />
+            <div className="order-1 xl:order-2">
+              <TemplateManagementCard
+                isBusy={isTemplateActionLoading}
+                onCreate={() => {
+                  setEditingTemplate(null);
+                  setIsTemplateEditorOpen(true);
+                }}
+                onDelete={deleteTemplate}
+                onEdit={(template) => {
+                  setEditingTemplate(template);
+                  setIsTemplateEditorOpen(true);
+                }}
+                onStart={startWorkoutFromTemplate}
+                templates={data.templates}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">
