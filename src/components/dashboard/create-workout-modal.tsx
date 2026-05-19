@@ -314,7 +314,7 @@ export function CreateWorkoutModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
       <form
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-4xl sm:rounded-2xl"
+        className="max-h-[92dvh] w-full overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-4xl sm:rounded-2xl sm:p-5"
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
@@ -361,20 +361,20 @@ export function CreateWorkoutModal({
               </p>
             </div>
           ) : (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 grid gap-2 sm:flex sm:flex-wrap">
               {templates.map((template) => {
                 const isApplying = applyingTemplateId === template.id;
 
                 return (
                   <button
-                    className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-left text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-55"
+                    className="min-h-11 min-w-0 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-left text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-55"
                     disabled={isSaving || applyingTemplateId !== null}
                     key={template.id}
                     onClick={() => void applyTemplate(template)}
                     type="button"
                   >
                     {isApplying ? "Applying..." : template.name}
-                    <span className="block text-xs font-normal text-[var(--muted)]">
+                    <span className="block break-words text-xs font-normal text-[var(--muted)]">
                       {template.category ?? "No category"} ·{" "}
                       {template.exercises.length} exercise slots · fill reps/weight next
                     </span>
@@ -413,7 +413,7 @@ export function CreateWorkoutModal({
           </label>
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="text-lg font-semibold">Exercises</h3>
           <button
             className={primaryButtonClassName}
@@ -458,7 +458,7 @@ export function CreateWorkoutModal({
                 </button>
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3">
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-semibold">Sets</p>
                 <button
                   className={secondaryButtonClassName}
@@ -550,7 +550,7 @@ export function CreateWorkoutModal({
           </p>
         ) : null}
 
-        <div className="sticky bottom-0 -mx-5 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+        <div className="sticky bottom-0 -mx-4 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-4 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] pt-4 sm:-mx-5 sm:px-5">
           <button
             className={`w-full ${primaryButtonClassName}`}
             disabled={isSaving || applyingTemplateId !== null}

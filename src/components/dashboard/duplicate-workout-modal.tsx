@@ -105,7 +105,7 @@ export function DuplicateWorkoutModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
-      <section className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-xl sm:rounded-2xl">
+      <section className="max-h-[92dvh] w-full overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-xl sm:rounded-2xl sm:p-5">
         <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
@@ -143,7 +143,7 @@ export function DuplicateWorkoutModal({
                   type="radio"
                 />
                 <span className="font-medium">{workout.name}</span>
-                <span className="ml-2 text-[var(--muted)]">
+                <span className="mt-1 block text-[var(--muted)] sm:ml-2 sm:mt-0 sm:inline">
                   {workout.category ?? "No category"} - {formatDate(workout.date)}
                 </span>
               </label>
@@ -161,7 +161,7 @@ export function DuplicateWorkoutModal({
           </p>
         ) : null}
 
-        <div className="sticky bottom-0 -mx-5 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+        <div className="sticky bottom-0 -mx-4 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-4 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] pt-4 sm:-mx-5 sm:px-5">
           <button
             className={`w-full ${primaryButtonClassName}`}
             disabled={isDuplicating || workouts.length === 0}

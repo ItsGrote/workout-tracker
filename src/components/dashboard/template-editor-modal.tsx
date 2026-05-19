@@ -238,7 +238,7 @@ export function TemplateEditorModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
       <form
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-4xl sm:rounded-2xl"
+        className="max-h-[92dvh] w-full overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-4xl sm:rounded-2xl sm:p-5"
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
@@ -292,7 +292,7 @@ export function TemplateEditorModal({
           </p>
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="text-lg font-semibold">Template structure</h3>
           <button
             className={primaryButtonClassName}
@@ -335,7 +335,7 @@ export function TemplateEditorModal({
                 </button>
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3">
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-semibold">Set type slots</p>
                 <button
                   className={secondaryButtonClassName}
@@ -400,7 +400,7 @@ export function TemplateEditorModal({
           </p>
         ) : null}
 
-        <div className="sticky bottom-0 -mx-5 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+        <div className="sticky bottom-0 -mx-4 mt-5 border-t border-[var(--border)] bg-[var(--surface)] px-4 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] pt-4 sm:-mx-5 sm:px-5">
           <button
             className={`w-full ${primaryButtonClassName}`}
             disabled={isSaving}

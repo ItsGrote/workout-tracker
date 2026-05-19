@@ -212,7 +212,7 @@ export function SettingsSidebar({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/35 sm:p-3">
-      <aside className="ml-auto flex h-full w-full max-w-xl flex-col overflow-hidden border-l border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-[#1f3a45]/20 sm:rounded-l-2xl sm:border">
+      <aside className="ml-auto flex h-[100dvh] w-full max-w-xl flex-col overflow-hidden border-l border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-[#1f3a45]/20 sm:h-full sm:rounded-l-2xl sm:border">
         <div className="flex items-start justify-between gap-3 border-b border-[var(--border)] p-4 sm:p-5">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
@@ -256,7 +256,7 @@ export function SettingsSidebar({
 
           <div className="min-h-0 overflow-y-auto p-4 sm:p-5">
             {section === "streak" ? (
-              <div className="pb-24">
+              <div className="pb-28">
                 <h3 className="text-lg font-semibold">Streak settings</h3>
                 <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
                   Streak progress counts unique training days, not multiple
@@ -435,7 +435,7 @@ export function SettingsSidebar({
         </div>
 
         {section === "streak" ? (
-          <div className="border-t border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_-12px_24px_rgba(31,58,69,0.06)]">
+          <div className="border-t border-[var(--border)] bg-[var(--surface)] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-12px_24px_rgba(31,58,69,0.06)] sm:pb-4">
             {error || validationError ? (
               <p className="mb-3 rounded-lg border border-[#e1b8b8] bg-[#fff7f7] px-3 py-2 text-sm text-[#7b3b3b]">
                 {error ?? validationError}

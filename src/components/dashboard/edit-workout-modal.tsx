@@ -348,20 +348,20 @@ export function EditWorkoutModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-black/35 p-3 sm:items-center sm:justify-center">
-      <section className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-5xl sm:rounded-2xl">
+      <section className="max-h-[92dvh] w-full overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl shadow-[#1f3a45]/15 sm:max-w-5xl sm:rounded-2xl sm:p-5">
         <div className="flex flex-col gap-4 border-b border-[var(--border)] pb-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
               Edit workout
             </p>
-            <h2 className="mt-2 text-2xl font-semibold">
+            <h2 className="mt-2 break-words text-xl font-semibold sm:text-2xl">
               {draft.name || "Untitled workout"} - {draft.category || "Category"}
             </h2>
             <p className="mt-1 text-sm text-[var(--muted)]">
               Changes stay in this editor until you click Save edits.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
             <button
               className={secondaryButtonClassName}
               onClick={requestClose}
@@ -485,7 +485,7 @@ export function EditWorkoutModal({
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between gap-3">
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h4 className="font-semibold">{selectedSetType} sets</h4>
                   <button
                     className={secondaryButtonClassName}
@@ -582,7 +582,7 @@ export function EditWorkoutModal({
           </p>
         ) : null}
 
-        <div className="sticky bottom-0 -mx-5 mt-6 border-t border-[var(--border)] bg-[var(--surface)] px-5 pb-1 pt-4">
+        <div className="sticky bottom-0 -mx-4 mt-6 border-t border-[var(--border)] bg-[var(--surface)] px-4 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] pt-4 sm:-mx-5 sm:px-5">
           <button
             className={dangerButtonClassName}
             disabled={isSaving || isDeleting}
@@ -603,7 +603,7 @@ export function EditWorkoutModal({
                   editing.
                 </p>
               </div>
-              <div className="grid gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_-12px_24px_rgba(31,58,69,0.06)] sm:grid-cols-3">
+              <div className="grid gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-12px_24px_rgba(31,58,69,0.06)] sm:grid-cols-3 sm:pb-4">
                 <button
                   className={primaryButtonClassName}
                   disabled={isSaving}

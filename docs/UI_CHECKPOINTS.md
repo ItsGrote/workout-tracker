@@ -415,7 +415,7 @@ settings e analytics.
 
 ## 11. Mobile polish pass
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 

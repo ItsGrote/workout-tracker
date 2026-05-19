@@ -73,14 +73,14 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <form
-      className="w-full max-w-md rounded border border-[var(--border)] bg-[var(--surface)] p-6"
+      className="w-full max-w-[calc(100vw-2rem)] rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm shadow-[#1f3a45]/5 sm:max-w-md sm:p-6"
       onSubmit={handleSubmit}
     >
       <div className="mb-6">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
           Workout Evolution
         </p>
-        <h1 className="mt-2 text-3xl font-semibold">{title}</h1>
+        <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">{title}</h1>
       </div>
 
       <label className="flex flex-col gap-2 text-sm font-medium">

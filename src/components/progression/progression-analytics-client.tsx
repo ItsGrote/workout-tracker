@@ -360,7 +360,7 @@ export function ProgressionAnalyticsClient() {
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
               Progression analytics
             </p>
-            <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
+            <h1 className="mt-2 text-2xl font-semibold sm:text-4xl">
               Investigate the evolution behind each session.
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--muted)]">
@@ -546,7 +546,7 @@ export function ProgressionAnalyticsClient() {
                 </div>
                 <div className={`${loadingBlockClassName} h-10 w-48 max-w-full`} />
               </div>
-              <div className={`${loadingBlockClassName} h-[320px] sm:h-[380px]`} />
+              <div className={`${loadingBlockClassName} h-[300px] sm:h-[380px]`} />
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 <div className={`${loadingBlockClassName} h-28`} />
                 <div className={`${loadingBlockClassName} h-28`} />
@@ -635,13 +635,19 @@ export function ProgressionAnalyticsClient() {
                 ) : null}
               </div>
 
-              <div className="mt-5 h-[360px] sm:h-[420px]">
+              <div className="mt-5 h-[300px] overflow-hidden sm:h-[420px]">
                 <ResponsiveContainer height="100%" width="100%">
                   {chartKind === "bar" ? (
                     <BarChart data={chartData}>
                       <CartesianGrid stroke="#d8cfc1" strokeDasharray="3 3" />
-                      <XAxis dataKey="displayDate" tickLine={false} />
-                      <YAxis tickLine={false} />
+                      <XAxis
+                        dataKey="displayDate"
+                        fontSize={12}
+                        interval="preserveStartEnd"
+                        minTickGap={16}
+                        tickLine={false}
+                      />
+                      <YAxis fontSize={12} tickLine={false} width={44} />
                       <Tooltip
                         contentStyle={{
                           background: "var(--surface)",
@@ -666,8 +672,14 @@ export function ProgressionAnalyticsClient() {
                   ) : (
                     <LineChart data={chartData}>
                       <CartesianGrid stroke="#d8cfc1" strokeDasharray="3 3" />
-                      <XAxis dataKey="displayDate" tickLine={false} />
-                      <YAxis tickLine={false} />
+                      <XAxis
+                        dataKey="displayDate"
+                        fontSize={12}
+                        interval="preserveStartEnd"
+                        minTickGap={16}
+                        tickLine={false}
+                      />
+                      <YAxis fontSize={12} tickLine={false} width={44} />
                       <Tooltip
                         contentStyle={{
                           background: "var(--surface)",
