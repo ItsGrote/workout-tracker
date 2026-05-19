@@ -471,6 +471,7 @@ export function DashboardClient() {
                 Settings
               </button>
               <button
+                aria-label="Create workout"
                 className="fixed bottom-[calc(env(safe-area-inset-bottom)+1.25rem)] right-5 z-40 h-14 w-14 rounded-full bg-[var(--accent)] text-3xl font-light leading-none text-white shadow-xl shadow-[#1f3a45]/25 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 sm:static sm:min-h-11 sm:w-auto sm:rounded-lg sm:px-4 sm:py-2.5 sm:text-sm sm:font-semibold"
                 onClick={() => openCreateWorkout()}
                 title="Create workout"

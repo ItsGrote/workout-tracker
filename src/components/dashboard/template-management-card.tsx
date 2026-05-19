@@ -28,7 +28,7 @@ export function TemplateManagementCard({
           </p>
         </div>
         <button
-          className="min-h-10 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
+          className="min-h-11 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
           onClick={onCreate}
           type="button"
         >
@@ -66,7 +66,7 @@ export function TemplateManagementCard({
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="min-h-10 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55"
+                  className="min-h-11 rounded-lg bg-[var(--accent)] px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-[#1f3a45]/10 transition hover:bg-[#172b33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onStart(template)}
                   type="button"
@@ -74,7 +74,7 @@ export function TemplateManagementCard({
                   Use structure
                 </button>
                 <button
-                  className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55"
+                  className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/20 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onEdit(template)}
                   type="button"
@@ -82,7 +82,7 @@ export function TemplateManagementCard({
                   Edit
                 </button>
                 <button
-                  className="min-h-10 rounded-lg border border-[#e1b8b8] bg-[#fff7f7] px-3 py-2 text-sm font-medium text-[#7b3b3b] transition hover:bg-[#fbecec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7b3b3b]/20 disabled:cursor-not-allowed disabled:opacity-55"
+                  className="min-h-11 rounded-lg border border-[#e1b8b8] bg-[#fff7f7] px-3 py-2 text-sm font-medium text-[#7b3b3b] transition hover:bg-[#fbecec] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7b3b3b]/20 disabled:cursor-not-allowed disabled:opacity-55"
                   disabled={isBusy}
                   onClick={() => onDelete(template)}
                   type="button"

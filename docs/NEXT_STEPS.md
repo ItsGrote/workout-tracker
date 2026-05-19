@@ -49,6 +49,10 @@
 - Revisar regras de Row Level Security no Supabase antes de producao.
 - Considerar persistir preferencias de notificacao/analytics no backend se precisarem sincronizar entre dispositivos.
 - Trocar confirmacoes nativas (`window.confirm`) por dialogs acessiveis antes de polimento final.
+- Revisar vulnerabilidades moderadas reportadas por `npm audit` em `next/postcss`
+  e `prisma/@prisma/dev/@hono/node-server`. O audit sugere
+  `npm audit fix --force`, mas isso envolve mudancas breaking e deve ser
+  planejado/testado separadamente.
 
 ## Robustez
 

@@ -415,7 +415,7 @@ settings e analytics.
 
 ## 11. Mobile polish pass
 
-Status: `IN PROGRESS`
+Status: `COMPLETED`
 
 ### Objetivo
 
@@ -450,7 +450,7 @@ Corrigir touch targets, scroll, overflow, textos quebrados e densidade.
 
 ## 12. Final visual QA and accessibility pass
 
-Status: `NOT STARTED`
+Status: `IN PROGRESS`
 
 ### Objetivo
 
